@@ -55,7 +55,7 @@ import Search from '@/components/HeaderSearch'
 import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
 import ProfileDialog from '@/components/ProfileDialog'
-import { getUnreadReminderCount } from '@/api/oa/dashboard'
+import { getUnreadMessageCount } from '@/api/system/message'
 
 export default {
   emits: ['setLayout'],
@@ -124,14 +124,14 @@ export default {
       this.$emit('setLayout')
     },
     loadUnreadReminderCount() {
-      getUnreadReminderCount().then(res => {
+      getUnreadMessageCount().then(res => {
         this.unreadReminderCount = res.data.count || 0
       }).catch(() => {
         this.unreadReminderCount = 0
       })
     },
     goToReminder() {
-      this.$router.push('/oa/reminder')
+      this.$router.push('/message/center')
     },
     openProfile() {
       this.profileVisible = true

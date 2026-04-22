@@ -25,7 +25,7 @@ const resolveSysCodeByPath = (path) => {
   if (path.startsWith('/oa')) {
     return 'oa'
   }
-  if (path.startsWith('/system') || path.startsWith('/monitor') || path.startsWith('/tool') || path.startsWith('/index')) {
+  if (path.startsWith('/message') || path.startsWith('/system') || path.startsWith('/monitor') || path.startsWith('/tool') || path.startsWith('/index')) {
     return 'basic'
   }
   return ''

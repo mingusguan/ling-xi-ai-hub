@@ -55,11 +55,18 @@
           <el-radio-button label="0">未读</el-radio-button>
           <el-radio-button label="1">已读</el-radio-button>
         </el-radio-group>
+        <el-select v-model="query.sourceType" placeholder="子系统" size="mini" clearable @change="getList">
+          <el-option label="系统通知" value="system" />
+          <el-option label="OA系统" value="oa" />
+          <el-option label="知识库" value="knowledge" />
+          <el-option label="AI助手" value="ai" />
+        </el-select>
         <el-select v-model="query.messageType" placeholder="消息类型" size="mini" clearable @change="getList">
-          <el-option label="待审批" value="approval" />
+          <el-option label="待审批" value="task" />
           <el-option label="超时预警" value="timeout" />
           <el-option label="流程完成" value="complete" />
           <el-option label="流程抄送" value="cc" />
+          <el-option label="系统通知" value="notice" />
         </el-select>
       </div>
 
@@ -72,18 +79,34 @@
           @click="handleRead(item)"
         >
           <div class="message-icon">
-            <i v-if="item.messageType === 'timeout'" class="el-icon-warning" style="color: #f56c6c;"></i>
-            <i v-else-if="item.messageType === 'approval'" class="el-icon-s-claim" style="color: #409eff;"></i>
-            <i v-else class="el-icon-message" style="color: #67c23a;"></i>
+            <i v-if="item.sourceType === 'oa'" class="el-icon-s-order" style="color: #409eff;"></i>
+            <i v-else-if="item.sourceType === 'system'" class="el-icon-message-solid" style="color: #67c23a;"></i>
+            <i v-else-if="item.sourceType === 'knowledge'" class="el-icon-notebook-2" style="color: #e6a23c;"></i>
+            <i v-else-if="item.sourceType === 'ai'" class="el-icon-chat-line-round" style="color: #f56c6c;"></i>
+            <i v-else class="el-icon-message" style="color: #909399;"></i>
           </div>
           <div class="message-content">
             <div class="message-title">
               {{ item.title }}
-              <el-tag v-if="item.priority === 3" type="danger" size="mini">紧急</el-tag>
-              <el-tag v-else-if="item.priority === 2" type="warning" size="mini">重要</el-tag>
+              <el-tag v-if="item.messageType === 'timeout'" type="danger" size="mini">超时预警</el-tag>
+              <el-tag v-else-if="item.messageType === 'task'" type="primary" size="mini">待审批</el-tag>
+              <el-tag v-else-if="item.messageType === 'complete'" type="success" size="mini">流程完成</el-tag>
+              <el-tag v-else-if="item.messageType === 'cc'" type="info" size="mini">抄送</el-tag>
+              <el-tag v-else-if="item.messageType === 'notice'" size="mini">通知</el-tag>
+              <el-tag v-if="item.priority === 3" type="danger" size="mini" effect="plain">紧急</el-tag>
+              <el-tag v-else-if="item.priority === 2" type="warning" size="mini" effect="plain">重要</el-tag>
             </div>
             <div class="message-desc">{{ item.content }}</div>
-            <div class="message-time">{{ formatTime(item.sendTime) }}</div>
+            <div class="message-meta">
+              <span class="message-source">
+                <span v-if="item.sourceType === 'oa'"><i class="el-icon-s-order"></i> OA系统</span>
+                <span v-else-if="item.sourceType === 'system'"><i class="el-icon-message-solid"></i> 系统通知</span>
+                <span v-else-if="item.sourceType === 'knowledge'"><i class="el-icon-notebook-2"></i> 知识库</span>
+                <span v-else-if="item.sourceType === 'ai'"><i class="el-icon-chat-line-round"></i> AI助手</span>
+                <span v-else><i class="el-icon-message"></i> 其他</span>
+              </span>
+              <span class="message-time">{{ formatTime(item.sendTime) }}</span>
+            </div>
           </div>
           <div v-if="item.status === '0'" class="unread-dot"></div>
         </div>
@@ -103,7 +126,7 @@
 import { getMessageList, getUnreadMessageCount, markMessageAsRead } from '@/api/system/message'
 
 export default {
-  name: 'OaReminder',
+  name: 'MessageCenter',
   data() {
     return {
       loading: false,
@@ -113,6 +136,7 @@ export default {
         pageNum: 1,
         pageSize: 20,
         status: '',
+        sourceType: '',
         messageType: ''
       },
       stats: {
@@ -133,6 +157,15 @@ export default {
       getMessageList(this.query).then(res => {
         this.list = res.rows || []
         this.total = res.total || 0
+        // 更新统计数据
+        this.stats.total = res.total || 0
+        // 统计待审批和超时预警数量
+        this.stats.pending = (this.list || []).filter(item => item.messageType === 'task' && item.status === '0').length
+        this.stats.timeout = (this.list || []).filter(item => item.messageType === 'timeout' && item.status === '0').length
+      }).catch(err => {
+        console.error('获取消息列表失败:', err)
+        this.list = []
+        this.total = 0
       }).finally(() => {
         this.loading = false
       })
@@ -248,7 +281,11 @@ export default {
 .filter-bar {
   margin-bottom: 16px;
   display: flex;
-  gap: 12px;
+}
+
+.filter-bar .el-radio-group,
+.filter-bar .el-select {
+  margin-right: 12px;
 }
 
 .message-list {
@@ -300,7 +337,10 @@ export default {
   margin-bottom: 6px;
   display: flex;
   align-items: center;
-  gap: 8px;
+}
+
+.message-title .el-tag {
+  margin-left: 8px;
 }
 
 .message-desc {
@@ -308,6 +348,24 @@ export default {
   color: #606266;
   line-height: 1.5;
   margin-bottom: 4px;
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #909399;
+}
+
+.message-source {
+  display: flex;
+  align-items: center;
+}
+
+.message-source i {
+  font-size: 14px;
+  margin-right: 4px;
 }
 
 .message-time {

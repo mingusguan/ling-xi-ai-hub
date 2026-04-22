@@ -1,16 +1,16 @@
+
 package com.lingxi.oa.task;
 
 import com.lingxi.common.core.constant.SecurityConstants;
 import com.lingxi.common.core.domain.R;
 import com.lingxi.oa.domain.OaProcessTimeoutConfig;
 import com.lingxi.oa.domain.OaProcessTimeoutWarning;
-import com.lingxi.oa.domain.OaSmartReminder;
 import com.lingxi.oa.domain.OaProcessTemplate;
 import com.lingxi.oa.mapper.OaProcessTimeoutConfigMapper;
 import com.lingxi.oa.mapper.OaProcessTimeoutWarningMapper;
 import com.lingxi.oa.mapper.OaProcessTemplateMapper;
-import com.lingxi.oa.service.IOaSmartReminderService;
 import com.lingxi.system.api.RemoteUserService;
+import com.lingxi.system.api.RemoteMessageService;
 import com.lingxi.system.api.model.LoginUser;
 import com.lingxi.system.api.domain.SysUser;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -76,10 +76,10 @@ public class OaProcessTimeoutTask {
     private OaProcessTimeoutWarningMapper timeoutWarningMapper;
 
     @Autowired
-    private IOaSmartReminderService smartReminderService;
+    private RemoteUserService remoteUserService;
 
     @Autowired
-    private RemoteUserService remoteUserService;
+    private RemoteMessageService remoteMessageService;
 
     @Autowired
     private OaProcessTemplateMapper templateMapper;
@@ -399,31 +399,33 @@ public class OaProcessTimeoutTask {
             // 构建提醒内容
             String levelText = warningLevel == 1 ? "一级" : warningLevel == 2 ? "二级" : "已";
             String title = "【" + levelText + "超时预警】" + task.getName();
-            String content = String.format("审批任务【%s】已耗时%s小时，请尽快处理！", 
+            String content = String.format("审批任务【%s】已耗时%s小时,请尽快处理!", 
                     task.getName(), durationHours);
 
             // 从流程变量中获取业务类型和业务ID
             BusinessInfo businessInfo = extractBusinessInfo(task);
 
-            // 构建提醒对象
-            OaSmartReminder reminder = new OaSmartReminder();
-            reminder.setUserId(sysUser.getUserId());
-            reminder.setUserName(sysUser.getUserName());
-            reminder.setReminderType(REMINDER_TYPE_TIMEOUT);
-            reminder.setTitle(title);
-            reminder.setContent(content);
-            reminder.setBusinessType(businessInfo.getType());
-            reminder.setBusinessId(businessInfo.getId());
-            reminder.setProcessInstanceId(task.getProcessInstanceId());
-            reminder.setTaskId(task.getId());
-            reminder.setPriority(warningLevel == 3 ? 3 : 2);
-            reminder.setChannel(CHANNEL_SYSTEM);
-            reminder.setStatus(STATUS_UNREAD);
-            reminder.setSendTime(new Date());
+            // 构建消息信息Map
+            Map<String, Object> messageInfo = new HashMap<>();
+            messageInfo.put("userId", sysUser.getUserId());
+            messageInfo.put("userName", sysUser.getUserName());
+            messageInfo.put("sourceType", "oa");
+            messageInfo.put("messageType", REMINDER_TYPE_TIMEOUT);
+            messageInfo.put("title", title);
+            messageInfo.put("content", content);
+            messageInfo.put("businessType", businessInfo.getType());
+            messageInfo.put("businessId", businessInfo.getId());
+            messageInfo.put("processInstanceId", task.getProcessInstanceId());
+            messageInfo.put("taskId", task.getId());
+            messageInfo.put("priority", warningLevel == 3 ? 3 : 2);
+            messageInfo.put("channel", CHANNEL_SYSTEM);
             
-            smartReminderService.sendReminder(reminder);
-            
-            log.info("发送超时提醒给用户: {}, 任务: {}", sysUser.getUserName(), task.getName());
+            R<Boolean> result = remoteMessageService.sendMessage(messageInfo, SecurityConstants.INNER);
+            if (result != null && Boolean.TRUE.equals(result.getData())) {
+                log.info("发送超时提醒给用户: {}, 任务: {}", sysUser.getUserName(), task.getName());
+            } else {
+                log.warn("发送超时提醒失败: userId={}, task={}", sysUser.getUserId(), task.getName());
+            }
         } catch (Exception e) {
             log.error("发送超时提醒给用户 {} 失败: {}", userId, e.getMessage());
         }

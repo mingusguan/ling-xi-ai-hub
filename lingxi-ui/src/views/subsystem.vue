@@ -3,6 +3,9 @@
     <div class="subsystem-topbar">
       <div class="topbar-logo">灵犀智能中枢</div>
       <div class="topbar-right">
+        <!-- <el-badge :value="unreadMessageCount" :hidden="unreadMessageCount === 0" type="primary" class="message-badge">
+          <i class="el-icon-bell message-icon right-menu-item" @click="goToMessageCenter"></i>
+        </el-badge> -->
         <el-dropdown class="avatar-dropdown" trigger="hover" @command="handleDropdownCommand">
           <div class="avatar-wrapper">
             <img :src="avatar" class="user-avatar">
@@ -77,17 +80,20 @@
 import { mapGetters } from 'vuex'
 import auth from '@/plugins/auth'
 import ProfileDialog from '@/components/ProfileDialog'
+import { getUnreadMessageCount } from '@/api/system/message'
 
 export default {
   name: 'Subsystem',
   components: { ProfileDialog },
   data() {
     return {
-      profileVisible: false
+      profileVisible: false,
+      unreadMessageCount: 0
     }
   },
   mounted() {
     window.addEventListener('openProfileDialog', this.handleOpenProfileDialog)
+    this.loadUnreadMessageCount()
   },
   beforeDestroy() {
     window.removeEventListener('openProfileDialog', this.handleOpenProfileDialog)
@@ -163,6 +169,16 @@ export default {
           location.href = '/index'
         })
       }).catch(() => {})
+    },
+    loadUnreadMessageCount() {
+      getUnreadMessageCount().then(res => {
+        this.unreadMessageCount = res.data.count || 0
+      }).catch(() => {
+        this.unreadMessageCount = 0
+      })
+    },
+    goToMessageCenter() {
+      this.$router.push('/message/center')
     }
   }
 }
@@ -172,7 +188,10 @@ export default {
 .subsystem-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #21409a 0%, #0f8a9d 100%); padding: 40px 20px; }
 .subsystem-topbar { position: fixed; top: 0; left: 0; right: 0; height: 64px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); z-index: 100; }
 .topbar-logo { font-size: 18px; font-weight: 600; color: #fff; }
-.topbar-right { display: flex; align-items: center; }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.message-badge { cursor: pointer; }
+.message-icon { font-size: 20px; color: #fff; padding: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); transition: all 0.2s ease; }
+.message-icon:hover { background: rgba(255, 255, 255, 0.25); }
 .avatar-dropdown { cursor: pointer; }
 .avatar-wrapper { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 20px; background: rgba(255, 255, 255, 0.15); transition: all 0.2s ease; }
 .avatar-wrapper:hover { background: rgba(255, 255, 255, 0.25); }

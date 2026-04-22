@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.system.mapper.SysMessageMapper">
+
+    <resultMap type="SysMessage" id="SysMessageResult">
+        <id     property="messageId"         column="message_id"         />
+        <result property="userId"            column="user_id"            />
+        <result property="userName"          column="user_name"          />
+        <result property="sourceType"        column="source_type"        />
+        <result property="messageType"       column="message_type"       />
+        <result property="title"             column="title"              />
+        <result property="content"           column="content"            />
+        <result property="businessType"      column="business_type"      />
+        <result property="businessId"        column="business_id"        />
+        <result property="processInstanceId" column="process_instance_id"/>
+        <result property="taskId"            column="task_id"            />
+        <result property="priority"          column="priority"           />
+        <result property="channel"           column="channel"            />
+        <result property="status"            column="status"             />
+        <result property="sendTime"          column="send_time"          />
+        <result property="readTime"          column="read_time"          />
+        <result property="createBy"          column="create_by"          />
+        <result property="createTime"        column="create_time"        />
+        <result property="updateBy"          column="update_by"          />
+        <result property="updateTime"        column="update_time"        />
+        <result property="remark"            column="remark"             />
+    </resultMap>
+
+    <sql id="selectSysMessageVo">
+        SELECT message_id, user_id, user_name, source_type, message_type, title, content,
+               business_type, business_id, process_instance_id, task_id, priority, channel,
+               status, send_time, read_time, create_by, create_time, update_by, update_time, remark
+        FROM sys_message
+    </sql>
+
+    <select id="selectSysMessageList" parameterType="SysMessage" resultMap="SysMessageResult">
+        <include refid="selectSysMessageVo"/>
+        <where>
+            <if test="userId != null">AND user_id = #{userId}</if>
+            <if test="sourceType != null and sourceType != ''">AND source_type = #{sourceType}</if>
+            <if test="messageType != null and messageType != ''">AND message_type = #{messageType}</if>
+            <if test="status != null and status != ''">AND status = #{status}</if>
+        </where>
+        ORDER BY send_time DESC
+    </select>
+
+    <select id="selectSysMessageById" parameterType="Long" resultMap="SysMessageResult">
+        <include refid="selectSysMessageVo"/>
+        WHERE message_id = #{messageId}
+    </select>
+
+    <insert id="insertSysMessage" parameterType="SysMessage" useGeneratedKeys="true" keyProperty="messageId">
+        INSERT INTO sys_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="sourceType != null">source_type,</if>
+            <if test="messageType != null">message_type,</if>
+            <if test="title != null">title,</if>
+            <if test="content != null">content,</if>
+            <if test="businessType != null">business_type,</if>
+            <if test="businessId != null">business_id,</if>
+            <if test="processInstanceId != null">process_instance_id,</if>
+            <if test="taskId != null">task_id,</if>
+            <if test="priority != null">priority,</if>
+            <if test="channel != null">channel,</if>
+            <if test="status != null">status,</if>
+            <if test="sendTime != null">send_time,</if>
+            <if test="readTime != null">read_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="remark != null">remark,</if>
+            create_time
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="sourceType != null">#{sourceType},</if>
+            <if test="messageType != null">#{messageType},</if>
+            <if test="title != null">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="businessType != null">#{businessType},</if>
+            <if test="businessId != null">#{businessId},</if>
+            <if test="processInstanceId != null">#{processInstanceId},</if>
+            <if test="taskId != null">#{taskId},</if>
+            <if test="priority != null">#{priority},</if>
+            <if test="channel != null">#{channel},</if>
+            <if test="status != null">#{status},</if>
+            <if test="sendTime != null">#{sendTime},</if>
+            <if test="readTime != null">#{readTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="remark != null">#{remark},</if>
+            NOW()
+        </trim>
+    </insert>
+
+    <update id="updateSysMessage" parameterType="SysMessage">
+        UPDATE sys_message
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="sourceType != null">source_type = #{sourceType},</if>
+            <if test="messageType != null">message_type = #{messageType},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="businessType != null">business_type = #{businessType},</if>
+            <if test="businessId != null">business_id = #{businessId},</if>
+            <if test="processInstanceId != null">process_instance_id = #{processInstanceId},</if>
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="channel != null">channel = #{channel},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="sendTime != null">send_time = #{sendTime},</if>
+            <if test="readTime != null">read_time = #{readTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = NOW()
+        </trim>
+        WHERE message_id = #{messageId}
+    </update>
+
+    <delete id="deleteSysMessageById" parameterType="Long">
+        DELETE FROM sys_message WHERE message_id = #{messageId}
+    </delete>
+
+    <select id="countUnreadMessages" parameterType="Long" resultType="int">
+        SELECT COUNT(*) FROM sys_message WHERE user_id = #{userId} AND status = '0'
+    </select>
+
+</mapper>

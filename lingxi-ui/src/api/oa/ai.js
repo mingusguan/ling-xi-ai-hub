@@ -60,36 +60,10 @@ export function sendChatMessage(data) {
   })
 }
 
-// 获取提醒列表
-export function getReminderList(query) {
-  return request({
-    url: '/oa/ai/reminder/list',
-    method: 'get',
-    params: query
-  })
-}
-
-// 获取未读提醒数量
+// 获取未读提醒数量（使用统一消息中心）
 export function getUnreadReminderCount() {
   return request({
-    url: '/oa/ai/reminder/unread/count',
+    url: '/system/message/unread/count',
     method: 'get'
-  })
-}
-
-// 标记提醒为已读
-export function markReminderAsRead(reminderId) {
-  return request({
-    url: `/oa/ai/reminder/${reminderId}/read`,
-    method: 'put'
-  })
-}
-
-// 获取超时提醒列表
-export function getTimeoutReminders() {
-  return request({
-    url: '/oa/ai/reminder/list',
-    method: 'get',
-    params: { status: '0', reminderType: 'timeout' }
   })
 }

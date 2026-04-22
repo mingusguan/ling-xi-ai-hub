@@ -1,16 +1,16 @@
 package com.lingxi.oa.controller;
 
+import com.lingxi.common.core.constant.SecurityConstants;
+import com.lingxi.common.core.domain.R;
 import com.lingxi.common.core.web.controller.BaseController;
 import com.lingxi.common.core.web.domain.AjaxResult;
 import com.lingxi.common.security.utils.SecurityUtils;
-import com.lingxi.oa.domain.OaSmartReminder;
+import com.lingxi.system.api.RemoteMessageService;
 import com.lingxi.oa.service.IOaAiOpinionService;
-import com.lingxi.oa.service.IOaSmartReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,7 +27,7 @@ public class OaAiAssistantController extends BaseController {
     private IOaAiOpinionService opinionService;
 
     @Autowired
-    private IOaSmartReminderService reminderService;
+    private RemoteMessageService remoteMessageService;
 
     /**
      * 生成智能审批意见建议
@@ -60,46 +60,18 @@ public class OaAiAssistantController extends BaseController {
     }
 
     /**
-     * 获取智能提醒列表
+     * 获取未读消息数量（从统一消息中心）
      *
-     * @param status 提醒状态（可选）
-     * @return 分页的提醒列表
-     */
-    @GetMapping("/reminder/list")
-    public AjaxResult getReminderList(@RequestParam(required = false) String status) {
-        startPage();
-        OaSmartReminder reminder = new OaSmartReminder();
-        reminder.setUserId(SecurityUtils.getUserId());
-        reminder.setStatus(status);
-        List<OaSmartReminder> list = reminderService.selectOaSmartReminderList(reminder);
-        return AjaxResult.success(getDataTable(list));
-    }
-
-    /**
-     * 获取未读提醒数量
-     *
-     * @return 未读提醒数量
+     * @return 未读消息数量
      */
     @GetMapping("/reminder/unread/count")
     public AjaxResult getUnreadCount() {
-        int count = reminderService.countUnreadReminders(SecurityUtils.getUserId());
-        Map<String, Object> result = new HashMap<>();
-        result.put("count", count);
-        return AjaxResult.success(result);
-    }
-
-    /**
-     * 标记提醒为已读
-     *
-     * @param reminderId 提醒ID
-     * @return 操作结果
-     */
-    @PutMapping("/reminder/{reminderId}/read")
-    public AjaxResult markAsRead(@PathVariable Long reminderId) {
-        boolean success = reminderService.markAsRead(reminderId, SecurityUtils.getUserId());
-        if (!success) {
-            return AjaxResult.error("提醒消息不存在或无权限");
+        R<Map<String, Object>> result = remoteMessageService.getUnreadCount(SecurityConstants.INNER);
+        if (result != null && result.getData() != null) {
+            return AjaxResult.success(result.getData());
         }
-        return AjaxResult.success();
+        Map<String, Object> empty = new HashMap<>();
+        empty.put("count", 0);
+        return AjaxResult.success(empty);
     }
 }
