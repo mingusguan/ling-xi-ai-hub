@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaLeaveRuleMapper">
+    
+    <resultMap type="OaLeaveRule" id="OaLeaveRuleResult">
+        <id     property="ruleId"            column="rule_id"            />
+        <result property="leaveType"         column="leave_type"         />
+        <result property="leaveName"         column="leave_name"         />
+        <result property="defaultDays"       column="default_days"       />
+        <result property="calculationRule"   column="calculation_rule"   />
+        <result property="canCarryOver"      column="can_carry_over"     />
+        <result property="carryOverRatio"    column="carry_over_ratio"   />
+        <result property="maxCarryOverDays"  column="max_carry_over_days"/>
+        <result property="minWorkYears"      column="min_work_years"     />
+        <result property="sortOrder"         column="sort_order"         />
+        <result property="status"            column="status"             />
+        <result property="createBy"          column="create_by"          />
+        <result property="createTime"        column="create_time"        />
+        <result property="updateBy"          column="update_by"          />
+        <result property="updateTime"        column="update_time"        />
+        <result property="remark"            column="remark"             />
+    </resultMap>
+
+    <sql id="selectOaLeaveRuleVo">
+        select rule_id, leave_type, leave_name, default_days, calculation_rule, 
+               can_carry_over, carry_over_ratio, max_carry_over_days, min_work_years,
+               sort_order, status, create_by, create_time, update_by, update_time, remark 
+        from oa_leave_rule
+    </sql>
+
+    <select id="selectOaLeaveRuleById" parameterType="Long" resultMap="OaLeaveRuleResult">
+        <include refid="selectOaLeaveRuleVo"/>
+        where rule_id = #{ruleId}
+    </select>
+
+    <select id="selectOaLeaveRuleByType" parameterType="String" resultMap="OaLeaveRuleResult">
+        <include refid="selectOaLeaveRuleVo"/>
+        where leave_type = #{leaveType}
+    </select>
+
+    <select id="selectOaLeaveRuleList" parameterType="OaLeaveRule" resultMap="OaLeaveRuleResult">
+        <include refid="selectOaLeaveRuleVo"/>
+        <where>
+            <if test="leaveType != null and leaveType != ''">
+                AND leave_type = #{leaveType}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        order by sort_order asc, rule_id asc
+    </select>
+
+    <insert id="insertOaLeaveRule" parameterType="OaLeaveRule" useGeneratedKeys="true" keyProperty="ruleId">
+        insert into oa_leave_rule(
+            <if test="leaveType != null and leaveType != ''">leave_type,</if>
+            <if test="leaveName != null and leaveName != ''">leave_name,</if>
+            <if test="defaultDays != null">default_days,</if>
+            <if test="calculationRule != null and calculationRule != ''">calculation_rule,</if>
+            <if test="canCarryOver != null and canCarryOver != ''">can_carry_over,</if>
+            <if test="carryOverRatio != null">carry_over_ratio,</if>
+            <if test="maxCarryOverDays != null">max_carry_over_days,</if>
+            <if test="minWorkYears != null">min_work_years,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time
+        )values(
+            <if test="leaveType != null and leaveType != ''">#{leaveType},</if>
+            <if test="leaveName != null and leaveName != ''">#{leaveName},</if>
+            <if test="defaultDays != null">#{defaultDays},</if>
+            <if test="calculationRule != null and calculationRule != ''">#{calculationRule},</if>
+            <if test="canCarryOver != null and canCarryOver != ''">#{canCarryOver},</if>
+            <if test="carryOverRatio != null">#{carryOverRatio},</if>
+            <if test="maxCarryOverDays != null">#{maxCarryOverDays},</if>
+            <if test="minWorkYears != null">#{minWorkYears},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+        )
+    </insert>
+
+    <update id="updateOaLeaveRule" parameterType="OaLeaveRule">
+        update oa_leave_rule
+        <set>
+            <if test="leaveName != null and leaveName != ''">leave_name = #{leaveName},</if>
+            <if test="defaultDays != null">default_days = #{defaultDays},</if>
+            <if test="calculationRule != null and calculationRule != ''">calculation_rule = #{calculationRule},</if>
+            <if test="canCarryOver != null and canCarryOver != ''">can_carry_over = #{canCarryOver},</if>
+            <if test="carryOverRatio != null">carry_over_ratio = #{carryOverRatio},</if>
+            <if test="maxCarryOverDays != null">max_carry_over_days = #{maxCarryOverDays},</if>
+            <if test="minWorkYears != null">min_work_years = #{minWorkYears},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where rule_id = #{ruleId}
+    </update>
+
+    <delete id="deleteOaLeaveRuleById" parameterType="Long">
+        delete from oa_leave_rule where rule_id = #{ruleId}
+    </delete>
+
+    <delete id="deleteOaLeaveRuleByIds" parameterType="Long">
+        delete from oa_leave_rule where rule_id in 
+        <foreach item="ruleId" collection="array" open="(" separator="," close=")">
+            #{ruleId}
+        </foreach>
+    </delete>
+
+</mapper>

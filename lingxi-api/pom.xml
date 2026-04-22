@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.lingxi</groupId>
+        <artifactId>lingxi-ai-hub</artifactId>
+        <version>3.6.7</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>lingxi-api-system</module>
+        <module>lingxi-api-knowledge</module>
+        <module>lingxi-api-ai</module>
+        <module>lingxi-api-oa</module>
+    </modules>
+
+    <artifactId>lingxi-api</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        lingxi-api系统接口
+    </description>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.lingxi</groupId>
+                <artifactId>lingxi-common-core</artifactId>
+                <version>${cloud.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

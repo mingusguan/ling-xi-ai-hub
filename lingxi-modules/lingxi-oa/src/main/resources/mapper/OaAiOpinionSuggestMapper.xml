@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaAiOpinionSuggestMapper">
+
+    <resultMap type="OaAiOpinionSuggest" id="OaAiOpinionSuggestResult">
+        <id     property="suggestId"           column="suggest_id"            />
+        <result property="processInstanceId"   column="process_instance_id"   />
+        <result property="taskId"              column="task_id"               />
+        <result property="businessType"        column="business_type"         />
+        <result property="businessId"          column="business_id"           />
+        <result property="approverId"          column="approver_id"           />
+        <result property="applicantName"       column="applicant_name"        />
+        <result property="formData"            column="form_data"             />
+        <result property="aiSuggestion"        column="ai_suggestion"         />
+        <result property="riskLevel"           column="risk_level"            />
+        <result property="riskPoints"          column="risk_points"           />
+        <result property="similarCases"        column="similar_cases"         />
+        <result property="templates"           column="templates"             />
+        <result property="used"                column="used"                  />
+        <result property="createTime"          column="create_time"           />
+    </resultMap>
+
+    <select id="selectLatestByBusiness" resultMap="OaAiOpinionSuggestResult">
+        SELECT * FROM oa_ai_opinion_suggest
+        WHERE business_type = #{businessType}
+          AND business_id = #{businessId}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectSimilarCases" resultMap="OaAiOpinionSuggestResult">
+        SELECT * FROM oa_ai_opinion_suggest
+        WHERE business_type = #{businessType}
+          AND risk_level = #{riskLevel}
+          AND used = '1'
+        ORDER BY create_time DESC
+        LIMIT 5
+    </select>
+
+    <insert id="insertOaAiOpinionSuggest" parameterType="OaAiOpinionSuggest" useGeneratedKeys="true" keyProperty="suggestId">
+        INSERT INTO oa_ai_opinion_suggest (
+            process_instance_id, task_id, business_type, business_id, approver_id,
+            applicant_name, form_data, ai_suggestion, risk_level, risk_points,
+            similar_cases, templates, used, create_time
+        ) VALUES (
+            #{processInstanceId}, #{taskId}, #{businessType}, #{businessId}, #{approverId},
+            #{applicantName}, #{formData}, #{aiSuggestion}, #{riskLevel}, #{riskPoints},
+            #{similarCases}, #{templates}, #{used}, #{createTime}
+        )
+    </insert>
+
+    <update id="updateOaAiOpinionSuggest" parameterType="OaAiOpinionSuggest">
+        UPDATE oa_ai_opinion_suggest
+        <set>
+            <if test="aiSuggestion != null">ai_suggestion = #{aiSuggestion},</if>
+            <if test="riskLevel != null">risk_level = #{riskLevel},</if>
+            <if test="riskPoints != null">risk_points = #{riskPoints},</if>
+            <if test="similarCases != null">similar_cases = #{similarCases},</if>
+            <if test="templates != null">templates = #{templates},</if>
+            <if test="used != null">used = #{used},</if>
+        </set>
+        WHERE suggest_id = #{suggestId}
+    </update>
+
+</mapper>

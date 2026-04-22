@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaLeaveAdjustmentMapper">
+    
+    <resultMap type="OaLeaveAdjustment" id="OaLeaveAdjustmentResult">
+        <id     property="adjustmentId"    column="adjustment_id"    />
+        <result property="quotaId"         column="quota_id"         />
+        <result property="userId"          column="user_id"          />
+        <result property="userName"        column="user_name"        />
+        <result property="leaveType"       column="leave_type"       />
+        <result property="year"            column="year"             />
+        <result property="adjustDays"      column="adjust_days"      />
+        <result property="beforeDays"      column="before_days"      />
+        <result property="afterDays"       column="after_days"       />
+        <result property="reason"          column="reason"           />
+        <result property="operatorId"      column="operator_id"      />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="createTime"      column="create_time"      />
+    </resultMap>
+
+    <sql id="selectOaLeaveAdjustmentVo">
+        select a.adjustment_id, a.quota_id, a.user_id, u.nick_name as user_name, a.leave_type, a.year, a.adjust_days, 
+               a.before_days, a.after_days, a.reason, a.operator_id, a.operator_name, a.create_time
+        from oa_leave_adjustment a
+        left join sys_user u on a.user_id = u.user_id
+    </sql>
+
+    <select id="selectOaLeaveAdjustmentById" parameterType="Long" resultMap="OaLeaveAdjustmentResult">
+        <include refid="selectOaLeaveAdjustmentVo"/>
+        where a.adjustment_id = #{adjustmentId}
+    </select>
+
+    <select id="selectOaLeaveAdjustmentList" parameterType="OaLeaveAdjustment" resultMap="OaLeaveAdjustmentResult">
+        <include refid="selectOaLeaveAdjustmentVo"/>
+        <where>
+            <if test="userId != null">
+                AND a.user_id = #{userId}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND u.nick_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="leaveType != null and leaveType != ''">
+                AND a.leave_type = #{leaveType}
+            </if>
+            <if test="year != null">
+                AND a.year = #{year}
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <insert id="insertOaLeaveAdjustment" parameterType="OaLeaveAdjustment" useGeneratedKeys="true" keyProperty="adjustmentId">
+        insert into oa_leave_adjustment(
+            <if test="quotaId != null">quota_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="leaveType != null and leaveType != ''">leave_type,</if>
+            <if test="year != null">year,</if>
+            <if test="adjustDays != null">adjust_days,</if>
+            <if test="beforeDays != null">before_days,</if>
+            <if test="afterDays != null">after_days,</if>
+            <if test="reason != null and reason != ''">reason,</if>
+            <if test="operatorId != null">operator_id,</if>
+            <if test="operatorName != null and operatorName != ''">operator_name,</if>
+            create_time
+        )values(
+            <if test="quotaId != null">#{quotaId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="leaveType != null and leaveType != ''">#{leaveType},</if>
+            <if test="year != null">#{year},</if>
+            <if test="adjustDays != null">#{adjustDays},</if>
+            <if test="beforeDays != null">#{beforeDays},</if>
+            <if test="afterDays != null">#{afterDays},</if>
+            <if test="reason != null and reason != ''">#{reason},</if>
+            <if test="operatorId != null">#{operatorId},</if>
+            <if test="operatorName != null and operatorName != ''">#{operatorName},</if>
+            sysdate()
+        )
+    </insert>
+
+    <delete id="deleteOaLeaveAdjustmentByIds" parameterType="Long">
+        delete from oa_leave_adjustment where adjustment_id in 
+        <foreach item="adjustmentId" collection="array" open="(" separator="," close=")">
+            #{adjustmentId}
+        </foreach>
+    </delete>
+
+</mapper>

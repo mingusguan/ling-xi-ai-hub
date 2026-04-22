@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.AiIntentConfigMapper">
+
+    <resultMap type="com.lingxi.ai.domain.AiIntentConfig" id="AiIntentConfigResult">
+        <id property="configId" column="config_id"/>
+        <result property="intentCode" column="intent_code"/>
+        <result property="intentName" column="intent_name"/>
+        <result property="sampleQuestions" column="sample_questions"/>
+        <result property="isEnabled" column="is_enabled"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <select id="selectEnabledList" resultMap="AiIntentConfigResult">
+        SELECT config_id, intent_code, intent_name, sample_questions, is_enabled, sort_order
+        FROM ai_intent_config
+        WHERE is_enabled = '1'
+        ORDER BY sort_order ASC
+    </select>
+
+</mapper>

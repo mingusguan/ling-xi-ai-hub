@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaExpenseMapper">
+
+    <select id="selectCompletedExpenses" resultType="com.lingxi.oa.domain.OaExpense">
+        SELECT e.*,
+               ar.approver_name as lastApproverName,
+               ar.comment_text as lastApproverOpinion
+        FROM oa_expense e
+        LEFT JOIN (
+            SELECT business_key, approver_name, comment_text
+            FROM oa_approval_record
+            WHERE action_type = 'approve'
+            ORDER BY create_time DESC
+        ) ar ON CONCAT('expense:', e.expense_id) = ar.business_key
+        WHERE e.approval_status IN ('approved', 'rejected')
+        <if test="deptId != null">
+            AND e.dept_id = #{deptId}
+        </if>
+        ORDER BY e.create_time DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

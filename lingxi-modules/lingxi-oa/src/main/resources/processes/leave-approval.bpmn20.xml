@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:flowable="http://flowable.org/bpmn" xmlns:lx="http://lingxi.com/schema/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://lingxi.com/oa/process">
+
+  <bpmn:process id="oa_leave_approval" isExecutable="true" lx:formFields="[{&quot;code&quot;:&quot;leaveType&quot;,&quot;label&quot;:&quot;请假类型&quot;,&quot;type&quot;:&quot;select&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:true,&quot;options&quot;:[{&quot;value&quot;:&quot;casual&quot;,&quot;label&quot;:&quot;事假&quot;},{&quot;value&quot;:&quot;annual&quot;,&quot;label&quot;:&quot;年假&quot;},{&quot;value&quot;:&quot;sick&quot;,&quot;label&quot;:&quot;病假&quot;}]},{&quot;code&quot;:&quot;startTime&quot;,&quot;label&quot;:&quot;开始时间&quot;,&quot;type&quot;:&quot;date&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]},{&quot;code&quot;:&quot;endTime&quot;,&quot;label&quot;:&quot;结束时间&quot;,&quot;type&quot;:&quot;date&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]},{&quot;code&quot;:&quot;leaveDays&quot;,&quot;label&quot;:&quot;请假天数&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:false,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]},{&quot;code&quot;:&quot;leaveHours&quot;,&quot;label&quot;:&quot;请假时长(小时)&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:false,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]},{&quot;code&quot;:&quot;leaveReason&quot;,&quot;label&quot;:&quot;请假事由&quot;,&quot;type&quot;:&quot;textarea&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]}]" name="请假审批">
+
+    <bpmn:startEvent id="StartEvent_1" name="发起申请">
+
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+
+    </bpmn:startEvent>
+
+    <bpmn:userTask flowable:assignee="${applicantUserId}" id="Activity_Edit" name="修改申请重新提交">
+
+      <bpmn:incoming>Flow_Reject_Back_Manager</bpmn:incoming>
+
+      <bpmn:incoming>Flow_Reject_Back_GM</bpmn:incoming>
+
+      <bpmn:incoming>Flow_Reject_Back_HR</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_To_Choice</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_Edit_Choice" name="选择操作"/>
+
+    <bpmn:sequenceFlow id="Flow_To_Choice" sourceRef="Activity_Edit" targetRef="Gateway_Edit_Choice"/>
+
+    <bpmn:userTask flowable:candidateGroups="manager" id="Activity_Manager" lx:approverType="role" lx:approverValue="manager" lx:needDeptFilter="true" name="部门负责人审批">
+
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_Gateway_Manager</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_Manager_Approve" name="部门审批是否通过"/>
+
+    <bpmn:exclusiveGateway id="Gateway_LeaveDays" name="请假是否超过3天"/>
+
+    <bpmn:userTask flowable:candidateGroups="general_manager" id="Activity_Gm" lx:approverType="role" lx:approverValue="general_manager" lx:needDeptFilter="false" name="总经理审批">
+
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_Gateway_GM</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_GM_Approve" name="总经理审批是否通过"/>
+
+    <bpmn:userTask flowable:candidateGroups="hr" id="Activity_Hr" lx:approverType="role" lx:approverValue="hr" lx:needDeptFilter="false" name="HR备案确认">
+
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_Gateway_HR</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_HR_Approve" name="HR备案是否通过"/>
+
+    <bpmn:endEvent id="EndEvent_Success" name="审批完成"/>
+
+    <bpmn:endEvent id="EndEvent_Cancelled" name="已取消"/>
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_Manager"/>
+
+    <bpmn:sequenceFlow id="Flow_Resubmit" name="重新提交" sourceRef="Gateway_Edit_Choice" targetRef="Activity_Manager">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == 'resubmit'}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Cancel" name="取消申请" sourceRef="Gateway_Edit_Choice" targetRef="EndEvent_Cancelled">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == 'cancel'}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_Manager" sourceRef="Activity_Manager" targetRef="Gateway_Manager_Approve"/>
+
+    <bpmn:sequenceFlow id="Flow_2" name="是" sourceRef="Gateway_Manager_Approve" targetRef="Gateway_LeaveDays">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Reject_Back_Manager" name="否" sourceRef="Gateway_Manager_Approve" targetRef="Activity_Edit">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_3" name="是" sourceRef="Gateway_LeaveDays" targetRef="Activity_Gm">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${leaveDays &gt; 3}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_4" name="否" sourceRef="Gateway_LeaveDays" targetRef="Activity_Hr">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${leaveDays &lt;= 3}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_GM" sourceRef="Activity_Gm" targetRef="Gateway_GM_Approve"/>
+
+    <bpmn:sequenceFlow id="Flow_5" name="是" sourceRef="Gateway_GM_Approve" targetRef="Activity_Hr">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Reject_Back_GM" name="否" sourceRef="Gateway_GM_Approve" targetRef="Activity_Edit">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_HR" sourceRef="Activity_Hr" targetRef="Gateway_HR_Approve"/>
+
+    <bpmn:sequenceFlow id="Flow_6" name="是" sourceRef="Gateway_HR_Approve" targetRef="EndEvent_Success">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Reject_Back_HR" name="否" sourceRef="Gateway_HR_Approve" targetRef="Activity_Edit">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Leave">
+
+    <bpmndi:BPMNPlane bpmnElement="oa_leave_approval" id="BPMNPlane_Leave">
+
+      <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="StartEvent_1_di">
+
+        <dc:Bounds height="36" width="36" x="100" y="302"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="95" y="313"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Edit" id="Activity_Edit_di">
+
+        <dc:Bounds height="80" width="140" x="100" y="100"/>
+
+        <bpmndi:BPMNLabel/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Manager" id="Activity_Manager_di">
+
+        <dc:Bounds height="80" width="120" x="240" y="270"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_Manager_Approve" id="Gateway_Manager_Approve_di" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="400" y="285"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_LeaveDays" id="Gateway_LeaveDays_di" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="500" y="285"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Gm" id="Activity_Gm_di">
+
+        <dc:Bounds height="80" width="120" x="620" y="180"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_GM_Approve" id="Gateway_GM_Approve_di" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="770" y="195"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Hr" id="Activity_Hr_di">
+
+        <dc:Bounds height="80" width="120" x="620" y="380"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_HR_Approve" id="Gateway_HR_Approve_di" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="770" y="395"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="EndEvent_Success" id="EndEvent_Success_di">
+
+        <dc:Bounds height="36" width="36" x="880" y="402"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="EndEvent_Cancelled" id="EndEvent_Cancelled_di">
+
+        <dc:Bounds height="36" width="36" x="880" y="32"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="34" x="881" y="72"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_Edit_Choice" id="Gateway_Edit_Choice_di" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="145" y="200"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="187" y="220"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_To_Choice" id="Flow_To_Choice_di">
+
+        <di:waypoint x="170" y="180"/>
+
+        <di:waypoint x="170" y="200"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_1" id="Flow_1_di">
+
+        <di:waypoint x="136" y="321"/>
+
+        <di:waypoint x="240" y="320"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Resubmit" id="Flow_Resubmit_di">
+
+        <di:waypoint x="170" y="250"/>
+
+        <di:waypoint x="170" y="290"/>
+
+        <di:waypoint x="240" y="290"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="122" y="260"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Cancel" id="Flow_Cancel_di">
+
+        <di:waypoint x="145" y="225"/>
+
+        <di:waypoint x="60" y="225"/>
+
+        <di:waypoint x="60" y="50"/>
+
+        <di:waypoint x="880" y="50"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="30" y="138"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_Manager" id="Flow_Gateway_Manager_di">
+
+        <di:waypoint x="360" y="310"/>
+
+        <di:waypoint x="400" y="310"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_2" id="Flow_2_di">
+
+        <di:waypoint x="450" y="310"/>
+
+        <di:waypoint x="500" y="310"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="470" y="292"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Back_Manager" id="Flow_Reject_Back_Manager_di">
+
+        <di:waypoint x="425" y="285"/>
+
+        <di:waypoint x="425" y="160"/>
+
+        <di:waypoint x="240" y="160"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="435" y="220"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_3" id="Flow_3_di">
+
+        <di:waypoint x="525" y="285"/>
+
+        <di:waypoint x="525" y="220"/>
+
+        <di:waypoint x="620" y="220"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="536" y="250"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_4" id="Flow_4_di">
+
+        <di:waypoint x="525" y="335"/>
+
+        <di:waypoint x="525" y="420"/>
+
+        <di:waypoint x="620" y="420"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="534" y="375"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_GM" id="Flow_Gateway_GM_di">
+
+        <di:waypoint x="740" y="220"/>
+
+        <di:waypoint x="770" y="220"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_5" id="Flow_5_di">
+
+        <di:waypoint x="820" y="220"/>
+
+        <di:waypoint x="820" y="390"/>
+
+        <di:waypoint x="740" y="390"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="829" y="302"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Back_GM" id="Flow_Reject_Back_GM_di">
+
+        <di:waypoint x="795" y="195"/>
+
+        <di:waypoint x="795" y="140"/>
+
+        <di:waypoint x="240" y="140"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="804" y="165"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_HR" id="Flow_Gateway_HR_di">
+
+        <di:waypoint x="740" y="420"/>
+
+        <di:waypoint x="770" y="420"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_6" id="Flow_6_di">
+
+        <di:waypoint x="820" y="420"/>
+
+        <di:waypoint x="880" y="420"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="844" y="402"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Back_HR" id="Flow_Reject_Back_HR_di">
+
+        <di:waypoint x="795" y="395"/>
+
+        <di:waypoint x="850" y="395"/>
+
+        <di:waypoint x="850" y="110"/>
+
+        <di:waypoint x="240" y="110"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="859" y="250"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

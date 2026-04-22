@@ -1,0 +1,194 @@
+2026-04-16 07:38:14,919 INFO [PUSH] Task merge for Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-gateway', ephemeral=true, revision=1}
+
+2026-04-16 07:38:15,342 INFO [PUSH-SUCC] 43ms, all delay time 574ms, SLA 574ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-gateway', ephemeral=true, revision=1}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 07:38:15,509 INFO [PUSH-SUCC] 12ms, all delay time 590ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-file', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:38:15,516 INFO [PUSH-SUCC] 19ms, all delay time 577ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:38:45,763 INFO [PUSH-SUCC] 8ms, all delay time 576ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-ai', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:38:45,766 INFO [PUSH-SUCC] 12ms, all delay time 580ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-knowledge', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:38:45,769 INFO [PUSH-SUCC] 13ms, all delay time 584ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-auth', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:38:45,773 INFO [PUSH-SUCC] 16ms, all delay time 587ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:41:23,382 INFO [PUSH] Task merge for Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-gateway', ephemeral=true, revision=3}
+
+2026-04-16 07:41:23,895 INFO [PUSH-SUCC] 57ms, all delay time 578ms, SLA 578ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-gateway', ephemeral=true, revision=3}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 07:41:23,946 INFO [PUSH-SUCC] 8ms, all delay time 562ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:41:23,951 INFO [PUSH-SUCC] 13ms, all delay time 564ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-ai', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:41:23,954 INFO [PUSH-SUCC] 16ms, all delay time 572ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-file', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:41:23,957 INFO [PUSH-SUCC] 19ms, all delay time 573ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-knowledge', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:41:23,959 INFO [PUSH-SUCC] 20ms, all delay time 572ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-auth', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:41:23,962 INFO [PUSH-SUCC] 23ms, all delay time 579ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:41:40,470 INFO [PUSH-SUCC] 9ms, all delay time 533ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 07:50:05,893 INFO [PUSH-SUCC] 10ms, all delay time 605ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 08:01:51,484 INFO [PUSH-SUCC] 6ms, all delay time 534ms, SLA 534ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 08:01:51,485 INFO [PUSH-SUCC] 7ms, all delay time 535ms, SLA 535ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 08:02:16,619 INFO [PUSH-SUCC] 7ms, all delay time 585ms, SLA 585ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=3}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 08:02:16,619 INFO [PUSH-SUCC] 7ms, all delay time 586ms, SLA 586ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=3}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 08:21:47,072 INFO [PUSH-SUCC] 8ms, all delay time 514ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=3}, originalSize=1, DataSize=1
+
+2026-04-16 10:18:57,024 INFO [PUSH-SUCC] 7ms, all delay time 581ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 10:22:08,636 INFO [PUSH-SUCC] 7ms, all delay time 582ms, SLA 583ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-ai', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 10:22:33,591 INFO [PUSH-SUCC] 21ms, all delay time 581ms, SLA 581ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-ai', ephemeral=true, revision=3}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 10:23:11,125 ERROR [PUSH-FAIL] 5003ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, reason=Timeout After 5000 milliseconds, requestId=31, connectionId=1776306152987_172.18.0.1_39152, target=172.25.32.1
+
+2026-04-16 10:23:11,130 ERROR Reason detail: 
+
+java.util.concurrent.TimeoutException: Timeout After 5000 milliseconds, requestId=31, connectionId=1776306152987_172.18.0.1_39152
+	at com.alibaba.nacos.api.remote.DefaultRequestFuture$TimeoutHandler.run(DefaultRequestFuture.java:194)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-16 10:23:13,914 INFO [PUSH-SUCC] 1783ms, all delay time 2783ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 12:36:11,087 INFO [PUSH-SUCC] 5ms, all delay time 514ms, SLA 514ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-ai', ephemeral=true, revision=4}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 12:36:47,436 INFO [PUSH-SUCC] 5ms, all delay time 598ms, SLA 598ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-ai', ephemeral=true, revision=5}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 12:37:23,675 ERROR [PUSH-FAIL] 5000ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, reason=Timeout After 5000 milliseconds, requestId=61, connectionId=1776314206815_172.18.0.1_56744, target=172.25.32.1
+
+2026-04-16 12:37:23,675 ERROR Reason detail: 
+
+java.util.concurrent.TimeoutException: Timeout After 5000 milliseconds, requestId=61, connectionId=1776314206815_172.18.0.1_56744
+	at com.alibaba.nacos.api.remote.DefaultRequestFuture$TimeoutHandler.run(DefaultRequestFuture.java:194)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-16 12:37:29,682 ERROR [PUSH-FAIL] 4999ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, reason=Timeout After 5000 milliseconds, requestId=62, connectionId=1776314206815_172.18.0.1_56744, target=172.25.32.1
+
+2026-04-16 12:37:29,682 ERROR Reason detail: 
+
+java.util.concurrent.TimeoutException: Timeout After 5000 milliseconds, requestId=62, connectionId=1776314206815_172.18.0.1_56744
+	at com.alibaba.nacos.api.remote.DefaultRequestFuture$TimeoutHandler.run(DefaultRequestFuture.java:194)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:539)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-16 12:37:33,534 INFO [PUSH-SUCC] 2843ms, all delay time 3851ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, originalSize=1, DataSize=1
+
+2026-04-16 19:55:44,297 INFO [PUSH-SUCC] 7ms, all delay time 556ms, SLA 556ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 19:55:44,298 INFO [PUSH-SUCC] 8ms, all delay time 557ms, SLA 557ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:08:39,122 INFO [PUSH-SUCC] 5ms, all delay time 564ms, SLA 564ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:08:39,123 INFO [PUSH-SUCC] 7ms, all delay time 565ms, SLA 565ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:24:31,908 INFO [PUSH-SUCC] 6ms, all delay time 603ms, SLA 604ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:24:31,908 INFO [PUSH-SUCC] 6ms, all delay time 603ms, SLA 604ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=2}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:24:49,329 INFO [PUSH-SUCC] 5ms, all delay time 519ms, SLA 519ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=3}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:24:49,330 INFO [PUSH-SUCC] 6ms, all delay time 520ms, SLA 520ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=3}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:26:46,498 INFO [PUSH-SUCC] 6ms, all delay time 529ms, SLA 529ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=4}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:26:46,498 INFO [PUSH-SUCC] 6ms, all delay time 529ms, SLA 529ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=4}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:27:02,217 INFO [PUSH-SUCC] 5ms, all delay time 578ms, SLA 578ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=5}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:27:02,219 INFO [PUSH-SUCC] 8ms, all delay time 580ms, SLA 580ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=5}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:28:24,434 INFO [PUSH-SUCC] 5ms, all delay time 572ms, SLA 573ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=6}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:28:24,435 INFO [PUSH-SUCC] 7ms, all delay time 573ms, SLA 574ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=6}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:28:39,757 INFO [PUSH-SUCC] 6ms, all delay time 516ms, SLA 516ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=7}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:28:39,758 INFO [PUSH-SUCC] 8ms, all delay time 517ms, SLA 517ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=7}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:59:22,116 INFO [PUSH-SUCC] 5ms, all delay time 582ms, SLA 582ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=8}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:59:22,117 INFO [PUSH-SUCC] 7ms, all delay time 583ms, SLA 583ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=8}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 20:59:38,436 INFO [PUSH-SUCC] 5ms, all delay time 510ms, SLA 510ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=9}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 20:59:38,437 INFO [PUSH-SUCC] 7ms, all delay time 511ms, SLA 511ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=9}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 21:30:03,221 INFO [PUSH-SUCC] 5ms, all delay time 556ms, SLA 556ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=10}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 21:30:03,222 INFO [PUSH-SUCC] 7ms, all delay time 557ms, SLA 557ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=10}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 21:30:18,544 INFO [PUSH-SUCC] 5ms, all delay time 526ms, SLA 527ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=11}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 21:30:18,544 INFO [PUSH-SUCC] 6ms, all delay time 526ms, SLA 527ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=11}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 21:30:58,004 INFO [PUSH-SUCC] 6ms, all delay time 566ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=3}, originalSize=1, DataSize=1
+
+2026-04-16 21:32:02,603 INFO [PUSH-SUCC] 5ms, all delay time 564ms, SLA 564ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=12}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 21:32:02,604 INFO [PUSH-SUCC] 6ms, all delay time 565ms, SLA 565ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=12}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 21:33:20,419 INFO [PUSH-SUCC] 6ms, all delay time 528ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=3}, originalSize=1, DataSize=1
+
+2026-04-16 21:33:20,419 INFO [PUSH-SUCC] 6ms, all delay time 532ms, SLA 533ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=13}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 21:33:20,420 INFO [PUSH-SUCC] 6ms, all delay time 533ms, SLA 534ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=13}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 21:39:41,094 INFO [PUSH-SUCC] 6ms, all delay time 603ms, SLA 603ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=4}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 21:39:41,097 INFO [PUSH-SUCC] 8ms, all delay time 606ms, SLA 606ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=4}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 21:39:41,099 INFO [PUSH-SUCC] 10ms, all delay time 608ms, SLA 608ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=4}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 21:39:56,616 INFO [PUSH-SUCC] 6ms, all delay time 506ms, SLA 506ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=5}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 21:39:56,618 INFO [PUSH-SUCC] 7ms, all delay time 508ms, SLA 508ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=5}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 21:39:56,618 INFO [PUSH-SUCC] 7ms, all delay time 508ms, SLA 508ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=5}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 22:59:49,265 INFO [PUSH-SUCC] 7ms, all delay time 593ms, SLA 593ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=14}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 22:59:49,266 INFO [PUSH-SUCC] 9ms, all delay time 594ms, SLA 594ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=14}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 23:00:06,389 INFO [PUSH-SUCC] 7ms, all delay time 551ms, SLA 551ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=15}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 23:00:06,390 INFO [PUSH-SUCC] 7ms, all delay time 552ms, SLA 552ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=15}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 23:15:03,746 INFO [PUSH-SUCC] 8ms, all delay time 583ms for subscriber 172.25.32.1, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=5}, originalSize=1, DataSize=1
+
+2026-04-16 23:56:29,995 INFO [PUSH-SUCC] 6ms, all delay time 601ms, SLA 602ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=16}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 23:56:29,996 INFO [PUSH-SUCC] 8ms, all delay time 602ms, SLA 603ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=16}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 23:56:38,807 INFO [PUSH-SUCC] 8ms, all delay time 600ms, SLA 600ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=6}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 23:56:38,821 INFO [PUSH-SUCC] 22ms, all delay time 614ms, SLA 614ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=6}, originalSize=0, DataSize=0, target=172.25.32.1
+
+2026-04-16 23:56:48,215 INFO [PUSH-SUCC] 6ms, all delay time 578ms, SLA 579ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=17}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 23:56:48,215 INFO [PUSH-SUCC] 5ms, all delay time 578ms, SLA 579ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=17}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 23:56:54,023 INFO [PUSH-SUCC] 5ms, all delay time 529ms, SLA 530ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=7}, originalSize=1, DataSize=1, target=172.25.32.1
+
+2026-04-16 23:56:54,024 INFO [PUSH-SUCC] 6ms, all delay time 530ms, SLA 531ms, Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=7}, originalSize=1, DataSize=1, target=172.25.32.1
+

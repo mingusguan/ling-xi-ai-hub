@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.knowledge.mapper.KbCategoryMapper">
+
+    <select id="selectListByDeptWithChildren" resultType="com.lingxi.knowledge.domain.KbCategory">
+        SELECT c.* FROM kb_category c
+        WHERE c.status = 1
+        AND (c.dept_id = #{deptId} OR c.dept_id IN
+        (SELECT dept_id FROM sys_dept WHERE
+            ancestors LIKE CONCAT('%', #{deptId}, '%')))
+        ORDER BY c.sort ASC
+    </select>
+
+</mapper>

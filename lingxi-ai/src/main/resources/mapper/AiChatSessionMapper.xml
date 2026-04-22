@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.AiChatSessionMapper">
+
+    <resultMap type="com.lingxi.ai.domain.AiChatSession" id="AiChatSessionResult">
+        <id property="sessionId" column="session_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="title" column="title"/>
+        <result property="isBookmarked" column="is_bookmarked"/>
+        <result property="lastMessageTime" column="last_message_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectByUserId" resultMap="AiChatSessionResult">
+        SELECT session_id, user_id, user_name, title, is_bookmarked, last_message_time, create_time
+        FROM ai_chat_session
+        WHERE user_id = #{userId}
+        ORDER BY last_message_time DESC
+    </select>
+
+    <select id="selectById" resultMap="AiChatSessionResult">
+        SELECT session_id, user_id, user_name, title, is_bookmarked, last_message_time, create_time
+        FROM ai_chat_session
+        WHERE session_id = #{sessionId}
+    </select>
+
+    <insert id="insert" parameterType="com.lingxi.ai.domain.AiChatSession" useGeneratedKeys="true" keyProperty="sessionId">
+        INSERT INTO ai_chat_session (user_id, user_name, title, is_bookmarked, last_message_time, create_time)
+        VALUES (#{userId}, #{userName}, #{title}, #{isBookmarked}, #{lastMessageTime}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.lingxi.ai.domain.AiChatSession">
+        UPDATE ai_chat_session
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="isBookmarked != null">is_bookmarked = #{isBookmarked},</if>
+            <if test="lastMessageTime != null">last_message_time = #{lastMessageTime},</if>
+        </set>
+        WHERE session_id = #{sessionId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM ai_chat_session WHERE session_id = #{sessionId}
+    </delete>
+
+</mapper>

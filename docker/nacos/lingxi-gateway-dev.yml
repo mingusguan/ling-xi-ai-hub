@@ -1,0 +1,14 @@
+﻿spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: lingxi-oa
+          uri: lb://lingxi-oa
+          predicates:
+            - Path=/oa/**
+          filters:
+            - StripPrefix=0

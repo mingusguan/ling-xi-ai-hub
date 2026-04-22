@@ -1,0 +1,59 @@
+{
+  "name": "Lingxi",
+  "uri": "http://lingxi.com/schema/bpmn",
+  "prefix": "lx",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "types": [
+    {
+      "name": "Process",
+      "extends": [
+        "bpmn:Process"
+      ],
+      "properties": [
+        {
+          "name": "formFields",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "UserTask",
+      "extends": [
+        "bpmn:UserTask"
+      ],
+      "properties": [
+        {
+          "name": "approverType",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "approverValue",
+          "isAttr": true,
+          "type": "String"
+        },
+        {
+          "name": "formFields",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "SequenceFlow",
+      "extends": [
+        "bpmn:SequenceFlow"
+      ],
+      "properties": [
+        {
+          "name": "conditionSummary",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}

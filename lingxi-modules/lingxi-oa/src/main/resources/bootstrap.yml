@@ -1,0 +1,37 @@
+server:
+  port: 9810
+
+spring:
+  application:
+    name: lingxi-oa
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+      config:
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+  config:
+    file-extension: yml
+    import:
+      - optional:nacos:application-${spring.profiles.active}.${spring.config.file-extension}
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.config.file-extension}
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.lingxi.oa.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
+flowable:
+  database-schema-update: true
+  db-history-used: true
+  history-level: full
+  check-process-definitions: false
+  process-definition-location-prefix: classpath*:/processes/
+

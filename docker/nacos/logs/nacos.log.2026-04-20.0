@@ -1,0 +1,990 @@
+2026-04-20 00:02:50,751 WARN clearHistoryConfig get scheduled
+
+2026-04-20 00:02:50,759 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 00:02:50,759 WARN clearConfigHistory, getBeforeStamp:2026-03-21 00:02:50.0, pageSize:1000
+
+2026-04-20 00:02:50,763 WARN history config cleaner successfully
+
+2026-04-20 00:03:06,050 INFO [capacityManagement] start correct usage
+
+2026-04-20 00:03:06,271 INFO [capacityManagement] end correct usage, cost: 0.220207886s
+
+2026-04-20 00:12:50,721 WARN clearHistoryConfig get scheduled
+
+2026-04-20 00:12:50,721 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 00:12:50,722 WARN clearConfigHistory, getBeforeStamp:2026-03-21 00:12:50.0, pageSize:1000
+
+2026-04-20 00:12:50,726 WARN history config cleaner successfully
+
+2026-04-20 00:13:06,229 INFO [capacityManagement] start correct usage
+
+2026-04-20 00:13:06,449 INFO [capacityManagement] end correct usage, cost: 0.218919888s
+
+2026-04-20 00:22:50,688 WARN clearHistoryConfig get scheduled
+
+2026-04-20 00:22:50,689 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 00:22:50,690 WARN clearConfigHistory, getBeforeStamp:2026-03-21 00:22:50.0, pageSize:1000
+
+2026-04-20 00:22:50,695 WARN history config cleaner successfully
+
+2026-04-20 00:23:06,411 INFO [capacityManagement] start correct usage
+
+2026-04-20 00:23:06,631 INFO [capacityManagement] end correct usage, cost: 0.219423967s
+
+2026-04-20 00:32:50,659 WARN clearHistoryConfig get scheduled
+
+2026-04-20 00:32:50,660 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 00:32:50,661 WARN clearConfigHistory, getBeforeStamp:2026-03-21 00:32:50.0, pageSize:1000
+
+2026-04-20 00:32:50,665 WARN history config cleaner successfully
+
+2026-04-20 00:33:06,595 INFO [capacityManagement] start correct usage
+
+2026-04-20 00:33:06,816 INFO [capacityManagement] end correct usage, cost: 0.220863351s
+
+2026-04-20 00:42:50,632 WARN clearHistoryConfig get scheduled
+
+2026-04-20 00:42:50,632 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 00:42:50,633 WARN clearConfigHistory, getBeforeStamp:2026-03-21 00:42:50.0, pageSize:1000
+
+2026-04-20 00:42:50,637 WARN history config cleaner successfully
+
+2026-04-20 00:43:06,783 INFO [capacityManagement] start correct usage
+
+2026-04-20 00:43:07,004 INFO [capacityManagement] end correct usage, cost: 0.220823588s
+
+2026-04-20 00:52:50,604 WARN clearHistoryConfig get scheduled
+
+2026-04-20 00:52:50,604 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 00:52:50,604 WARN clearConfigHistory, getBeforeStamp:2026-03-21 00:52:50.0, pageSize:1000
+
+2026-04-20 00:52:50,609 WARN history config cleaner successfully
+
+2026-04-20 00:53:06,971 INFO [capacityManagement] start correct usage
+
+2026-04-20 00:53:07,192 INFO [capacityManagement] end correct usage, cost: 0.220555345s
+
+2026-04-20 01:02:50,576 WARN clearHistoryConfig get scheduled
+
+2026-04-20 01:02:50,576 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 01:02:50,577 WARN clearConfigHistory, getBeforeStamp:2026-03-21 01:02:50.0, pageSize:1000
+
+2026-04-20 01:02:50,582 WARN history config cleaner successfully
+
+2026-04-20 01:03:07,159 INFO [capacityManagement] start correct usage
+
+2026-04-20 01:03:07,381 INFO [capacityManagement] end correct usage, cost: 0.221586835s
+
+2026-04-20 01:12:50,539 WARN clearHistoryConfig get scheduled
+
+2026-04-20 01:12:50,539 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 01:12:50,542 WARN clearConfigHistory, getBeforeStamp:2026-03-21 01:12:50.0, pageSize:1000
+
+2026-04-20 01:12:50,545 WARN history config cleaner successfully
+
+2026-04-20 01:13:07,338 INFO [capacityManagement] start correct usage
+
+2026-04-20 01:13:07,557 INFO [capacityManagement] end correct usage, cost: 0.218997626s
+
+2026-04-20 01:22:50,503 WARN clearHistoryConfig get scheduled
+
+2026-04-20 01:22:50,503 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 01:22:50,504 WARN clearConfigHistory, getBeforeStamp:2026-03-21 01:22:50.0, pageSize:1000
+
+2026-04-20 01:22:50,507 WARN history config cleaner successfully
+
+2026-04-20 01:23:07,516 INFO [capacityManagement] start correct usage
+
+2026-04-20 01:23:07,732 INFO [capacityManagement] end correct usage, cost: 0.216293259s
+
+2026-04-20 01:32:50,474 WARN clearHistoryConfig get scheduled
+
+2026-04-20 01:32:50,474 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 01:32:50,474 WARN clearConfigHistory, getBeforeStamp:2026-03-21 01:32:50.0, pageSize:1000
+
+2026-04-20 01:32:50,477 WARN history config cleaner successfully
+
+2026-04-20 01:33:07,699 INFO [capacityManagement] start correct usage
+
+2026-04-20 01:33:07,924 INFO [capacityManagement] end correct usage, cost: 0.224074374s
+
+2026-04-20 01:42:50,454 WARN clearHistoryConfig get scheduled
+
+2026-04-20 01:42:50,454 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 01:42:50,455 WARN clearConfigHistory, getBeforeStamp:2026-03-21 01:42:50.0, pageSize:1000
+
+2026-04-20 01:42:50,458 WARN history config cleaner successfully
+
+2026-04-20 01:43:07,900 INFO [capacityManagement] start correct usage
+
+2026-04-20 01:43:08,122 INFO [capacityManagement] end correct usage, cost: 0.220584946s
+
+2026-04-20 01:52:50,424 WARN clearHistoryConfig get scheduled
+
+2026-04-20 01:52:50,424 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 01:52:50,425 WARN clearConfigHistory, getBeforeStamp:2026-03-21 01:52:50.0, pageSize:1000
+
+2026-04-20 01:52:50,428 WARN history config cleaner successfully
+
+2026-04-20 01:53:08,087 INFO [capacityManagement] start correct usage
+
+2026-04-20 01:53:08,307 INFO [capacityManagement] end correct usage, cost: 0.219056741s
+
+2026-04-20 02:02:50,393 WARN clearHistoryConfig get scheduled
+
+2026-04-20 02:02:50,394 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 02:02:50,394 WARN clearConfigHistory, getBeforeStamp:2026-03-21 02:02:50.0, pageSize:1000
+
+2026-04-20 02:02:50,397 WARN history config cleaner successfully
+
+2026-04-20 02:03:08,273 INFO [capacityManagement] start correct usage
+
+2026-04-20 02:03:08,493 INFO [capacityManagement] end correct usage, cost: 0.220047248s
+
+2026-04-20 02:12:50,363 WARN clearHistoryConfig get scheduled
+
+2026-04-20 02:12:50,363 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 02:12:50,364 WARN clearConfigHistory, getBeforeStamp:2026-03-21 02:12:50.0, pageSize:1000
+
+2026-04-20 02:12:50,366 WARN history config cleaner successfully
+
+2026-04-20 02:13:08,459 INFO [capacityManagement] start correct usage
+
+2026-04-20 02:13:08,678 INFO [capacityManagement] end correct usage, cost: 0.218252631s
+
+2026-04-20 02:22:50,330 WARN clearHistoryConfig get scheduled
+
+2026-04-20 02:22:50,330 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 02:22:50,330 WARN clearConfigHistory, getBeforeStamp:2026-03-21 02:22:50.0, pageSize:1000
+
+2026-04-20 02:22:50,336 WARN history config cleaner successfully
+
+2026-04-20 02:23:08,642 INFO [capacityManagement] start correct usage
+
+2026-04-20 02:23:08,864 INFO [capacityManagement] end correct usage, cost: 0.220627626s
+
+2026-04-20 02:32:50,296 WARN clearHistoryConfig get scheduled
+
+2026-04-20 02:32:50,296 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 02:32:50,297 WARN clearConfigHistory, getBeforeStamp:2026-03-21 02:32:50.0, pageSize:1000
+
+2026-04-20 02:32:50,300 WARN history config cleaner successfully
+
+2026-04-20 02:33:08,827 INFO [capacityManagement] start correct usage
+
+2026-04-20 02:33:09,048 INFO [capacityManagement] end correct usage, cost: 0.220656524s
+
+2026-04-20 02:40:29,473 WARN Stream Error
+
+io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception$StreamException: Cannot create stream 199 greater than Last-Stream-ID 197 from GOAWAY.
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception.streamError(Http2Exception.java:151)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.checkNewStreamAllowed(DefaultHttp2Connection.java:904)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:770)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:685)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder$FrameReadListener.onHeadersRead(DefaultHttp2ConnectionDecoder.java:360)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger$1.onHeadersRead(Http2InboundFrameLogger.java:63)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader$1.processFragment(DefaultHttp2FrameReader.java:449)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readHeadersFrame(DefaultHttp2FrameReader.java:456)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.processPayloadState(DefaultHttp2FrameReader.java:247)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readFrame(DefaultHttp2FrameReader.java:164)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger.readFrame(Http2InboundFrameLogger.java:39)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder.decodeFrame(DefaultHttp2ConnectionDecoder.java:186)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler$FrameDecoder.decode(Http2ConnectionHandler.java:391)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler.decode(Http2ConnectionHandler.java:451)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994)
+	at io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-20 02:40:29,478 WARN Stream Error
+
+io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception$StreamException: Cannot create stream 201 greater than Last-Stream-ID 197 from GOAWAY.
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception.streamError(Http2Exception.java:151)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.checkNewStreamAllowed(DefaultHttp2Connection.java:904)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:770)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:685)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder$FrameReadListener.onHeadersRead(DefaultHttp2ConnectionDecoder.java:360)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger$1.onHeadersRead(Http2InboundFrameLogger.java:63)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader$1.processFragment(DefaultHttp2FrameReader.java:449)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readHeadersFrame(DefaultHttp2FrameReader.java:456)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.processPayloadState(DefaultHttp2FrameReader.java:247)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readFrame(DefaultHttp2FrameReader.java:164)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger.readFrame(Http2InboundFrameLogger.java:39)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder.decodeFrame(DefaultHttp2ConnectionDecoder.java:186)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler$FrameDecoder.decode(Http2ConnectionHandler.java:391)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler.decode(Http2ConnectionHandler.java:451)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994)
+	at io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-20 02:40:29,481 INFO [id: 0xf5dd99e2, L:/172.18.0.4:9848 ! R:/172.18.0.1:55062] ignoring DATA frame for stream 199. Stream sent after GOAWAY sent
+
+2026-04-20 02:42:50,279 WARN clearHistoryConfig get scheduled
+
+2026-04-20 02:42:50,279 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 02:42:50,280 WARN clearConfigHistory, getBeforeStamp:2026-03-21 02:42:50.0, pageSize:1000
+
+2026-04-20 02:42:50,284 WARN history config cleaner successfully
+
+2026-04-20 02:43:09,027 INFO [capacityManagement] start correct usage
+
+2026-04-20 02:43:09,244 INFO [capacityManagement] end correct usage, cost: 0.21715279s
+
+2026-04-20 02:52:50,263 WARN clearHistoryConfig get scheduled
+
+2026-04-20 02:52:50,263 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 02:52:50,264 WARN clearConfigHistory, getBeforeStamp:2026-03-21 02:52:50.0, pageSize:1000
+
+2026-04-20 02:52:50,272 WARN history config cleaner successfully
+
+2026-04-20 02:53:09,224 INFO [capacityManagement] start correct usage
+
+2026-04-20 02:53:09,455 INFO [capacityManagement] end correct usage, cost: 0.230487264s
+
+2026-04-20 03:02:50,247 WARN clearHistoryConfig get scheduled
+
+2026-04-20 03:02:50,248 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 03:02:50,248 WARN clearConfigHistory, getBeforeStamp:2026-03-21 03:02:50.0, pageSize:1000
+
+2026-04-20 03:02:50,253 WARN history config cleaner successfully
+
+2026-04-20 03:03:09,429 INFO [capacityManagement] start correct usage
+
+2026-04-20 03:03:09,651 INFO [capacityManagement] end correct usage, cost: 0.221604202s
+
+2026-04-20 03:12:50,230 WARN clearHistoryConfig get scheduled
+
+2026-04-20 03:12:50,231 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 03:12:50,232 WARN clearConfigHistory, getBeforeStamp:2026-03-21 03:12:50.0, pageSize:1000
+
+2026-04-20 03:12:50,237 WARN history config cleaner successfully
+
+2026-04-20 03:13:09,625 INFO [capacityManagement] start correct usage
+
+2026-04-20 03:13:09,844 INFO [capacityManagement] end correct usage, cost: 0.218820609s
+
+2026-04-20 03:22:50,208 WARN clearHistoryConfig get scheduled
+
+2026-04-20 03:22:50,209 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 03:22:50,210 WARN clearConfigHistory, getBeforeStamp:2026-03-21 03:22:50.0, pageSize:1000
+
+2026-04-20 03:22:50,215 WARN history config cleaner successfully
+
+2026-04-20 03:23:09,813 INFO [capacityManagement] start correct usage
+
+2026-04-20 03:23:10,034 INFO [capacityManagement] end correct usage, cost: 0.219938482s
+
+2026-04-20 03:32:50,188 WARN clearHistoryConfig get scheduled
+
+2026-04-20 03:32:50,189 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 03:32:50,190 WARN clearConfigHistory, getBeforeStamp:2026-03-21 03:32:50.0, pageSize:1000
+
+2026-04-20 03:32:50,194 WARN history config cleaner successfully
+
+2026-04-20 03:33:10,003 INFO [capacityManagement] start correct usage
+
+2026-04-20 03:33:10,223 INFO [capacityManagement] end correct usage, cost: 0.21918524s
+
+2026-04-20 09:50:16,511 WARN clearHistoryConfig get scheduled
+
+2026-04-20 09:50:16,512 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 09:50:16,512 WARN clearConfigHistory, getBeforeStamp:2026-03-21 09:50:16.0, pageSize:1000
+
+2026-04-20 09:50:16,522 WARN history config cleaner successfully
+
+2026-04-20 09:50:36,539 INFO [capacityManagement] start correct usage
+
+2026-04-20 09:50:36,761 INFO [capacityManagement] end correct usage, cost: 0.222028689s
+
+2026-04-20 10:00:16,493 WARN clearHistoryConfig get scheduled
+
+2026-04-20 10:00:16,493 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 10:00:16,494 WARN clearConfigHistory, getBeforeStamp:2026-03-21 10:00:16.0, pageSize:1000
+
+2026-04-20 10:00:16,500 WARN history config cleaner successfully
+
+2026-04-20 10:00:36,732 INFO [capacityManagement] start correct usage
+
+2026-04-20 10:00:36,954 INFO [capacityManagement] end correct usage, cost: 0.221339844s
+
+2026-04-20 10:13:24,479 WARN clearHistoryConfig get scheduled
+
+2026-04-20 10:13:24,480 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 10:13:24,482 WARN clearConfigHistory, getBeforeStamp:2026-03-21 10:13:24.0, pageSize:1000
+
+2026-04-20 10:13:24,485 WARN history config cleaner successfully
+
+2026-04-20 10:13:44,933 INFO [capacityManagement] start correct usage
+
+2026-04-20 10:13:45,153 INFO [capacityManagement] end correct usage, cost: 0.219448864s
+
+2026-04-20 10:23:24,453 WARN clearHistoryConfig get scheduled
+
+2026-04-20 10:23:24,454 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 10:23:24,454 WARN clearConfigHistory, getBeforeStamp:2026-03-21 10:23:24.0, pageSize:1000
+
+2026-04-20 10:23:24,458 WARN history config cleaner successfully
+
+2026-04-20 10:23:45,119 INFO [capacityManagement] start correct usage
+
+2026-04-20 10:23:45,341 INFO [capacityManagement] end correct usage, cost: 0.221469151s
+
+2026-04-20 10:33:24,427 WARN clearHistoryConfig get scheduled
+
+2026-04-20 10:33:24,427 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 10:33:24,428 WARN clearConfigHistory, getBeforeStamp:2026-03-21 10:33:24.0, pageSize:1000
+
+2026-04-20 10:33:24,434 WARN history config cleaner successfully
+
+2026-04-20 10:33:45,307 INFO [capacityManagement] start correct usage
+
+2026-04-20 10:33:45,525 INFO [capacityManagement] end correct usage, cost: 0.21774724s
+
+2026-04-20 10:43:24,402 WARN clearHistoryConfig get scheduled
+
+2026-04-20 10:43:24,403 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 10:43:24,404 WARN clearConfigHistory, getBeforeStamp:2026-03-21 10:43:24.0, pageSize:1000
+
+2026-04-20 10:43:24,408 WARN history config cleaner successfully
+
+2026-04-20 10:43:45,494 INFO [capacityManagement] start correct usage
+
+2026-04-20 10:43:45,715 INFO [capacityManagement] end correct usage, cost: 0.219675649s
+
+2026-04-20 10:53:24,426 WARN clearHistoryConfig get scheduled
+
+2026-04-20 10:53:24,426 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 10:53:24,427 WARN clearConfigHistory, getBeforeStamp:2026-03-21 10:53:24.0, pageSize:1000
+
+2026-04-20 10:53:24,432 WARN history config cleaner successfully
+
+2026-04-20 10:53:45,684 INFO [capacityManagement] start correct usage
+
+2026-04-20 10:53:45,904 INFO [capacityManagement] end correct usage, cost: 0.219528985s
+
+2026-04-20 11:12:07,397 WARN clearHistoryConfig get scheduled
+
+2026-04-20 11:12:07,397 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 11:12:07,398 WARN clearConfigHistory, getBeforeStamp:2026-03-21 11:12:07.0, pageSize:1000
+
+2026-04-20 11:12:07,403 WARN history config cleaner successfully
+
+2026-04-20 11:12:28,868 INFO [capacityManagement] start correct usage
+
+2026-04-20 11:12:29,090 INFO [capacityManagement] end correct usage, cost: 0.221493301s
+
+2026-04-20 11:22:07,375 WARN clearHistoryConfig get scheduled
+
+2026-04-20 11:22:07,375 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 11:22:07,376 WARN clearConfigHistory, getBeforeStamp:2026-03-21 11:22:07.0, pageSize:1000
+
+2026-04-20 11:22:07,380 WARN history config cleaner successfully
+
+2026-04-20 11:22:29,060 INFO [capacityManagement] start correct usage
+
+2026-04-20 11:22:29,280 INFO [capacityManagement] end correct usage, cost: 0.219315955s
+
+2026-04-20 11:32:07,344 WARN clearHistoryConfig get scheduled
+
+2026-04-20 11:32:07,345 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 11:32:07,345 WARN clearConfigHistory, getBeforeStamp:2026-03-21 11:32:07.0, pageSize:1000
+
+2026-04-20 11:32:07,349 WARN history config cleaner successfully
+
+2026-04-20 11:32:29,244 INFO [capacityManagement] start correct usage
+
+2026-04-20 11:32:29,465 INFO [capacityManagement] end correct usage, cost: 0.220372191s
+
+2026-04-20 11:42:07,309 WARN clearHistoryConfig get scheduled
+
+2026-04-20 11:42:07,309 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 11:42:07,309 WARN clearConfigHistory, getBeforeStamp:2026-03-21 11:42:07.0, pageSize:1000
+
+2026-04-20 11:42:07,315 WARN history config cleaner successfully
+
+2026-04-20 11:42:29,424 INFO [capacityManagement] start correct usage
+
+2026-04-20 11:42:29,652 INFO [capacityManagement] end correct usage, cost: 0.227226682s
+
+2026-04-20 11:52:07,278 WARN clearHistoryConfig get scheduled
+
+2026-04-20 11:52:07,279 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 11:52:07,279 WARN clearConfigHistory, getBeforeStamp:2026-03-21 11:52:07.0, pageSize:1000
+
+2026-04-20 11:52:07,283 WARN history config cleaner successfully
+
+2026-04-20 11:52:29,615 INFO [capacityManagement] start correct usage
+
+2026-04-20 11:52:29,839 INFO [capacityManagement] end correct usage, cost: 0.223359437s
+
+2026-04-20 12:02:07,249 WARN clearHistoryConfig get scheduled
+
+2026-04-20 12:02:07,250 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 12:02:07,250 WARN clearConfigHistory, getBeforeStamp:2026-03-21 12:02:07.0, pageSize:1000
+
+2026-04-20 12:02:07,253 WARN history config cleaner successfully
+
+2026-04-20 12:02:29,806 INFO [capacityManagement] start correct usage
+
+2026-04-20 12:02:30,023 INFO [capacityManagement] end correct usage, cost: 0.217103328s
+
+2026-04-20 12:12:07,221 WARN clearHistoryConfig get scheduled
+
+2026-04-20 12:12:07,222 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 12:12:07,222 WARN clearConfigHistory, getBeforeStamp:2026-03-21 12:12:07.0, pageSize:1000
+
+2026-04-20 12:12:07,225 WARN history config cleaner successfully
+
+2026-04-20 12:12:29,991 INFO [capacityManagement] start correct usage
+
+2026-04-20 12:12:30,213 INFO [capacityManagement] end correct usage, cost: 0.220797955s
+
+2026-04-20 12:22:07,195 WARN clearHistoryConfig get scheduled
+
+2026-04-20 12:22:07,196 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 12:22:07,196 WARN clearConfigHistory, getBeforeStamp:2026-03-21 12:22:07.0, pageSize:1000
+
+2026-04-20 12:22:07,200 WARN history config cleaner successfully
+
+2026-04-20 12:22:30,183 INFO [capacityManagement] start correct usage
+
+2026-04-20 12:22:30,401 INFO [capacityManagement] end correct usage, cost: 0.217220612s
+
+2026-04-20 15:42:40,098 WARN clearHistoryConfig get scheduled
+
+2026-04-20 15:42:40,098 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 15:42:40,099 WARN clearConfigHistory, getBeforeStamp:2026-03-21 15:42:40.0, pageSize:1000
+
+2026-04-20 15:42:40,101 WARN history config cleaner successfully
+
+2026-04-20 15:43:03,300 INFO [capacityManagement] start correct usage
+
+2026-04-20 15:43:03,520 INFO [capacityManagement] end correct usage, cost: 0.21921753s
+
+2026-04-20 15:52:40,082 WARN clearHistoryConfig get scheduled
+
+2026-04-20 15:52:40,083 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 15:52:40,084 WARN clearConfigHistory, getBeforeStamp:2026-03-21 15:52:40.0, pageSize:1000
+
+2026-04-20 15:52:40,089 WARN history config cleaner successfully
+
+2026-04-20 15:53:03,499 INFO [capacityManagement] start correct usage
+
+2026-04-20 15:53:03,716 INFO [capacityManagement] end correct usage, cost: 0.216654985s
+
+2026-04-20 16:02:40,058 WARN clearHistoryConfig get scheduled
+
+2026-04-20 16:02:40,058 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 16:02:40,059 WARN clearConfigHistory, getBeforeStamp:2026-03-21 16:02:40.0, pageSize:1000
+
+2026-04-20 16:02:40,062 WARN history config cleaner successfully
+
+2026-04-20 16:03:03,683 INFO [capacityManagement] start correct usage
+
+2026-04-20 16:03:03,904 INFO [capacityManagement] end correct usage, cost: 0.220171088s
+
+2026-04-20 16:12:40,021 WARN clearHistoryConfig get scheduled
+
+2026-04-20 16:12:40,022 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 16:12:40,023 WARN clearConfigHistory, getBeforeStamp:2026-03-21 16:12:40.0, pageSize:1000
+
+2026-04-20 16:12:40,028 WARN history config cleaner successfully
+
+2026-04-20 16:13:03,862 INFO [capacityManagement] start correct usage
+
+2026-04-20 16:13:04,083 INFO [capacityManagement] end correct usage, cost: 0.22067156s
+
+2026-04-20 16:16:20,860 WARN Stream Error
+
+io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception$StreamException: Cannot create stream 135 greater than Last-Stream-ID 133 from GOAWAY.
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception.streamError(Http2Exception.java:151)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.checkNewStreamAllowed(DefaultHttp2Connection.java:904)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:770)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:685)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder$FrameReadListener.onHeadersRead(DefaultHttp2ConnectionDecoder.java:360)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger$1.onHeadersRead(Http2InboundFrameLogger.java:63)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader$1.processFragment(DefaultHttp2FrameReader.java:449)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readHeadersFrame(DefaultHttp2FrameReader.java:456)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.processPayloadState(DefaultHttp2FrameReader.java:247)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readFrame(DefaultHttp2FrameReader.java:164)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger.readFrame(Http2InboundFrameLogger.java:39)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder.decodeFrame(DefaultHttp2ConnectionDecoder.java:186)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler$FrameDecoder.decode(Http2ConnectionHandler.java:391)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler.decode(Http2ConnectionHandler.java:451)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994)
+	at io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-20 16:16:20,860 WARN Stream Error
+
+io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception$StreamException: Cannot create stream 125 greater than Last-Stream-ID 123 from GOAWAY.
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception.streamError(Http2Exception.java:151)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.checkNewStreamAllowed(DefaultHttp2Connection.java:904)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:770)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:685)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder$FrameReadListener.onHeadersRead(DefaultHttp2ConnectionDecoder.java:360)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger$1.onHeadersRead(Http2InboundFrameLogger.java:63)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader$1.processFragment(DefaultHttp2FrameReader.java:449)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readHeadersFrame(DefaultHttp2FrameReader.java:456)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.processPayloadState(DefaultHttp2FrameReader.java:247)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readFrame(DefaultHttp2FrameReader.java:164)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger.readFrame(Http2InboundFrameLogger.java:39)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder.decodeFrame(DefaultHttp2ConnectionDecoder.java:186)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler$FrameDecoder.decode(Http2ConnectionHandler.java:391)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler.decode(Http2ConnectionHandler.java:451)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994)
+	at io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-20 16:16:20,865 WARN Stream Error
+
+io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception$StreamException: Cannot create stream 137 greater than Last-Stream-ID 133 from GOAWAY.
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception.streamError(Http2Exception.java:151)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.checkNewStreamAllowed(DefaultHttp2Connection.java:904)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:770)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:685)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder$FrameReadListener.onHeadersRead(DefaultHttp2ConnectionDecoder.java:360)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger$1.onHeadersRead(Http2InboundFrameLogger.java:63)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader$1.processFragment(DefaultHttp2FrameReader.java:449)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readHeadersFrame(DefaultHttp2FrameReader.java:456)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.processPayloadState(DefaultHttp2FrameReader.java:247)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readFrame(DefaultHttp2FrameReader.java:164)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger.readFrame(Http2InboundFrameLogger.java:39)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder.decodeFrame(DefaultHttp2ConnectionDecoder.java:186)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler$FrameDecoder.decode(Http2ConnectionHandler.java:391)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler.decode(Http2ConnectionHandler.java:451)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994)
+	at io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-20 16:16:20,868 INFO [id: 0xe0e9ec30, L:/172.18.0.4:9848 ! R:/172.18.0.1:45078] ignoring DATA frame for stream 135. Stream sent after GOAWAY sent
+
+2026-04-20 16:22:39,987 WARN clearHistoryConfig get scheduled
+
+2026-04-20 16:22:39,988 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 16:22:39,988 WARN clearConfigHistory, getBeforeStamp:2026-03-21 16:22:39.0, pageSize:1000
+
+2026-04-20 16:22:39,991 WARN history config cleaner successfully
+
+2026-04-20 16:23:04,042 INFO [capacityManagement] start correct usage
+
+2026-04-20 16:23:04,263 INFO [capacityManagement] end correct usage, cost: 0.220708366s
+
+2026-04-20 16:32:39,954 WARN clearHistoryConfig get scheduled
+
+2026-04-20 16:32:39,954 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 16:32:39,954 WARN clearConfigHistory, getBeforeStamp:2026-03-21 16:32:39.0, pageSize:1000
+
+2026-04-20 16:32:39,957 WARN history config cleaner successfully
+
+2026-04-20 16:33:04,226 INFO [capacityManagement] start correct usage
+
+2026-04-20 16:33:04,444 INFO [capacityManagement] end correct usage, cost: 0.217865084s
+
+2026-04-20 16:42:39,925 WARN clearHistoryConfig get scheduled
+
+2026-04-20 16:42:39,925 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 16:42:39,926 WARN clearConfigHistory, getBeforeStamp:2026-03-21 16:42:39.0, pageSize:1000
+
+2026-04-20 16:42:39,932 WARN history config cleaner successfully
+
+2026-04-20 16:43:04,412 INFO [capacityManagement] start correct usage
+
+2026-04-20 16:43:04,632 INFO [capacityManagement] end correct usage, cost: 0.219277627s
+
+2026-04-20 16:52:39,900 WARN clearHistoryConfig get scheduled
+
+2026-04-20 16:52:39,900 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 16:52:39,901 WARN clearConfigHistory, getBeforeStamp:2026-03-21 16:52:39.0, pageSize:1000
+
+2026-04-20 16:52:39,906 WARN history config cleaner successfully
+
+2026-04-20 16:53:04,600 INFO [capacityManagement] start correct usage
+
+2026-04-20 16:53:04,946 INFO [capacityManagement] end correct usage, cost: 0.329522539s
+
+2026-04-20 17:02:39,868 WARN clearHistoryConfig get scheduled
+
+2026-04-20 17:02:39,869 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 17:02:39,869 WARN clearConfigHistory, getBeforeStamp:2026-03-21 17:02:39.0, pageSize:1000
+
+2026-04-20 17:02:39,873 WARN history config cleaner successfully
+
+2026-04-20 17:03:04,907 INFO [capacityManagement] start correct usage
+
+2026-04-20 17:03:05,126 INFO [capacityManagement] end correct usage, cost: 0.218182927s
+
+2026-04-20 17:12:39,834 WARN clearHistoryConfig get scheduled
+
+2026-04-20 17:12:39,834 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 17:12:39,835 WARN clearConfigHistory, getBeforeStamp:2026-03-21 17:12:39.0, pageSize:1000
+
+2026-04-20 17:12:39,838 WARN history config cleaner successfully
+
+2026-04-20 17:13:05,086 INFO [capacityManagement] start correct usage
+
+2026-04-20 17:13:05,309 INFO [capacityManagement] end correct usage, cost: 0.221595008s
+
+2026-04-20 17:22:39,800 WARN clearHistoryConfig get scheduled
+
+2026-04-20 17:22:39,800 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 17:22:39,801 WARN clearConfigHistory, getBeforeStamp:2026-03-21 17:22:39.0, pageSize:1000
+
+2026-04-20 17:22:39,804 WARN history config cleaner successfully
+
+2026-04-20 17:23:05,272 INFO [capacityManagement] start correct usage
+
+2026-04-20 17:23:05,495 INFO [capacityManagement] end correct usage, cost: 0.222519937s
+
+2026-04-20 17:32:39,771 WARN clearHistoryConfig get scheduled
+
+2026-04-20 17:32:39,772 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 17:32:39,772 WARN clearConfigHistory, getBeforeStamp:2026-03-21 17:32:39.0, pageSize:1000
+
+2026-04-20 17:32:39,775 WARN history config cleaner successfully
+
+2026-04-20 17:33:05,460 INFO [capacityManagement] start correct usage
+
+2026-04-20 17:33:05,680 INFO [capacityManagement] end correct usage, cost: 0.219719214s
+
+2026-04-20 17:42:39,742 WARN clearHistoryConfig get scheduled
+
+2026-04-20 17:42:39,743 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 17:42:39,743 WARN clearConfigHistory, getBeforeStamp:2026-03-21 17:42:39.0, pageSize:1000
+
+2026-04-20 17:42:39,746 WARN history config cleaner successfully
+
+2026-04-20 17:43:05,648 INFO [capacityManagement] start correct usage
+
+2026-04-20 17:43:05,869 INFO [capacityManagement] end correct usage, cost: 0.220677441s
+
+2026-04-20 17:52:39,715 WARN clearHistoryConfig get scheduled
+
+2026-04-20 17:52:39,716 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 17:52:39,717 WARN clearConfigHistory, getBeforeStamp:2026-03-21 17:52:39.0, pageSize:1000
+
+2026-04-20 17:52:39,722 WARN history config cleaner successfully
+
+2026-04-20 17:53:05,838 INFO [capacityManagement] start correct usage
+
+2026-04-20 17:53:06,059 INFO [capacityManagement] end correct usage, cost: 0.220350455s
+
+2026-04-20 18:02:39,687 WARN clearHistoryConfig get scheduled
+
+2026-04-20 18:02:39,688 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 18:02:39,688 WARN clearConfigHistory, getBeforeStamp:2026-03-21 18:02:39.0, pageSize:1000
+
+2026-04-20 18:02:39,691 WARN history config cleaner successfully
+
+2026-04-20 18:03:06,022 INFO [capacityManagement] start correct usage
+
+2026-04-20 18:03:06,243 INFO [capacityManagement] end correct usage, cost: 0.220960402s
+
+2026-04-20 18:12:39,650 WARN clearHistoryConfig get scheduled
+
+2026-04-20 18:12:39,650 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 18:12:39,651 WARN clearConfigHistory, getBeforeStamp:2026-03-21 18:12:39.0, pageSize:1000
+
+2026-04-20 18:12:39,652 WARN history config cleaner successfully
+
+2026-04-20 18:13:06,204 INFO [capacityManagement] start correct usage
+
+2026-04-20 18:13:06,423 INFO [capacityManagement] end correct usage, cost: 0.218564847s
+
+2026-04-20 18:22:39,617 WARN clearHistoryConfig get scheduled
+
+2026-04-20 18:22:39,618 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 18:22:39,620 WARN clearConfigHistory, getBeforeStamp:2026-03-21 18:22:39.0, pageSize:1000
+
+2026-04-20 18:22:39,624 WARN history config cleaner successfully
+
+2026-04-20 18:23:06,388 INFO [capacityManagement] start correct usage
+
+2026-04-20 18:23:06,606 INFO [capacityManagement] end correct usage, cost: 0.217982191s
+
+2026-04-20 18:32:39,591 WARN clearHistoryConfig get scheduled
+
+2026-04-20 18:32:39,591 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 18:32:39,592 WARN clearConfigHistory, getBeforeStamp:2026-03-21 18:32:39.0, pageSize:1000
+
+2026-04-20 18:32:39,595 WARN history config cleaner successfully
+
+2026-04-20 18:33:06,575 INFO [capacityManagement] start correct usage
+
+2026-04-20 18:33:06,791 INFO [capacityManagement] end correct usage, cost: 0.216475271s
+
+2026-04-20 18:40:05,033 WARN Stream Error
+
+io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception$StreamException: Cannot create stream 37 greater than Last-Stream-ID 35 from GOAWAY.
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2Exception.streamError(Http2Exception.java:151)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.checkNewStreamAllowed(DefaultHttp2Connection.java:904)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:770)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2Connection$DefaultEndpoint.createStream(DefaultHttp2Connection.java:685)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder$FrameReadListener.onHeadersRead(DefaultHttp2ConnectionDecoder.java:360)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger$1.onHeadersRead(Http2InboundFrameLogger.java:63)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader$1.processFragment(DefaultHttp2FrameReader.java:449)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readHeadersFrame(DefaultHttp2FrameReader.java:456)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.processPayloadState(DefaultHttp2FrameReader.java:247)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2FrameReader.readFrame(DefaultHttp2FrameReader.java:164)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2InboundFrameLogger.readFrame(Http2InboundFrameLogger.java:39)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder.decodeFrame(DefaultHttp2ConnectionDecoder.java:186)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler$FrameDecoder.decode(Http2ConnectionHandler.java:391)
+	at io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2ConnectionHandler.decode(Http2ConnectionHandler.java:451)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469)
+	at io.grpc.netty.shaded.io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440)
+	at io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420)
+	at io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501)
+	at io.grpc.netty.shaded.io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994)
+	at io.grpc.netty.shaded.io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2026-04-20 18:40:05,035 INFO [id: 0xabb49a42, L:/172.18.0.4:9848 ! R:/172.18.0.1:38146] ignoring DATA frame for stream 37. Stream sent after GOAWAY sent
+
+2026-04-20 18:42:39,566 WARN clearHistoryConfig get scheduled
+
+2026-04-20 18:42:39,567 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 18:42:39,567 WARN clearConfigHistory, getBeforeStamp:2026-03-21 18:42:39.0, pageSize:1000
+
+2026-04-20 18:42:39,577 WARN history config cleaner successfully
+
+2026-04-20 18:43:06,760 INFO [capacityManagement] start correct usage
+
+2026-04-20 18:43:06,982 INFO [capacityManagement] end correct usage, cost: 0.220461242s
+
+2026-04-20 18:52:39,544 WARN clearHistoryConfig get scheduled
+
+2026-04-20 18:52:39,545 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 18:52:39,546 WARN clearConfigHistory, getBeforeStamp:2026-03-21 18:52:39.0, pageSize:1000
+
+2026-04-20 18:52:39,549 WARN history config cleaner successfully
+
+2026-04-20 18:53:06,948 INFO [capacityManagement] start correct usage
+
+2026-04-20 18:53:07,167 INFO [capacityManagement] end correct usage, cost: 0.218640348s
+
+2026-04-20 19:02:39,513 WARN clearHistoryConfig get scheduled
+
+2026-04-20 19:02:39,513 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 19:02:39,514 WARN clearConfigHistory, getBeforeStamp:2026-03-21 19:02:39.0, pageSize:1000
+
+2026-04-20 19:02:39,518 WARN history config cleaner successfully
+
+2026-04-20 19:03:07,131 INFO [capacityManagement] start correct usage
+
+2026-04-20 19:03:07,351 INFO [capacityManagement] end correct usage, cost: 0.219402203s
+
+2026-04-20 19:12:39,483 WARN clearHistoryConfig get scheduled
+
+2026-04-20 19:12:39,483 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 19:12:39,484 WARN clearConfigHistory, getBeforeStamp:2026-03-21 19:12:39.0, pageSize:1000
+
+2026-04-20 19:12:39,489 WARN history config cleaner successfully
+
+2026-04-20 19:13:07,314 INFO [capacityManagement] start correct usage
+
+2026-04-20 19:13:07,533 INFO [capacityManagement] end correct usage, cost: 0.217936012s
+
+2026-04-20 23:06:57,062 WARN clearHistoryConfig get scheduled
+
+2026-04-20 23:06:57,062 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 23:06:57,063 WARN clearConfigHistory, getBeforeStamp:2026-03-21 23:06:57.0, pageSize:1000
+
+2026-04-20 23:06:57,069 WARN history config cleaner successfully
+
+2026-04-20 23:07:25,107 INFO [capacityManagement] start correct usage
+
+2026-04-20 23:07:25,325 INFO [capacityManagement] end correct usage, cost: 0.217376177s
+
+2026-04-20 23:16:57,040 WARN clearHistoryConfig get scheduled
+
+2026-04-20 23:16:57,041 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 23:16:57,041 WARN clearConfigHistory, getBeforeStamp:2026-03-21 23:16:57.0, pageSize:1000
+
+2026-04-20 23:16:57,044 WARN history config cleaner successfully
+
+2026-04-20 23:17:25,295 INFO [capacityManagement] start correct usage
+
+2026-04-20 23:17:25,512 INFO [capacityManagement] end correct usage, cost: 0.21637184s
+
+2026-04-20 23:26:57,012 WARN clearHistoryConfig get scheduled
+
+2026-04-20 23:26:57,013 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 23:26:57,013 WARN clearConfigHistory, getBeforeStamp:2026-03-21 23:26:57.0, pageSize:1000
+
+2026-04-20 23:26:57,017 WARN history config cleaner successfully
+
+2026-04-20 23:27:25,479 INFO [capacityManagement] start correct usage
+
+2026-04-20 23:27:25,697 INFO [capacityManagement] end correct usage, cost: 0.217276636s
+
+2026-04-20 23:36:56,985 WARN clearHistoryConfig get scheduled
+
+2026-04-20 23:36:56,986 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 23:36:56,986 WARN clearConfigHistory, getBeforeStamp:2026-03-21 23:36:56.0, pageSize:1000
+
+2026-04-20 23:36:56,991 WARN history config cleaner successfully
+
+2026-04-20 23:37:25,665 INFO [capacityManagement] start correct usage
+
+2026-04-20 23:37:25,887 INFO [capacityManagement] end correct usage, cost: 0.220968521s
+
+2026-04-20 23:46:56,961 WARN clearHistoryConfig get scheduled
+
+2026-04-20 23:46:56,962 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 23:46:56,963 WARN clearConfigHistory, getBeforeStamp:2026-03-21 23:46:56.0, pageSize:1000
+
+2026-04-20 23:46:56,967 WARN history config cleaner successfully
+
+2026-04-20 23:47:25,855 INFO [capacityManagement] start correct usage
+
+2026-04-20 23:47:26,072 INFO [capacityManagement] end correct usage, cost: 0.215984603s
+
+2026-04-20 23:56:56,932 WARN clearHistoryConfig get scheduled
+
+2026-04-20 23:56:56,932 WARN clearHistoryConfig is enable in current context, try to run cleaner
+
+2026-04-20 23:56:56,932 WARN clearConfigHistory, getBeforeStamp:2026-03-21 23:56:56.0, pageSize:1000
+
+2026-04-20 23:56:56,938 WARN history config cleaner successfully
+
+2026-04-20 23:57:26,036 INFO [capacityManagement] start correct usage
+
+2026-04-20 23:57:26,250 INFO [capacityManagement] end correct usage, cost: 0.214363624s
+

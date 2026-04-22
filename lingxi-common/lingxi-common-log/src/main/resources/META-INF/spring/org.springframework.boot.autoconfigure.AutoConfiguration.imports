@@ -1,0 +1,2 @@
+com.lingxi.common.log.service.AsyncLogService
+com.lingxi.common.log.aspect.LogAspect

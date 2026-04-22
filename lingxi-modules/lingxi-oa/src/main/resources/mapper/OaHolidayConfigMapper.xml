@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaHolidayConfigMapper">
+
+    <!-- 查询指定日期范围内的所有休息日配置 -->
+    <select id="selectByDateRange" resultType="com.lingxi.oa.domain.OaHolidayConfig">
+        SELECT * FROM oa_holiday_config 
+        WHERE holiday_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY holiday_date
+    </select>
+
+    <!-- 查询某天的休息日配置 -->
+    <select id="selectByDate" resultType="com.lingxi.oa.domain.OaHolidayConfig">
+        SELECT * FROM oa_holiday_config 
+        WHERE holiday_date = #{date}
+        LIMIT 1
+    </select>
+
+</mapper>

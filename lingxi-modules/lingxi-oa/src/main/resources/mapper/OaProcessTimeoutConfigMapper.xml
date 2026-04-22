@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaProcessTimeoutConfigMapper">
+
+    <resultMap type="OaProcessTimeoutConfig" id="OaProcessTimeoutConfigResult">
+        <id     property="configId"            column="config_id"              />
+        <result property="processDefinitionKey" column="process_definition_key" />
+        <result property="taskDefinitionKey"    column="task_definition_key"    />
+        <result property="timeoutHours"         column="timeout_hours"          />
+        <result property="warning1Hours"        column="warning1_hours"         />
+        <result property="warning2Hours"        column="warning2_hours"         />
+        <result property="reminderType"         column="reminder_type"          />
+        <result property="enabled"              column="enabled"                />
+    </resultMap>
+
+    <select id="selectEnabledList" resultMap="OaProcessTimeoutConfigResult">
+        SELECT * FROM oa_process_timeout_config WHERE enabled = '1'
+    </select>
+
+    <select id="selectByTaskKey" resultMap="OaProcessTimeoutConfigResult">
+        SELECT * FROM oa_process_timeout_config
+        WHERE enabled = '1'
+          AND process_definition_key = #{processDefinitionKey}
+          AND task_definition_key = #{taskDefinitionKey}
+        LIMIT 1
+    </select>
+
+</mapper>

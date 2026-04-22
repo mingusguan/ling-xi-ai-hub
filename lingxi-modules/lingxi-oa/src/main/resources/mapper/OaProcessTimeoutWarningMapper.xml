@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaProcessTimeoutWarningMapper">
+
+    <resultMap type="OaProcessTimeoutWarning" id="OaProcessTimeoutWarningResult">
+        <id     property="warningId"             column="warning_id"              />
+        <result property="processInstanceId"     column="process_instance_id"     />
+        <result property="taskId"                column="task_id"                 />
+        <result property="processDefinitionKey"  column="process_definition_key"  />
+        <result property="taskDefinitionKey"     column="task_definition_key"     />
+        <result property="taskName"              column="task_name"               />
+        <result property="assignee"              column="assignee"                />
+        <result property="applicant"             column="applicant"               />
+        <result property="warningLevel"          column="warning_level"           />
+        <result property="timeoutHours"          column="timeout_hours"           />
+        <result property="durationHours"         column="duration_hours"          />
+        <result property="status"                column="status"                  />
+        <result property="reminderSent"          column="reminder_sent"           />
+        <result property="warningTime"           column="warning_time"            />
+        <result property="reminderTime"          column="reminder_time"           />
+        <result property="processed"             column="processed"               />
+        <result property="processedTime"         column="processed_time"          />
+    </resultMap>
+
+    <select id="selectUnprocessed" resultMap="OaProcessTimeoutWarningResult">
+        SELECT * FROM oa_process_timeout_warning
+        WHERE processed = '0'
+        ORDER BY warning_level DESC, create_time DESC
+    </select>
+
+    <select id="selectByTaskId" parameterType="String" resultMap="OaProcessTimeoutWarningResult">
+        SELECT * FROM oa_process_timeout_warning WHERE task_id = #{taskId}
+    </select>
+    
+    <select id="selectByTaskIdAndAssignee" resultMap="OaProcessTimeoutWarningResult">
+        SELECT * FROM oa_process_timeout_warning 
+        WHERE task_id = #{taskId} AND assignee = #{assignee}
+    </select>
+    
+    <select id="selectUnprocessedByAssignee" parameterType="String" resultMap="OaProcessTimeoutWarningResult">
+        SELECT * FROM oa_process_timeout_warning
+        WHERE processed = '0'
+        AND FIND_IN_SET(#{assignee}, assignee) > 0
+        ORDER BY warning_level DESC, create_time DESC
+    </select>
+
+    <insert id="insertOaProcessTimeoutWarning" parameterType="OaProcessTimeoutWarning" useGeneratedKeys="true" keyProperty="warningId">
+        INSERT INTO oa_process_timeout_warning (
+            process_instance_id, task_id, process_definition_key, task_definition_key,
+            task_name, assignee, applicant, warning_level, timeout_hours, duration_hours,
+            status, reminder_sent, create_time, warning_time, processed
+        ) VALUES (
+            #{processInstanceId}, #{taskId}, #{processDefinitionKey}, #{taskDefinitionKey},
+            #{taskName}, #{assignee}, #{applicant}, #{warningLevel}, #{timeoutHours}, #{durationHours},
+            #{status}, #{reminderSent}, NOW(), #{warningTime}, '0'
+        )
+    </insert>
+
+    <update id="updateOaProcessTimeoutWarning" parameterType="OaProcessTimeoutWarning">
+        UPDATE oa_process_timeout_warning
+        <trim prefix="SET" suffixOverrides=",">
+            warning_level = #{warningLevel},
+            duration_hours = #{durationHours},
+            <if test="reminderSent != null">reminder_sent = #{reminderSent},</if>
+            <if test="reminderTime != null">reminder_time = #{reminderTime},</if>
+            processed = #{processed},
+            <if test="processedTime != null">processed_time = #{processedTime},</if>
+            warning_time = #{warningTime}
+        </trim>
+        WHERE warning_id = #{warningId}
+    </update>
+
+</mapper>

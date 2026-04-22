@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.oa.mapper.OaLeaveQuotaMapper">
+    
+    <resultMap type="OaLeaveQuota" id="OaLeaveQuotaResult">
+        <id     property="quotaId"         column="quota_id"         />
+        <result property="userId"          column="user_id"          />
+        <result property="leaveType"       column="leave_type"       />
+        <result property="year"            column="year"             />
+        <result property="totalDays"       column="total_days"       />
+        <result property="usedDays"        column="used_days"        />
+        <result property="remainingDays"   column="remaining_days"   />
+        <result property="carryOverDays"   column="carry_over_days"  />
+        <result property="status"          column="status"           />
+        <result property="createBy"        column="create_by"        />
+        <result property="createTime"      column="create_time"      />
+        <result property="updateBy"        column="update_by"        />
+        <result property="updateTime"      column="update_time"      />
+        <result property="remark"          column="remark"           />
+    </resultMap>
+
+    <sql id="selectOaLeaveQuotaVo">
+        select quota_id, user_id, leave_type, year, total_days, used_days, remaining_days, 
+               carry_over_days, status, create_by, create_time, update_by, update_time, remark 
+        from oa_leave_quota
+    </sql>
+
+    <select id="selectOaLeaveQuotaById" parameterType="Long" resultMap="OaLeaveQuotaResult">
+        <include refid="selectOaLeaveQuotaVo"/>
+        where quota_id = #{quotaId}
+    </select>
+
+    <select id="selectOaLeaveQuotaByUserAndYear" parameterType="OaLeaveQuota" resultMap="OaLeaveQuotaResult">
+        <include refid="selectOaLeaveQuotaVo"/>
+        where user_id = #{userId} 
+          and leave_type = #{leaveType} 
+          and year = #{year}
+    </select>
+
+    <select id="selectOaLeaveQuotaList" parameterType="OaLeaveQuota" resultMap="OaLeaveQuotaResult">
+        select q.quota_id, q.user_id, q.leave_type, q.year, q.total_days, q.used_days, q.remaining_days, 
+               q.carry_over_days, q.status, q.create_by, q.create_time, q.update_by, q.update_time, q.remark,
+               u.nick_name as userName
+        from oa_leave_quota q
+        left join sys_user u on q.user_id = u.user_id
+        <where>
+            <if test="userId != null">
+                AND u.user_id = #{userId}
+            </if>
+            <if test="userName != null and userName != ''">
+                AND u.nick_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="leaveType != null and leaveType != ''">
+                AND q.leave_type = #{leaveType}
+            </if>
+            <if test="year != null">
+                AND q.year = #{year}
+            </if>
+            <if test="status != null and status != ''">
+                AND q.status = #{status}
+            </if>
+        </where>
+        order by q.year desc, q.quota_id desc
+    </select>
+
+    <insert id="insertOaLeaveQuota" parameterType="OaLeaveQuota" useGeneratedKeys="true" keyProperty="quotaId">
+        insert into oa_leave_quota(
+            <if test="userId != null">user_id,</if>
+            <if test="leaveType != null and leaveType != ''">leave_type,</if>
+            <if test="year != null">year,</if>
+            <if test="totalDays != null">total_days,</if>
+            <if test="usedDays != null">used_days,</if>
+            <if test="remainingDays != null">remaining_days,</if>
+            <if test="carryOverDays != null">carry_over_days,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            create_time
+        )values(
+            <if test="userId != null">#{userId},</if>
+            <if test="leaveType != null and leaveType != ''">#{leaveType},</if>
+            <if test="year != null">#{year},</if>
+            <if test="totalDays != null">#{totalDays},</if>
+            <if test="usedDays != null">#{usedDays},</if>
+            <if test="remainingDays != null">#{remainingDays},</if>
+            <if test="carryOverDays != null">#{carryOverDays},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+        )
+    </insert>
+
+    <update id="updateOaLeaveQuota" parameterType="OaLeaveQuota">
+        update oa_leave_quota
+        <set>
+            <if test="totalDays != null">total_days = #{totalDays},</if>
+            <if test="usedDays != null">used_days = #{usedDays},</if>
+            <if test="remainingDays != null">remaining_days = #{remainingDays},</if>
+            <if test="carryOverDays != null">carry_over_days = #{carryOverDays},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where quota_id = #{quotaId}
+    </update>
+
+    <delete id="deleteOaLeaveQuotaById" parameterType="Long">
+        delete from oa_leave_quota where quota_id = #{quotaId}
+    </delete>
+
+    <delete id="deleteOaLeaveQuotaByIds" parameterType="Long">
+        delete from oa_leave_quota where quota_id in 
+        <foreach item="quotaId" collection="array" open="(" separator="," close=")">
+            #{quotaId}
+        </foreach>
+    </delete>
+
+    <!-- P1: 批量插入或更新假期额度(MySQL特有语法) -->
+    <insert id="batchUpsertOaLeaveQuota" parameterType="java.util.List">
+        insert into oa_leave_quota(user_id, leave_type, year, total_days, used_days, remaining_days, 
+                                    carry_over_days, status, create_by, create_time)
+        values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.userId}, #{item.leaveType}, #{item.year}, #{item.totalDays}, 
+             #{item.usedDays}, #{item.remainingDays}, #{item.carryOverDays}, 
+             #{item.status}, #{item.createBy}, sysdate())
+        </foreach>
+        on duplicate key update
+            total_days = values(total_days),
+            remaining_days = values(remaining_days),
+            carry_over_days = values(carry_over_days),
+            update_time = sysdate()
+    </insert>
+
+</mapper>

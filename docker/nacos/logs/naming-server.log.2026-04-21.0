@@ -1,0 +1,236 @@
+2026-04-21 00:20:36,826 INFO Client connection 1776653789364_172.18.0.1_45990 disconnect, remove instances and subscribers
+
+2026-04-21 00:20:36,829 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-knowledge,changed type DELETE_SERVICE 
+
+2026-04-21 00:20:45,747 INFO Client connection 1776698725041_172.18.0.1_57098 disconnect, remove instances and subscribers
+
+2026-04-21 00:20:45,747 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 00:20:55,288 INFO Client connection 1776693953482_172.18.0.1_46950 disconnect, remove instances and subscribers
+
+2026-04-21 00:20:55,288 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-gateway,changed type DELETE_SERVICE 
+
+2026-04-21 00:20:59,968 INFO Client connection 1776653774326_172.18.0.1_57434 disconnect, remove instances and subscribers
+
+2026-04-21 00:20:59,968 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-file,changed type DELETE_SERVICE 
+
+2026-04-21 00:21:05,095 INFO Client connection 1776655894121_172.18.0.1_34596 disconnect, remove instances and subscribers
+
+2026-04-21 00:21:05,096 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-system,changed type DELETE_SERVICE 
+
+2026-04-21 00:21:51,534 INFO Client connection 1776653789786_172.18.0.1_46004 disconnect, remove instances and subscribers
+
+2026-04-21 00:21:51,535 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-auth,changed type DELETE_SERVICE 
+
+2026-04-21 00:21:54,500 INFO Client connection 1776653800730_172.18.0.1_43572 disconnect, remove instances and subscribers
+
+2026-04-21 00:21:54,500 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-ai,changed type DELETE_SERVICE 
+
+2026-04-21 00:22:13,237 INFO Client connection 1776702133220_172.18.0.1_47480 connect
+
+2026-04-21 00:22:13,280 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-auth', ephemeral=true, revision=6}, 1776702133220_172.18.0.1_47480
+
+2026-04-21 00:22:13,280 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-auth,changed type ADD_SERVICE 
+
+2026-04-21 00:22:19,446 INFO Client connection 1776702139432_172.18.0.1_35104 connect
+
+2026-04-21 00:22:19,471 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-gateway', ephemeral=true, revision=18}, 1776702139432_172.18.0.1_35104
+
+2026-04-21 00:22:19,472 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-gateway,changed type ADD_SERVICE 
+
+2026-04-21 00:22:27,598 WARN namespace : public, [DEFAULT_GROUP@@lingxi-knowledge] services are automatically cleaned
+
+2026-04-21 00:22:27,599 WARN namespace : public, [DEFAULT_GROUP@@lingxi-file] services are automatically cleaned
+
+2026-04-21 00:22:27,599 WARN namespace : public, [DEFAULT_GROUP@@lingxi-system] services are automatically cleaned
+
+2026-04-21 00:22:27,600 WARN namespace : public, [DEFAULT_GROUP@@lingxi-oa] services are automatically cleaned
+
+2026-04-21 00:22:29,346 INFO Client connection 1776702149330_172.18.0.1_51160 connect
+
+2026-04-21 00:22:29,377 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-knowledge', ephemeral=true, revision=0}, 1776702149330_172.18.0.1_51160
+
+2026-04-21 00:22:29,377 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-knowledge,changed type ADD_SERVICE 
+
+2026-04-21 00:22:33,896 INFO Client connection 1776702153884_172.18.0.1_51172 connect
+
+2026-04-21 00:22:33,917 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-system', ephemeral=true, revision=0}, 1776702153884_172.18.0.1_51172
+
+2026-04-21 00:22:33,917 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-system,changed type ADD_SERVICE 
+
+2026-04-21 00:22:35,944 INFO Client connection 1776702155923_172.18.0.1_47962 connect
+
+2026-04-21 00:22:35,967 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-file', ephemeral=true, revision=0}, 1776702155923_172.18.0.1_47962
+
+2026-04-21 00:22:35,968 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-file,changed type ADD_SERVICE 
+
+2026-04-21 00:22:39,986 INFO Client connection 1776702159979_172.18.0.1_47978 connect
+
+2026-04-21 00:22:40,000 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-ai', ephemeral=true, revision=6}, 1776702159979_172.18.0.1_47978
+
+2026-04-21 00:22:40,000 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-ai,changed type ADD_SERVICE 
+
+2026-04-21 00:22:46,659 INFO Client connection 1776702166654_172.18.0.1_42914 connect
+
+2026-04-21 00:22:46,671 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=0}, 1776702166654_172.18.0.1_42914
+
+2026-04-21 00:22:46,671 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 00:54:38,267 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, 1776702166654_172.18.0.1_42914
+
+2026-04-21 00:54:38,268 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 00:54:38,291 INFO Client connection 1776702166654_172.18.0.1_42914 disconnect, remove instances and subscribers
+
+2026-04-21 00:55:06,548 INFO Client connection 1776704106540_172.18.0.1_51952 connect
+
+2026-04-21 00:55:06,566 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=2}, 1776704106540_172.18.0.1_51952
+
+2026-04-21 00:55:06,566 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 01:07:09,397 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=3}, 1776704106540_172.18.0.1_51952
+
+2026-04-21 01:07:09,398 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 01:07:09,407 INFO Client connection 1776704106540_172.18.0.1_51952 disconnect, remove instances and subscribers
+
+2026-04-21 01:07:37,416 INFO Client connection 1776704857408_172.18.0.1_56954 connect
+
+2026-04-21 01:07:37,431 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=4}, 1776704857408_172.18.0.1_56954
+
+2026-04-21 01:07:37,432 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 01:39:33,349 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=5}, 1776704857408_172.18.0.1_56954
+
+2026-04-21 01:39:33,349 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 01:39:33,365 INFO Client connection 1776704857408_172.18.0.1_56954 disconnect, remove instances and subscribers
+
+2026-04-21 01:41:27,371 WARN namespace : public, [DEFAULT_GROUP@@lingxi-oa] services are automatically cleaned
+
+2026-04-21 01:42:33,872 INFO Client connection 1776706953863_172.18.0.1_38252 connect
+
+2026-04-21 01:42:33,887 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=0}, 1776706953863_172.18.0.1_38252
+
+2026-04-21 01:42:33,888 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 01:45:57,962 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=1}, 1776706953863_172.18.0.1_38252
+
+2026-04-21 01:45:57,963 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 01:45:57,972 INFO Client connection 1776706953863_172.18.0.1_38252 disconnect, remove instances and subscribers
+
+2026-04-21 01:46:24,722 INFO Client connection 1776707184713_172.18.0.1_37138 connect
+
+2026-04-21 01:46:24,736 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=2}, 1776707184713_172.18.0.1_37138
+
+2026-04-21 01:46:24,737 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 02:16:33,900 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=3}, 1776707184713_172.18.0.1_37138
+
+2026-04-21 02:16:33,901 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 02:16:33,909 INFO Client connection 1776707184713_172.18.0.1_37138 disconnect, remove instances and subscribers
+
+2026-04-21 02:17:01,545 INFO Client connection 1776709021537_172.18.0.1_40182 connect
+
+2026-04-21 02:17:01,561 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=4}, 1776709021537_172.18.0.1_40182
+
+2026-04-21 02:17:01,561 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 13:54:10,756 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=5}, 1776709021537_172.18.0.1_40182
+
+2026-04-21 13:54:10,758 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 13:54:10,781 INFO Client connection 1776709021537_172.18.0.1_40182 disconnect, remove instances and subscribers
+
+2026-04-21 13:54:47,163 INFO Client connection 1776750887154_172.18.0.1_57270 connect
+
+2026-04-21 13:54:47,191 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=6}, 1776750887154_172.18.0.1_57270
+
+2026-04-21 13:54:47,191 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 14:09:52,385 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=7}, 1776750887154_172.18.0.1_57270
+
+2026-04-21 14:09:52,386 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 14:09:52,399 INFO Client connection 1776750887154_172.18.0.1_57270 disconnect, remove instances and subscribers
+
+2026-04-21 14:10:20,262 INFO Client connection 1776751820254_172.18.0.1_59642 connect
+
+2026-04-21 14:10:20,281 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=8}, 1776751820254_172.18.0.1_59642
+
+2026-04-21 14:10:20,281 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 18:02:03,182 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=9}, 1776751820254_172.18.0.1_59642
+
+2026-04-21 18:02:03,184 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 18:02:03,204 INFO Client connection 1776751820254_172.18.0.1_59642 disconnect, remove instances and subscribers
+
+2026-04-21 18:02:40,688 INFO Client connection 1776765760680_172.18.0.1_45604 connect
+
+2026-04-21 18:02:40,703 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=10}, 1776765760680_172.18.0.1_45604
+
+2026-04-21 18:02:40,703 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 19:45:37,856 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=11}, 1776765760680_172.18.0.1_45604
+
+2026-04-21 19:45:37,858 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 19:45:37,880 INFO Client connection 1776765760680_172.18.0.1_45604 disconnect, remove instances and subscribers
+
+2026-04-21 19:46:05,470 INFO Client connection 1776771965460_172.18.0.1_48018 connect
+
+2026-04-21 19:46:05,485 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=12}, 1776771965460_172.18.0.1_48018
+
+2026-04-21 19:46:05,485 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 22:59:49,190 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=13}, 1776771965460_172.18.0.1_48018
+
+2026-04-21 22:59:49,191 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 22:59:49,199 INFO Client connection 1776771965460_172.18.0.1_48018 disconnect, remove instances and subscribers
+
+2026-04-21 23:00:15,500 INFO Client connection 1776783615493_172.18.0.1_51686 connect
+
+2026-04-21 23:00:15,517 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=14}, 1776783615493_172.18.0.1_51686
+
+2026-04-21 23:00:15,517 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 23:27:38,369 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=15}, 1776783615493_172.18.0.1_51686
+
+2026-04-21 23:27:38,369 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 23:27:38,380 INFO Client connection 1776783615493_172.18.0.1_51686 disconnect, remove instances and subscribers
+
+2026-04-21 23:28:06,509 INFO Client connection 1776785286498_172.18.0.1_53520 connect
+
+2026-04-21 23:28:06,536 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=16}, 1776785286498_172.18.0.1_53520
+
+2026-04-21 23:28:06,536 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 23:34:29,199 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=17}, 1776785286498_172.18.0.1_53520
+
+2026-04-21 23:34:29,199 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 23:34:29,208 INFO Client connection 1776785286498_172.18.0.1_53520 disconnect, remove instances and subscribers
+
+2026-04-21 23:34:56,692 INFO Client connection 1776785696684_172.18.0.1_57294 connect
+
+2026-04-21 23:34:56,707 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=18}, 1776785696684_172.18.0.1_57294
+
+2026-04-21 23:34:56,708 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+
+2026-04-21 23:35:51,758 INFO Client remove for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=19}, 1776785696684_172.18.0.1_57294
+
+2026-04-21 23:35:51,758 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type DELETE_SERVICE 
+
+2026-04-21 23:35:51,767 INFO Client connection 1776785696684_172.18.0.1_57294 disconnect, remove instances and subscribers
+
+2026-04-21 23:36:24,456 INFO Client connection 1776785784448_172.18.0.1_45714 connect
+
+2026-04-21 23:36:24,474 INFO Client change for service Service{namespace='public', group='DEFAULT_GROUP', name='lingxi-oa', ephemeral=true, revision=20}, 1776785784448_172.18.0.1_45714
+
+2026-04-21 23:36:24,474 WARN [fuzzy-watch] service change matched,service key public@@DEFAULT_GROUP@@lingxi-oa,changed type ADD_SERVICE 
+

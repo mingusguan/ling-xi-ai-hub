@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:flowable="http://flowable.org/bpmn" xmlns:lx="http://lingxi.com/schema/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://lingxi.com/oa/process">
+
+  <bpmn:process id="oa_expense_approval" isExecutable="true" lx:formFields="[{&quot;code&quot;:&quot;expenseType&quot;,&quot;label&quot;:&quot;报销类型&quot;,&quot;type&quot;:&quot;select&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:true,&quot;options&quot;:[{&quot;value&quot;:&quot;travel&quot;,&quot;label&quot;:&quot;差旅&quot;},{&quot;value&quot;:&quot;entertain&quot;,&quot;label&quot;:&quot;招待&quot;},{&quot;value&quot;:&quot;office&quot;,&quot;label&quot;:&quot;办公&quot;}]},{&quot;code&quot;:&quot;amount&quot;,&quot;label&quot;:&quot;报销金额&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]},{&quot;code&quot;:&quot;expenseDate&quot;,&quot;label&quot;:&quot;费用日期&quot;,&quot;type&quot;:&quot;date&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]},{&quot;code&quot;:&quot;expenseReason&quot;,&quot;label&quot;:&quot;报销事由&quot;,&quot;type&quot;:&quot;textarea&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false,&quot;options&quot;:[]}]" name="报销审批">
+
+    <bpmn:startEvent id="StartEvent_1" name="发起报销">
+
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+
+    </bpmn:startEvent>
+
+    <bpmn:userTask flowable:assignee="${applicantUserId}" id="Activity_Edit" name="修改申请重新提交">
+
+      <bpmn:incoming>Flow_Reject_Back_Manager</bpmn:incoming>
+
+      <bpmn:incoming>Flow_Reject_Back_Finance</bpmn:incoming>
+
+      <bpmn:incoming>Flow_Reject_Back_Admin</bpmn:incoming>
+
+      <bpmn:incoming>Flow_Reject_Back_GM</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_To_Choice</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_Edit_Choice" name="选择操作"/>
+
+    <bpmn:sequenceFlow id="Flow_To_Choice" sourceRef="Activity_Edit" targetRef="Gateway_Edit_Choice"/>
+
+    <bpmn:userTask flowable:candidateGroups="manager" id="Activity_Manager" lx:approverType="role" lx:approverValue="manager" lx:needDeptFilter="true" name="部门负责人审批">
+
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_Gateway_Manager</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_Manager_Approve" name="是否通过">
+
+      <bpmn:incoming>Flow_Gateway_Manager</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+
+    </bpmn:exclusiveGateway>
+
+    <bpmn:exclusiveGateway id="Gateway_ExpenseType">
+
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask flowable:candidateGroups="finance" id="Activity_Finance" lx:approverType="role" lx:approverValue="finance" lx:needDeptFilter="false" name="财务复核">
+
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_Gateway_Finance</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_Finance_Approve" name="是否通过">
+
+      <bpmn:incoming>Flow_Gateway_Finance</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_0kzwf6d</bpmn:outgoing>
+
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask flowable:candidateGroups="administration" id="Activity_Administration" lx:approverType="role" lx:approverValue="administration" lx:needDeptFilter="false" name="行政核验">
+
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_Gateway_Admin</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_Admin_Approve" name="是否通过">
+
+      <bpmn:incoming>Flow_Gateway_Admin</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+
+    </bpmn:exclusiveGateway>
+
+    <bpmn:exclusiveGateway id="Gateway_Amount" name="金额是否大于5000">
+
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+
+      <bpmn:incoming>Flow_0kzwf6d</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+
+      <bpmn:outgoing>Flow_9</bpmn:outgoing>
+
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask flowable:candidateGroups="general_manager" id="Activity_Gm" lx:approverType="role" lx:approverValue="general_manager" lx:needDeptFilter="false" name="总经理审批">
+
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_Gateway_GM</bpmn:outgoing>
+
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_GM_Approve" name="是否通过">
+
+      <bpmn:incoming>Flow_Gateway_GM</bpmn:incoming>
+
+      <bpmn:outgoing>Flow_0qe36j5</bpmn:outgoing>
+
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="EndEvent_Success" name="审批完成">
+
+      <bpmn:incoming>Flow_9</bpmn:incoming>
+
+      <bpmn:incoming>Flow_0qe36j5</bpmn:incoming>
+
+    </bpmn:endEvent>
+
+    <bpmn:endEvent id="EndEvent_Cancelled" name="已取消"/>
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_Manager"/>
+
+    <bpmn:sequenceFlow id="Flow_Resubmit" name="重新提交" sourceRef="Gateway_Edit_Choice" targetRef="Activity_Manager">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == null || action == 'resubmit'}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Cancel" name="取消申请" sourceRef="Gateway_Edit_Choice" targetRef="EndEvent_Cancelled">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == 'cancel'}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_Manager" sourceRef="Activity_Manager" targetRef="Gateway_Manager_Approve"/>
+
+    <bpmn:sequenceFlow id="Flow_2" name="类型分流" sourceRef="Gateway_Manager_Approve" targetRef="Gateway_ExpenseType">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Reject_Back_Manager" name="否" sourceRef="Gateway_Manager_Approve" targetRef="Activity_Edit">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_3" lx:conditionSummary="差旅报销进入财务复核" name="差旅" sourceRef="Gateway_ExpenseType" targetRef="Activity_Finance">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${expenseType == 'travel'}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_4" lx:conditionSummary="招待报销进入财务复核" name="招待" sourceRef="Gateway_ExpenseType" targetRef="Activity_Finance">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${expenseType == 'entertain'}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_5" lx:conditionSummary="办公报销先走行政核验" name="办公" sourceRef="Gateway_ExpenseType" targetRef="Activity_Administration">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${expenseType == 'office'}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_Finance" sourceRef="Activity_Finance" targetRef="Gateway_Finance_Approve"/>
+
+    <bpmn:sequenceFlow id="Flow_Reject_Back_Finance" name="否" sourceRef="Gateway_Finance_Approve" targetRef="Activity_Edit">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_Admin" sourceRef="Activity_Administration" targetRef="Gateway_Admin_Approve"/>
+
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Gateway_Admin_Approve" targetRef="Gateway_Amount">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Reject_Back_Admin" name="否" sourceRef="Gateway_Admin_Approve" targetRef="Activity_Edit">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_8" lx:conditionSummary="金额大于5000，进入总经理审批" sourceRef="Gateway_Amount" targetRef="Activity_Gm">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${amount &gt; 5000}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_9" lx:conditionSummary="金额不超过5000，复核后直接结束" name="否" sourceRef="Gateway_Amount" targetRef="EndEvent_Success">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${amount &lt;= 5000}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_Gateway_GM" sourceRef="Activity_Gm" targetRef="Gateway_GM_Approve"/>
+
+    <bpmn:sequenceFlow id="Flow_Reject_Back_GM" name="否" sourceRef="Gateway_GM_Approve" targetRef="Activity_Edit">
+
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_0kzwf6d" sourceRef="Gateway_Finance_Approve" targetRef="Gateway_Amount"/>
+
+    <bpmn:sequenceFlow id="Flow_0qe36j5" sourceRef="Gateway_GM_Approve" targetRef="EndEvent_Success"/>
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Expense">
+
+    <bpmndi:BPMNPlane bpmnElement="oa_expense_approval" id="BPMNPlane_Expense">
+
+      <bpmndi:BPMNShape bpmnElement="StartEvent_1">
+
+        <dc:Bounds height="36" width="36" x="100" y="240"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Edit">
+
+        <dc:Bounds height="60" width="140" x="230" y="35"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Manager">
+
+        <dc:Bounds height="60" width="120" x="240" y="230"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_Manager_Approve" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="405" y="233"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="408" y="283"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_ExpenseType" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="500" y="233"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="67" x="445.5" y="233"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Finance">
+
+        <dc:Bounds height="60" width="120" x="650" y="140"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_Finance_Approve" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="855" y="145"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="896.5" y="151"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Administration">
+
+        <dc:Bounds height="60" width="120" x="650" y="340"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_Admin_Approve" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="800" y="345"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="803" y="395"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_Amount" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="920" y="233"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="27" width="85" x="947" y="276"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Activity_Gm">
+
+        <dc:Bounds height="60" width="120" x="1040" y="140"/>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_GM_Approve" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="1190" y="145"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="1249.5" y="163"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="EndEvent_Success">
+
+        <dc:Bounds height="36" width="36" x="1197" y="240"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="1193" y="276"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="Gateway_Edit_Choice" id="Gateway_Edit_Choice_di" isMarkerVisible="true">
+
+        <dc:Bounds height="50" width="50" x="275" y="145"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="327" y="163"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape bpmnElement="EndEvent_Cancelled" id="EndEvent_Cancelled_di">
+
+        <dc:Bounds height="36" width="36" x="1197" y="-118"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="34" x="1198" y="-78"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_To_Choice" id="Flow_To_Choice_di">
+
+        <di:waypoint x="300" y="95"/>
+
+        <di:waypoint x="300" y="145"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_1">
+
+        <di:waypoint x="136" y="258"/>
+
+        <di:waypoint x="240" y="258"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Resubmit" id="Flow_Resubmit_di">
+
+        <di:waypoint x="300" y="195"/>
+
+        <di:waypoint x="300" y="230"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="307" y="201"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Cancel" id="Flow_Cancel_di">
+
+        <di:waypoint x="275" y="170"/>
+
+        <di:waypoint x="150" y="170"/>
+
+        <di:waypoint x="150" y="-100"/>
+
+        <di:waypoint x="1197" y="-100"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="120" y="100"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_Manager">
+
+        <di:waypoint x="360" y="258"/>
+
+        <di:waypoint x="405" y="258"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_2">
+
+        <di:waypoint x="455" y="258"/>
+
+        <di:waypoint x="500" y="258"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="45" x="455" y="240"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Back_Manager">
+
+        <di:waypoint x="430" y="233"/>
+
+        <di:waypoint x="430" y="90"/>
+
+        <di:waypoint x="369" y="90"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="439" y="151"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_3">
+
+        <di:waypoint x="525" y="233"/>
+
+        <di:waypoint x="525" y="170"/>
+
+        <di:waypoint x="650" y="170"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="23" x="529" y="192"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_4">
+
+        <di:waypoint x="543" y="251"/>
+
+        <di:waypoint x="580" y="251"/>
+
+        <di:waypoint x="580" y="170"/>
+
+        <di:waypoint x="650" y="170"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="23" x="584" y="201"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_5">
+
+        <di:waypoint x="525" y="283"/>
+
+        <di:waypoint x="525" y="370"/>
+
+        <di:waypoint x="650" y="370"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="23" x="529" y="316"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_Finance">
+
+        <di:waypoint x="770" y="170"/>
+
+        <di:waypoint x="855" y="170"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Back_Finance">
+
+        <di:waypoint x="880" y="145"/>
+
+        <di:waypoint x="880" y="65"/>
+
+        <di:waypoint x="370" y="65"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="889" y="94"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_Admin">
+
+        <di:waypoint x="770" y="370"/>
+
+        <di:waypoint x="800" y="370"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_7">
+
+        <di:waypoint x="850" y="370"/>
+
+        <di:waypoint x="945" y="370"/>
+
+        <di:waypoint x="945" y="283"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Back_Admin">
+
+        <di:waypoint x="825" y="345"/>
+
+        <di:waypoint x="825" y="40"/>
+
+        <di:waypoint x="370" y="40"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="819" y="244"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_8">
+
+        <di:waypoint x="945" y="233"/>
+
+        <di:waypoint x="945" y="170"/>
+
+        <di:waypoint x="1040" y="170"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_9">
+
+        <di:waypoint x="970" y="258"/>
+
+        <di:waypoint x="1197" y="258"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="996" y="251"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_GM">
+
+        <di:waypoint x="1160" y="170"/>
+
+        <di:waypoint x="1190" y="170"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Back_GM">
+
+        <di:waypoint x="1215" y="145"/>
+
+        <di:waypoint x="1215" y="-40"/>
+
+        <di:waypoint x="300" y="-40"/>
+
+        <di:waypoint x="300" y="35"/>
+
+        <bpmndi:BPMNLabel>
+
+          <dc:Bounds height="14" width="12" x="1224" y="40"/>
+
+        </bpmndi:BPMNLabel>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_0kzwf6d" id="Flow_0kzwf6d_di">
+
+        <di:waypoint x="880" y="195"/>
+
+        <di:waypoint x="880" y="258"/>
+
+        <di:waypoint x="920" y="258"/>
+
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge bpmnElement="Flow_0qe36j5" id="Flow_0qe36j5_di">
+
+        <di:waypoint x="1215" y="195"/>
+
+        <di:waypoint x="1215" y="240"/>
+
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:flowable="http://flowable.org/bpmn"
+                  xmlns:lx="http://lingxi.com/schema/bpmn"
+                  targetNamespace="http://lingxi.com/oa/process">
+    <bpmn:process id="oa_leave_approval" name="请假审批" isExecutable="true"
+                  lx:formFields="[{&quot;code&quot;:&quot;leaveType&quot;,&quot;label&quot;:&quot;请假类型&quot;,&quot;type&quot;:&quot;select&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:true,&quot;options&quot;:[{&quot;value&quot;:&quot;casual&quot;,&quot;label&quot;:&quot;事假&quot;},{&quot;value&quot;:&quot;annual&quot;,&quot;label&quot;:&quot;年假&quot;},{&quot;value&quot;:&quot;sick&quot;,&quot;label&quot;:&quot;病假&quot;}]},{&quot;code&quot;:&quot;startTime&quot;,&quot;label&quot;:&quot;开始时间&quot;,&quot;type&quot;:&quot;date&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false},{&quot;code&quot;:&quot;endTime&quot;,&quot;label&quot;:&quot;结束时间&quot;,&quot;type&quot;:&quot;date&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false},{&quot;code&quot;:&quot;leaveDays&quot;,&quot;label&quot;:&quot;请假天数&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:false,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false},{&quot;code&quot;:&quot;leaveHours&quot;,&quot;label&quot;:&quot;请假时长(小时)&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:false,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false},{&quot;code&quot;:&quot;leaveReason&quot;,&quot;label&quot;:&quot;请假事由&quot;,&quot;type&quot;:&quot;textarea&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;both&quot;,&quot;approveReadonly&quot;:false}]">
+        <bpmn:startEvent id="StartEvent_1" name="发起申请">
+            <bpmn:outgoing>Flow_1</bpmn:outgoing>
+        </bpmn:startEvent>
+
+        <bpmn:userTask id="Activity_Manager" name="部门负责人审批"
+                       flowable:candidateGroups="manager"
+                       lx:approverType="role"
+                       lx:approverValue="manager"
+                       lx:needDeptFilter="true"
+                       flowable:formKey="oa_leave_manager"
+                       lx:formFields="[{&quot;code&quot;:&quot;leaveReason&quot;,&quot;label&quot;:&quot;请假事由&quot;,&quot;type&quot;:&quot;textarea&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false},{&quot;code&quot;:&quot;leaveDays&quot;,&quot;label&quot;:&quot;核定天数&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:false,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false},{&quot;code&quot;:&quot;leaveHours&quot;,&quot;label&quot;:&quot;核定时长(小时)&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:false,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false}]">
+            <bpmn:incoming>Flow_1</bpmn:incoming>
+            <bpmn:outgoing>Flow_2</bpmn:outgoing>
+        </bpmn:userTask>
+
+        <bpmn:exclusiveGateway id="Gateway_LeaveDays" name="请假是否超过3天">
+            <bpmn:incoming>Flow_2</bpmn:incoming>
+            <bpmn:outgoing>Flow_3</bpmn:outgoing>
+            <bpmn:outgoing>Flow_4</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+
+        <bpmn:userTask id="Activity_Gm" name="总经理审批"
+                       flowable:candidateGroups="general_manager"
+                       lx:approverType="role"
+                       lx:approverValue="general_manager"
+                       lx:needDeptFilter="false"
+                       flowable:formKey="oa_leave_gm"
+                       lx:formFields="[{&quot;code&quot;:&quot;leaveDays&quot;,&quot;label&quot;:&quot;请假天数&quot;,&quot;type&quot;:&quot;number&quot;,&quot;required&quot;:false,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:true},{&quot;code&quot;:&quot;leaveReason&quot;,&quot;label&quot;:&quot;请假事由&quot;,&quot;type&quot;:&quot;textarea&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:true}]">
+            <bpmn:incoming>Flow_3</bpmn:incoming>
+            <bpmn:outgoing>Flow_5</bpmn:outgoing>
+        </bpmn:userTask>
+
+        <bpmn:userTask id="Activity_Hr" name="HR备案确认"
+                       flowable:candidateGroups="hr"
+                       lx:approverType="role"
+                       lx:approverValue="hr"
+                       lx:needDeptFilter="false"
+                       flowable:formKey="oa_leave_hr"
+                       lx:formFields="[{&quot;code&quot;:&quot;startTime&quot;,&quot;label&quot;:&quot;生效开始时间&quot;,&quot;type&quot;:&quot;date&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false},{&quot;code&quot;:&quot;endTime&quot;,&quot;label&quot;:&quot;生效结束时间&quot;,&quot;type&quot;:&quot;date&quot;,&quot;required&quot;:true,&quot;displayStage&quot;:&quot;approve&quot;,&quot;approveReadonly&quot;:false}]">
+            <bpmn:incoming>Flow_4</bpmn:incoming>
+            <bpmn:incoming>Flow_5</bpmn:incoming>
+            <bpmn:outgoing>Flow_6</bpmn:outgoing>
+        </bpmn:userTask>
+
+        <bpmn:endEvent id="EndEvent_1" name="审批结束">
+            <bpmn:incoming>Flow_6</bpmn:incoming>
+        </bpmn:endEvent>
+
+        <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_Manager" />
+        <bpmn:sequenceFlow id="Flow_2" sourceRef="Activity_Manager" targetRef="Gateway_LeaveDays" />
+        <bpmn:sequenceFlow id="Flow_3" sourceRef="Gateway_LeaveDays" targetRef="Activity_Gm" lx:conditionSummary="请假超过3天，需要总经理审批">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${leaveDays > 3}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_4" sourceRef="Gateway_LeaveDays" targetRef="Activity_Hr" lx:conditionSummary="请假3天及以内，直接进入HR备案">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${leaveDays &lt;= 3}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_5" sourceRef="Activity_Gm" targetRef="Activity_Hr" />
+        <bpmn:sequenceFlow id="Flow_6" sourceRef="Activity_Hr" targetRef="EndEvent_1" />
+    </bpmn:process>
+
+    <bpmndi:BPMNDiagram id="BPMNDiagram_Leave">
+        <bpmndi:BPMNPlane id="BPMNPlane_Leave" bpmnElement="oa_leave_approval">
+            <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+                <dc:Bounds x="80" y="172" width="36" height="36" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Activity_Manager_di" bpmnElement="Activity_Manager">
+                <dc:Bounds x="180" y="150" width="120" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Gateway_LeaveDays_di" bpmnElement="Gateway_LeaveDays" isMarkerVisible="true">
+                <dc:Bounds x="365" y="165" width="50" height="50" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Activity_Gm_di" bpmnElement="Activity_Gm">
+                <dc:Bounds x="470" y="80" width="120" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Activity_Hr_di" bpmnElement="Activity_Hr">
+                <dc:Bounds x="470" y="250" width="120" height="80" />
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+                <dc:Bounds x="690" y="272" width="36" height="36" />
+            </bpmndi:BPMNShape>
+
+            <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+                <di:waypoint x="116" y="190" />
+                <di:waypoint x="180" y="190" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+                <di:waypoint x="300" y="190" />
+                <di:waypoint x="365" y="190" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+                <di:waypoint x="390" y="165" />
+                <di:waypoint x="390" y="120" />
+                <di:waypoint x="470" y="120" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+                <di:waypoint x="390" y="215" />
+                <di:waypoint x="390" y="290" />
+                <di:waypoint x="470" y="290" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+                <di:waypoint x="590" y="120" />
+                <di:waypoint x="640" y="120" />
+                <di:waypoint x="640" y="290" />
+                <di:waypoint x="590" y="290" />
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+                <di:waypoint x="590" y="290" />
+                <di:waypoint x="690" y="290" />
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>

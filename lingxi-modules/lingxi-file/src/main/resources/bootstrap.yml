@@ -1,0 +1,36 @@
+# Tomcat
+server:
+  port: 9300
+
+# Spring
+spring: 
+  application:
+    # 应用名称
+    name: lingxi-file
+  profiles:
+    # 环境配置
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+      config:
+        # 配置中心地址
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+        # 刷新配置
+        refresh-enabled: true
+        # 命名空间（留空则使用 public）
+        namespace: public
+        # 配置分组
+        group: DEFAULT_GROUP
+  config:
+    # 配置文件格式
+    file-extension: yml
+    import:
+      - optional:nacos:application-${spring.profiles.active}.${spring.config.file-extension}
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.config.file-extension}

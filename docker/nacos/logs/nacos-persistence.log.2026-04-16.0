@@ -1,0 +1,2 @@
+2026-04-16 07:35:57,345 WARN [master-db] jdbc:mysql://host.docker.internal:3306/lingxi-config?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=UTC
+
