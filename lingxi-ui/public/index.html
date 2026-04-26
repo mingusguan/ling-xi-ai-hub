@@ -15,6 +15,7 @@
       height: 100%;
       margin: 0px;
       padding: 0px;
+      background: #0B1120;
     }
     .chromeframe {
       margin: 0.2em 0;
@@ -30,6 +31,52 @@
       width: 100%;
       height: 100%;
       z-index: 999999;
+      background: #0B1120;
+    }
+
+    /* 科技风背景效果 */
+    #loader-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 60%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+      mix-blend-mode: screen;
+    }
+
+    /* 网格背景已移除 */
+    #loader-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* 发光光晕 */
+    .bg-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.6;
+      mix-blend-mode: screen;
+    }
+
+    .glow-1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%);
+      top: -200px;
+      left: 10%;
+    }
+
+    .glow-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+      bottom: -150px;
+      right: 10%;
     }
 
     #loader {
@@ -37,12 +84,13 @@
       position: relative;
       left: 50%;
       top: 50%;
-      width: 150px;
-      height: 150px;
-      margin: -75px 0 0 -75px;
+      width: 120px;
+      height: 120px;
+      margin: -60px 0 0 -60px;
       border-radius: 50%;
       border: 3px solid transparent;
-      border-top-color: #FFF;
+      border-top-color: #60A5FA;
+      box-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
       -webkit-animation: spin 2s linear infinite;
       -ms-animation: spin 2s linear infinite;
       -moz-animation: spin 2s linear infinite;
@@ -60,7 +108,8 @@
       bottom: 5px;
       border-radius: 50%;
       border: 3px solid transparent;
-      border-top-color: #FFF;
+      border-top-color: #3B82F6;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
       -webkit-animation: spin 3s linear infinite;
       -moz-animation: spin 3s linear infinite;
       -o-animation: spin 3s linear infinite;
@@ -77,14 +126,14 @@
       bottom: 15px;
       border-radius: 50%;
       border: 3px solid transparent;
-      border-top-color: #FFF;
+      border-top-color: #8B5CF6;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
       -moz-animation: spin 1.5s linear infinite;
       -o-animation: spin 1.5s linear infinite;
       -ms-animation: spin 1.5s linear infinite;
       -webkit-animation: spin 1.5s linear infinite;
       animation: spin 1.5s linear infinite;
     }
-
 
     @-webkit-keyframes spin {
       0% {
@@ -112,13 +161,12 @@
       }
     }
 
-
     #loader-wrapper .loader-section {
       position: fixed;
       top: 0;
       width: 51%;
       height: 100%;
-      background: #7171C6;
+      background: linear-gradient(90deg, rgba(11, 17, 32, 0.95), rgba(11, 17, 32, 0));
       z-index: 1000;
       -webkit-transform: translateX(0);
       -ms-transform: translateX(0);
@@ -131,8 +179,8 @@
 
     #loader-wrapper .loader-section.section-right {
       right: 0;
+      background: linear-gradient(-90deg, rgba(11, 17, 32, 0.95), rgba(11, 17, 32, 0));
     }
-
 
     .loaded #loader-wrapper .loader-section.section-left {
       -webkit-transform: translateX(-100%);
@@ -174,9 +222,10 @@
     }
 
     #loader-wrapper .load_title {
-      font-family: 'Open Sans';
-      color: #FFF;
-      font-size: 19px;
+      font-family: 'Open Sans', 'Microsoft YaHei', sans-serif;
+      color: #60A5FA;
+      font-size: 20px;
+      font-weight: 600;
       width: 100%;
       text-align: center;
       z-index: 9999999999999;
@@ -184,20 +233,23 @@
       top: 60%;
       opacity: 1;
       line-height: 30px;
+      text-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
     }
 
     #loader-wrapper .load_title span {
       font-weight: normal;
       font-style: italic;
-      font-size: 13px;
-      color: #FFF;
-      opacity: 0.5;
+      font-size: 14px;
+      color: #94A3B8;
+      opacity: 0.8;
     }
   </style>
   </head>
   <body>
     <div id="app">
 	    <div id="loader-wrapper">
+		    <div class="bg-glow glow-1"></div>
+		    <div class="bg-glow glow-2"></div>
 		    <div id="loader"></div>
 		    <div class="loader-section section-left"></div>
 		    <div class="loader-section section-right"></div>

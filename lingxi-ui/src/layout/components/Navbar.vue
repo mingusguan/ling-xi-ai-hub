@@ -22,10 +22,11 @@
 
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="hover">
+      <el-dropdown class="avatar-container hover-effect" trigger="hover">
         <div class="avatar-wrapper">
           <img :src="avatar" class="user-avatar">
           <span class="user-nickname"> {{ nickName }} </span>
+          <i class="el-icon-caret-bottom"></i>
         </div>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="openProfile">个人中心</el-dropdown-item>
@@ -152,6 +153,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+
 .navbar.nav3 {
   .hamburger-container {
     display: none !important;
@@ -159,33 +162,50 @@ export default {
 }
 
 .navbar {
-  height: 50px;
+  height: 52px;
   overflow: visible;
   position: relative;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid $glass-border;
   display: flex;
   align-items: center;
+  padding: 0 $spacing-md;
   box-sizing: border-box;
 
   .hamburger-container {
-    line-height: 46px;
+    line-height: $navbar-height;
     height: 100%;
     cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
+    transition: all $transition-base;
+    -webkit-tap-highlight-color: transparent;
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-shrink: 0;
-    margin-right: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-md;
+    margin-right: $spacing-md;
+    color: #E2E8F0;
 
     &:hover {
-      background: rgba(0, 0, 0, .025)
+      background: rgba(59, 130, 246, 0.1);
+      color: $primary;
     }
   }
 
   .breadcrumb-container {
     flex-shrink: 0;
+
+    .el-breadcrumb__item {
+      font-weight: $font-weight-medium;
+
+      &:last-child .el-breadcrumb__inner {
+        color: $text-color-primary;
+        font-weight: $font-weight-semibold;
+      }
+    }
   }
 
   .topmenu-container {
@@ -209,91 +229,130 @@ export default {
 
   .right-menu {
     height: 100%;
-    line-height: 50px;
     display: flex;
     align-items: center;
     margin-left: auto;
     overflow: visible;
+    gap: $spacing-sm;
 
     &:focus {
       outline: none;
     }
 
     .reminder-badge {
-      position: relative;
-      margin-right: 15px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: $radius-md;
+      transition: all $transition-base;
+
+      &:hover {
+        background: $primary-50;
+      }
     }
 
     .reminder-icon {
       font-size: 20px;
-      line-height: 50px;
-      vertical-align: middle;
+      color: $gray-600;
+      transition: color $transition-base;
+    }
+
+    .reminder-badge:hover .reminder-icon {
+      color: $primary;
     }
 
     .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: $radius-md;
+      font-size: 20px;
+      color: $gray-600;
+      transition: all $transition-base;
+    }
 
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
+    .right-menu-item.hover-effect,
+    .hover-effect {
+      cursor: pointer;
+      transition: all $transition-base;
 
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
+      &:hover {
+        background: rgba(255,255,255,0.1);
+        color: $primary;
       }
     }
 
     .avatar-container {
-      margin-right: 0px;
-      padding-right: 0px;
+      cursor: pointer;
+      height: 40px;
+      padding: 0 8px 0 4px;
+      border-radius: $radius-full;
+      transition: all $transition-base;
+
+      &:hover {
+        background: rgba(255,255,255,0.1);
+      }
 
       .avatar-wrapper {
-        margin-top: 10px;
-        right: 8px;
-        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
 
         .user-avatar {
-          cursor: pointer;
-          width: 30px;
-          height: 30px;
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
+          box-shadow: $shadow-sm;
         }
 
-        .user-nickname{
-          position: relative;
-          bottom: 10px;
-          left: 2px;
-          font-size: 14px;
-          font-weight: bold;
+        .user-nickname {
+          max-width: 120px;
+          font-size: $font-size-sm;
+          font-weight: $font-weight-semibold;
+          color: #E2E8F0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .el-icon-caret-bottom {
-          cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
           font-size: 12px;
+          color: rgba(226, 232, 240, 0.8);
+          transition: transform $transition-base;
+          flex-shrink: 0;
         }
       }
     }
+
+    .avatar-container:hover .el-icon-caret-bottom {
+      transform: translateY(2px);
+    }
   }
+}
+
+.screenfull-svg {
+  width: 20px;
+  height: 20px;
 }
 </style>
 
-<!-- 全局样式必须单独写一个不加 scoped 的 style 标签！ -->
 <style>
   .el-badge__content.is-fixed {
     position: absolute !important;
     transform: none !important;
-    top: 6px !important;
-    right: -6px !important;
+    top: 2px !important;
+    right: 2px !important;
+  }
+
+  .avatar-container .el-dropdown-link {
+    display: flex !important;
+    align-items: center !important;
+    height: 40px !important;
   }
 </style>

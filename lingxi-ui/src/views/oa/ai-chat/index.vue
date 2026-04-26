@@ -236,19 +236,19 @@ export default {
 .ai-chat-container {
   display: flex;
   height: calc(100vh - 84px);
-  background: #f5f7fa;
+  background: #0B1120;
 }
 
 .session-sidebar {
   width: 260px;
-  background: #fff;
-  border-right: 1px solid #e4e7ed;
+  background: rgba(15, 23, 42, 0.9);
+  border-right: 1px solid rgba(96, 165, 250, 0.2);
   display: flex;
   flex-direction: column;
 
   .sidebar-header {
     padding: 16px;
-    border-bottom: 1px solid #e4e7ed;
+    border-bottom: 1px solid rgba(96, 165, 250, 0.2);
   }
 
   .session-list {
@@ -265,14 +265,15 @@ export default {
       border-radius: 4px;
       cursor: pointer;
       transition: all 0.3s;
+      color: #e2e8f0;
 
       &:hover {
-        background: #f5f7fa;
+        background: rgba(96, 165, 250, 0.1);
       }
 
       &.active {
-        background: #ecf5ff;
-        color: #409eff;
+        background: rgba(96, 165, 250, 0.2);
+        color: #60a5fa;
       }
 
       .session-title {
@@ -290,7 +291,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: rgba(15, 23, 42, 0.8);
 
   .message-list {
     flex: 1;
@@ -300,11 +301,12 @@ export default {
     .empty-tip {
       text-align: center;
       padding: 60px 20px;
-      color: #909399;
+      color: #94a3b8;
 
       i {
         font-size: 64px;
         margin-bottom: 16px;
+        color: #60a5fa;
       }
 
       p {
@@ -337,7 +339,7 @@ export default {
         }
 
         .message-text {
-          background: #409eff;
+          background: linear-gradient(135deg, #60a5fa, #3b82f6);
           color: #fff;
         }
       }
@@ -346,7 +348,7 @@ export default {
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: #e4e7ed;
+        background: rgba(96, 165, 250, 0.3);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -361,16 +363,18 @@ export default {
         flex-direction: column;
 
         .message-text {
-          background: #f4f4f5;
+          background: rgba(30, 41, 59, 0.8);
           padding: 12px 16px;
           border-radius: 8px;
           line-height: 1.6;
           word-break: break-word;
+          color: #e2e8f0;
+          border: 1px solid rgba(96, 165, 250, 0.2);
         }
 
         .message-time {
           font-size: 12px;
-          color: #c0c4cc;
+          color: #64748b;
           margin-top: 4px;
         }
       }
@@ -379,13 +383,17 @@ export default {
 
   .input-area {
     padding: 16px;
-    border-top: 1px solid #e4e7ed;
+    border-top: 1px solid rgba(96, 165, 250, 0.2);
     display: flex;
     gap: 12px;
     align-items: flex-end;
+    background: rgba(15, 23, 42, 0.9);
 
     ::v-deep .el-textarea__inner {
       resize: none;
+      background: rgba(15, 23, 42, 0.8) !important;
+      border-color: rgba(96, 165, 250, 0.3) !important;
+      color: #e2e8f0;
     }
 
     .el-button {

@@ -1,20 +1,58 @@
 <template>
-  <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: sideTheme === 'theme-dark' && navType !== 3 ? variables.menuBackground : variables.menuLightBackground }">
+  <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 v-else class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' && navType !== 3 ? variables.logoTitleColor : variables.logoLightTitleColor }">{{ title }} </h1>
+        <div class="logo-icon-collapse">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 18L18 70L42 54L42 18" fill="url(#lxGrad)"/>
+            <path d="M42 54L68 54L68 70L42 70Z" fill="url(#lxGrad)"/>
+            <path d="M52 18L82 66M82 18L52 66" stroke="url(#lxGrad)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <defs>
+              <linearGradient id="lxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="30%" stop-color="#FFFFFF"/>
+                <stop offset="60%" stop-color="#60A5FA"/>
+                <stop offset="100%" stop-color="#3B82F6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' && navType !== 3 ? variables.logoTitleColor : variables.logoLightTitleColor }">{{ title }} </h1>
+        <div class="logo-icon">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="48" fill="url(#glowBg)" opacity="0.3"/>
+            <ellipse cx="50" cy="50" rx="47" ry="47" stroke="url(#ring1)" stroke-width="1.5" stroke-dasharray="10 5" opacity="0.7"/>
+            <path d="M18 18L18 70L42 54L42 18" fill="url(#lxGrad)"/>
+            <path d="M42 54L68 54L68 70L42 70Z" fill="url(#lxGrad)"/>
+            <path d="M52 18L82 66M82 18L52 66" stroke="url(#lxGrad)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <defs>
+              <radialGradient id="glowBg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#60A5FA"/>
+                <stop offset="70%" stop-color="#8B5CF6"/>
+                <stop offset="100%" stop-color="#3B82F6"/>
+              </radialGradient>
+              <linearGradient id="ring1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#60A5FA"/>
+                <stop offset="50%" stop-color="#8B5CF6"/>
+                <stop offset="100%" stop-color="#3B82F6"/>
+              </linearGradient>
+              <linearGradient id="lxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="30%" stop-color="#FFFFFF"/>
+                <stop offset="60%" stop-color="#60A5FA"/>
+                <stop offset="100%" stop-color="#3B82F6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h1 class="sidebar-title">灵犀AIHub</h1>
       </router-link>
     </transition>
   </div>
 </template>
 
 <script>
-import logoImg from '@/assets/logo/logo.png'
 import variables from '@/assets/styles/variables.scss'
 
 export default {
@@ -28,18 +66,6 @@ export default {
   computed: {
     variables() {
       return variables
-    },
-    sideTheme() {
-      return this.$store.state.settings.sideTheme
-    },
-    navType() {
-      return this.$store.state.settings.navType
-    }
-  },
-  data() {
-    return {
-      title: process.env.VUE_APP_TITLE,
-      logo: logoImg
     }
   }
 }
@@ -53,43 +79,5 @@ export default {
 .sidebarLogoFade-enter,
 .sidebarLogoFade-leave-to {
   opacity: 0;
-}
-
-.sidebar-logo-container {
-  position: relative;
-  height: 50px;
-  line-height: 50px;
-  background: #2b2f3a;
-  text-align: center;
-  overflow: hidden;
-
-  & .sidebar-logo-link {
-    height: 100%;
-    width: 100%;
-
-    & .sidebar-logo {
-      width: 32px;
-      height: 32px;
-      vertical-align: middle;
-      margin-right: 12px;
-    }
-
-    & .sidebar-title {
-      display: inline-block;
-      margin: 0;
-      color: #fff;
-      font-weight: 600;
-      line-height: 50px;
-      font-size: 14px;
-      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
-      vertical-align: middle;
-    }
-  }
-
-  &.collapse {
-    .sidebar-logo {
-      margin-right: 0px;
-    }
-  }
 }
 </style>

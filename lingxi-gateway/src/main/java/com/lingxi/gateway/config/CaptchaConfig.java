@@ -22,8 +22,13 @@ public class CaptchaConfig
         Properties properties = new Properties();
         // 是否有边框 默认为true 我们可以自己设置yes，no
         properties.setProperty(KAPTCHA_BORDER, "yes");
-        // 验证码文本字符颜色 默认为Color.BLACK
-        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_COLOR, "black");
+        // 边框颜色 - 科技蓝
+        properties.setProperty(KAPTCHA_BORDER_COLOR, "59,130,246");
+        // 背景颜色 - 略浅于登录页背景的深蓝色，形成层次感
+        properties.setProperty(KAPTCHA_BACKGROUND_CLR_FROM, "15,23,42");
+        properties.setProperty(KAPTCHA_BACKGROUND_CLR_TO, "30,41,59");
+        // 验证码文本字符颜色 - 亮蓝色
+        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_COLOR, "96,165,250");
         // 验证码图片宽度 默认为200
         properties.setProperty(KAPTCHA_IMAGE_WIDTH, "160");
         // 验证码图片高度 默认为50
@@ -50,10 +55,13 @@ public class CaptchaConfig
         Properties properties = new Properties();
         // 是否有边框 默认为true 我们可以自己设置yes，no
         properties.setProperty(KAPTCHA_BORDER, "yes");
-        // 边框颜色 默认为Color.BLACK
-        properties.setProperty(KAPTCHA_BORDER_COLOR, "105,179,90");
-        // 验证码文本字符颜色 默认为Color.BLACK
-        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_COLOR, "blue");
+        // 边框颜色 - 科技蓝
+        properties.setProperty(KAPTCHA_BORDER_COLOR, "59,130,246");
+        // 背景颜色 - 略浅于登录页背景的深蓝色，形成层次感
+        properties.setProperty(KAPTCHA_BACKGROUND_CLR_FROM, "15,23,42");
+        properties.setProperty(KAPTCHA_BACKGROUND_CLR_TO, "30,41,59");
+        // 验证码文本字符颜色 - 亮蓝色
+        properties.setProperty(KAPTCHA_TEXTPRODUCER_FONT_COLOR, "96,165,250");
         // 验证码图片宽度 默认为200
         properties.setProperty(KAPTCHA_IMAGE_WIDTH, "160");
         // 验证码图片高度 默认为50

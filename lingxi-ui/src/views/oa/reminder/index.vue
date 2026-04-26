@@ -183,6 +183,12 @@ export default {
 </script>
 
 <style scoped>
+.app-container {
+  background: #0B1120;
+  min-height: calc(100vh - 84px);
+  padding: 14px;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -198,27 +204,32 @@ export default {
   align-items: center;
   padding: 20px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(96, 165, 250, 0.2);
 }
 
 .stat-card.total {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
   color: #fff;
+  border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .stat-card.unread {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.6) 0%, rgba(245, 87, 108, 0.6) 100%);
   color: #fff;
+  border: 1px solid rgba(240, 147, 251, 0.3);
 }
 
 .stat-card.task {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.8) 0%, rgba(0, 242, 254, 0.8) 100%);
   color: #fff;
+  border: 1px solid rgba(79, 172, 254, 0.3);
 }
 
 .stat-card.timeout {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: linear-gradient(135deg, rgba(250, 112, 154, 0.6) 0%, rgba(254, 225, 64, 0.6) 100%);
   color: #fff;
+  border: 1px solid rgba(250, 112, 154, 0.3);
 }
 
 .stat-icon {
@@ -261,26 +272,29 @@ export default {
   padding: 16px;
   border-radius: 8px;
   margin-bottom: 12px;
-  background: #f5f7fa;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(96, 165, 250, 0.15);
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
 }
 
 .message-item:hover {
-  background: #e6f7ff;
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(96, 165, 250, 0.4);
 }
 
 .message-item.unread {
-  background: #fffbe6;
-  border-left: 3px solid #e6a23c;
+  background: rgba(245, 158, 11, 0.15);
+  border-left: 3px solid rgba(245, 158, 11, 0.6);
 }
 
 .message-icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #fff;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(96, 165, 250, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,7 +310,7 @@ export default {
 .message-title {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: #e2e8f0;
   margin-bottom: 6px;
   display: flex;
   align-items: center;
@@ -305,14 +319,14 @@ export default {
 
 .message-desc {
   font-size: 13px;
-  color: #606266;
+  color: #94a3b8;
   line-height: 1.5;
   margin-bottom: 4px;
 }
 
 .message-time {
   font-size: 12px;
-  color: #909399;
+  color: #64748b;
 }
 
 .unread-dot {
@@ -323,18 +337,20 @@ export default {
   position: absolute;
   top: 16px;
   right: 16px;
+  box-shadow: 0 0 8px rgba(245, 108, 108, 0.5);
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #909399;
+  color: #94a3b8;
 }
 
 .empty-state i {
   font-size: 48px;
   margin-bottom: 12px;
   display: block;
+  color: #60a5fa;
 }
 
 .empty-state p {

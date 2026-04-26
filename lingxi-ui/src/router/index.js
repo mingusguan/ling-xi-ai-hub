@@ -58,7 +58,7 @@ export const oaRoutes = [
     hidden: true,
     children: [
       { path: 'dashboard', component: () => import('@/views/oa/dashboard/index'), name: 'OaDashboard', meta: { title: 'OA工作台', icon: 'dashboard', sysCode: 'oa' }, permissions: ['oa:dashboard:view'] },
-      { path: 'process', component: () => import('@/views/oa/process/index'), name: 'OaProcess', meta: { title: '流程模板', icon: 'tree', sysCode: 'oa' }, permissions: ['oa:process:list'] },
+      { path: 'process', component: () => import('@/views/oa/process/index'), name: 'OaProcess', meta: { title: '模板管理', icon: 'tree', sysCode: 'oa' }, permissions: ['oa:process:list'] },
       { path: 'leave', component: () => import('@/views/oa/leave/index'), name: 'OaLeave', meta: { title: '请假管理', icon: 'date', sysCode: 'oa' }, permissions: ['oa:leave:list'] },
       { path: 'balance', component: () => import('@/views/oa/leaveQuota/balance'), name: 'OaLeaveBalance', meta: { title: '假期余额', icon: 'guide', sysCode: 'oa' }, permissions: ['oa:leave:balance'] },
       { path: 'rule', component: () => import('@/views/oa/leaveQuota/rule'), name: 'OaLeaveRule', meta: { title: '假期规则', icon: 'form', sysCode: 'oa' }, permissions: ['oa:leave:rule:list'] },

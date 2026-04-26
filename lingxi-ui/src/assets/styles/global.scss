@@ -1,0 +1,526 @@
+@import 'variables.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: $font-family;
+  color: $text-color-primary;
+  background: transparent;
+}
+
+label {
+  font-weight: 700;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: $primary;
+}
+
+*:focus-visible {
+  outline: none;
+}
+
+div:focus {
+  background-color: transparent;
+}
+
+ul {
+  list-style: none;
+}
+
+// 提升内容层级，置于光晕之上
+.sidebar-container,
+.main-container {
+  position: relative;
+  z-index: 1;
+}
+
+// ============================================================================
+//  主布局 - 侧边栏与内容区域间距
+// ============================================================================
+.main-container {
+  margin-left: $sidebar-width;
+  transition: margin-left 0.28s;
+}
+
+.hideSidebar .main-container {
+  margin-left: $sidebar-collapse-width;
+}
+
+.sidebarHide .main-container {
+  margin-left: 0;
+}
+
+.mobile .main-container {
+  margin-left: 0;
+}
+
+// ============================================================================
+//  Glass Card - 玻璃拟态卡片
+// ============================================================================
+.el-card {
+  border: 1px solid $glass-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-glass;
+  transition: all $transition-base;
+  background: $card-bg;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  &:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba($primary, 0.3);
+    background: rgba(30, 41, 59, 0.7);
+  }
+
+  .el-card__header {
+    border-bottom: 1px solid $glass-border;
+    padding: $spacing-md $spacing-lg;
+    background: linear-gradient(180deg, rgba($primary, 0.08) 0%, transparent 100%);
+    border-radius: $radius-lg $radius-lg 0 0;
+
+    & > span {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-semibold;
+      color: $text-color-primary;
+    }
+  }
+
+  .el-card__body {
+    padding: $spacing-lg;
+  }
+}
+
+// ============================================================================
+//  Glass Table - 磨砂表格
+// ============================================================================
+.el-table {
+  color: $text-color-regular;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  background: transparent;
+
+  &::before {
+    display: none;
+  }
+
+  th.el-table__cell {
+    background: rgba(30, 41, 59, 0.8) !important;
+    color: $text-color-secondary;
+    font-weight: $font-weight-medium;
+    border-bottom: 1px solid $glass-border !important;
+    user-select: none;
+  }
+
+  .el-table__row {
+    transition: all $transition-fast;
+
+    &:hover > td {
+      background-color: rgba($primary, 0.1) !important;
+    }
+  }
+
+  td.el-table__cell {
+    border-bottom: 1px solid $glass-border;
+    color: $text-color-regular;
+    background: rgba(30, 41, 59, 0.5);
+  }
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: rgba(30, 41, 59, 0.35);
+}
+
+// ============================================================================
+//  Glass Form - 磨砂表单控件
+// ============================================================================
+.el-input__wrapper {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid $glass-border;
+  border-radius: $radius-md;
+  box-shadow: none !important;
+  transition: all $transition-fast;
+  backdrop-filter: blur(12px);
+
+  &:hover {
+    border-color: rgba($primary, 0.4);
+  }
+
+  &.is-focus {
+    border-color: $primary;
+    background: rgba(15, 23, 42, 0.8) !important;
+    box-shadow: 0 0 0 3px rgba($primary, 0.15) !important;
+  }
+}
+
+
+
+// 选择器下拉框
+.el-select__popper,
+.el-picker__popper {
+  background: rgba(30, 41, 59, 0.95) !important;
+  border: 1px solid $glass-border;
+  border-radius: $radius-lg;
+  backdrop-filter: blur(20px);
+  box-shadow: $shadow-xl;
+
+  .el-select-dropdown__item,
+  .el-select-group__title,
+  .el-picker-panel {
+    color: $text-color-secondary;
+    background: transparent;
+
+    &:hover:not(.is-disabled):not(.is-selected) {
+      background: rgba($primary, 0.1);
+      color: $primary;
+    }
+
+    &.is-selected {
+      background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
+      color: white;
+      border-radius: $radius-sm;
+    }
+  }
+}
+
+.el-select-group {
+  .el-select-group__wrap:not(:last-of-type) {
+    padding-bottom: 0;
+  }
+}
+
+.el-scrollbar {
+  .el-select-dropdown__list {
+    padding: 8px;
+  }
+}
+
+// ============================================================================
+//  Glass Buttons - 发光按钮
+// ============================================================================
+.el-button {
+  border-radius: $radius-md;
+  font-weight: $font-weight-medium;
+  border: 1px solid $glass-border;
+  transition: all $transition-fast;
+
+  &:not(.is-text) {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+  }
+
+  &--primary {
+    background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba($primary, 0.4);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba($primary, 0.5);
+      filter: brightness(1.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--success {
+    background: linear-gradient(135deg, $success-500 0%, $success 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba($success, 0.3);
+  }
+
+  &--danger {
+    background: linear-gradient(135deg, $danger-500 0%, $danger 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba($danger, 0.35);
+  }
+
+  &--warning {
+    background: linear-gradient(135deg, $warning-500 0%, $warning 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba($warning, 0.35);
+  }
+
+  &--info {
+    background: linear-gradient(135deg, $info-500 0%, $info 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba($info, 0.35);
+  }
+
+  &--default:not(.is-text) {
+    color: $text-color-secondary;
+
+    &:hover {
+      color: $primary;
+      border-color: rgba($primary, 0.4);
+      background: rgba($primary, 0.08);
+    }
+  }
+}
+
+// ============================================================================
+//  Glass Dialog - 磨砂弹窗
+// ============================================================================
+.el-overlay {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+.el-dialog {
+  border-radius: $radius-xl;
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid $glass-border;
+  box-shadow: $shadow-xl;
+  backdrop-filter: blur(20px);
+
+  .el-dialog__header {
+    border-bottom: 1px solid $glass-border;
+    background: linear-gradient(180deg, rgba($primary, 0.08) 0%, transparent 100%);
+    border-radius: $radius-xl $radius-xl 0 0;
+    padding: $spacing-lg $spacing-xl;
+
+    .el-dialog__title {
+      color: $text-color-primary;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-xl;
+    }
+  }
+
+  .el-dialog__body {
+    padding: $spacing-xl;
+    color: $text-color-regular;
+  }
+
+  .el-dialog__footer {
+    border-top: 1px solid $glass-border;
+    padding: $spacing-md $spacing-xl;
+  }
+}
+
+// ============================================================================
+//  Glass Drawer
+// ============================================================================
+.el-drawer {
+  background: rgba(30, 41, 59, 0.9) !important;
+  border: none;
+  backdrop-filter: blur(20px);
+}
+
+.el-drawer__header {
+  border-bottom: 1px solid $glass-border;
+  color: $text-color-primary;
+  padding: $spacing-lg $spacing-xl;
+  margin-bottom: 0;
+}
+
+.el-drawer__body {
+  padding: $spacing-lg $spacing-xl;
+}
+
+// ============================================================================
+//  Top Tool - 查询区域磨砂
+// ============================================================================
+.top {
+  .paneltitle {
+    display: flex;
+    align-items: center;
+    font-weight: $font-weight-semibold;
+    color: $text-color-primary;
+    font-size: $font-size-lg;
+    margin-bottom: $spacing-md;
+  }
+}
+
+// 重置搜索栏为磨砂
+.el-row.search-form-row {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid $glass-border;
+  border-radius: $radius-lg;
+  padding: $spacing-lg $spacing-lg 0;
+  margin-bottom: $spacing-lg;
+}
+
+// ============================================================================
+//  Pagination - 磨砂分页
+// ============================================================================
+.el-pagination {
+  padding: $spacing-md 0;
+
+  .btn-prev,
+  .btn-next,
+  .el-pager li {
+    background: rgba(30, 41, 59, 0.6) !important;
+    border: 1px solid $glass-border;
+    border-radius: $radius-md;
+    color: $text-color-secondary;
+    transition: all $transition-fast;
+
+    &:hover:not(.disabled) {
+      color: $primary;
+      border-color: rgba($primary, 0.4);
+    }
+  }
+
+  .el-pager li.is-active {
+    background: linear-gradient(135deg, $primary-light 0%, $primary 100%) !important;
+    color: white !important;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba($primary, 0.4);
+  }
+}
+
+// ============================================================================
+//  Tabs 磨砂标签页
+// ============================================================================
+.el-tabs__nav-wrap::after {
+  background-color: $glass-border;
+}
+
+.el-tabs__item {
+  color: $text-color-secondary;
+
+  &.is-active {
+    color: $primary;
+    font-weight: $font-weight-medium;
+  }
+
+  &:hover:not(.is-disabled):not(.is-active) {
+    color: $primary-light;
+  }
+}
+
+.el-tabs__active-bar {
+  background: linear-gradient(90deg, $primary-light 0%, $primary 100%);
+  border-radius: 2px;
+}
+
+// ============================================================================
+//  Message 消息提示
+// ============================================================================
+.el-message {
+  background: rgba(30, 41, 59, 0.9) !important;
+  border: 1px solid $glass-border;
+  border-radius: $radius-lg;
+  backdrop-filter: blur(20px);
+  box-shadow: $shadow-lg;
+
+  .el-message__content {
+    color: $text-color-primary;
+  }
+}
+
+// ============================================================================
+//  Menu 下拉菜单
+// ============================================================================
+.el-dropdown-menu {
+  background: rgba(30, 41, 59, 0.95) !important;
+  border: 1px solid $glass-border !important;
+  border-radius: $radius-lg !important;
+  box-shadow: $shadow-lg !important;
+  backdrop-filter: blur(20px);
+  padding: 8px !important;
+
+  &::before {
+    display: none !important;
+  }
+
+  .el-dropdown-menu__item {
+    color: $text-color-secondary;
+    border-radius: $radius-sm;
+    background: transparent !important;
+
+    &:hover:not(.is-disabled) {
+      background: rgba($primary, 0.1) !important;
+      color: $primary;
+    }
+  }
+
+  .el-dropdown-menu__item--divided {
+    border-color: $glass-border !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    margin: 4px 0 0 0 !important;
+    padding-top: 8px !important;
+
+    &::before {
+      display: none !important;
+    }
+  }
+
+  .el-dropdown-menu__item--divided::before {
+    background-color: $glass-border !important;
+  }
+}
+
+// ============================================================================
+//  头像与图标
+// ============================================================================
+.avatar {
+  border: 2px solid rgba($primary, 0.3);
+  box-shadow: 0 0 20px rgba($primary, 0.2);
+}
+
+// 徽章发光
+.el-badge__content {
+  box-shadow: 0 0 0 2px rgba(30, 41, 59, 0.8);
+}
+
+// ============================================================================
+//  空状态样式
+// ============================================================================
+.el-empty {
+  padding: $spacing-xl;
+
+  .el-empty__description p {
+    color: $text-color-secondary;
+  }
+}
+
+// ============================================================================
+//  修复下拉菜单分割线白色背景问题
+// ============================================================================
+body .el-dropdown-menu.el-popper {
+  background: rgba(30, 41, 59, 0.95) !important;
+}
+
+body .el-dropdown-menu__item--divided {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-top: 1px solid $glass-border !important;
+  position: relative !important;
+}
+
+body .el-dropdown-menu__item--divided::before {
+  display: none !important;
+  background: none !important;
+}

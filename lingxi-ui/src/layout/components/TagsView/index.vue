@@ -127,7 +127,6 @@ export default {
     initTags() {
       const affixTags = this.affixTags = this.filterAffixTags(this.routes)
       for (const tag of affixTags) {
-        // Must have tag name
         if (tag.name) {
           this.$store.dispatch('tagsView/addVisitedView', tag)
         }
@@ -145,7 +144,6 @@ export default {
         for (const tag of tags) {
           if (tag.to.path === this.$route.path) {
             this.$refs.scrollPane.moveToTarget(tag)
-            // when query is different then update
             if (tag.to.fullPath !== this.$route.fullPath) {
               this.$store.dispatch('tagsView/updateVisitedView', this.$route)
             }
@@ -200,10 +198,7 @@ export default {
       if (latestView) {
         this.$router.push(latestView.fullPath)
       } else {
-        // now the default is to redirect to the home page if there is no tags-view,
-        // you can adjust it according to your needs.
         if (view.name === 'Dashboard') {
-          // to reload home page
           this.$router.replace({ path: '/redirect' + view.fullPath })
         } else {
           this.$router.push('/')
@@ -212,10 +207,10 @@ export default {
     },
     openMenu(tag, e) {
       const menuMinWidth = 105
-      const offsetLeft = this.$el.getBoundingClientRect().left // container margin left
-      const offsetWidth = this.$el.offsetWidth // container width
-      const maxLeft = offsetWidth - menuMinWidth // left boundary
-      const left = e.clientX - offsetLeft + 15 // 15: margin right
+      const offsetLeft = this.$el.getBoundingClientRect().left
+      const offsetWidth = this.$el.offsetWidth
+      const maxLeft = offsetWidth - menuMinWidth
+      const left = e.clientX - offsetLeft + 15
 
       if (left > maxLeft) {
         this.left = maxLeft
@@ -238,45 +233,82 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+
 .tags-view-container {
-  height: 34px;
+  height: $tags-height;
   width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #d8dce5;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  padding: 2px 8px 4px;
+
   .tags-view-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
     .tags-view-item {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       position: relative;
       cursor: pointer;
-      height: 26px;
-      line-height: 26px;
-      border: 1px solid #d8dce5;
-      color: #495060;
-      background: #fff;
-      padding: 0 8px;
-      font-size: 12px;
-      margin-left: 5px;
-      margin-top: 4px;
-      &:first-of-type {
-        margin-left: 15px;
+      height: 28px;
+      line-height: 28px;
+      border: 1px solid $border-color-light;
+      color: $text-color-secondary;
+      background: $gray-50;
+      padding: 0 12px 0 12px;
+      font-size: $font-size-sm;
+      border-radius: $radius-md;
+      margin: 0 4px;
+      transition: all $transition-fast;
+      user-select: none;
+
+      &:hover {
+        color: $primary;
+        background: $primary-50;
+        border-color: rgba($primary, 0.2);
       }
-      &:last-of-type {
-        margin-right: 15px;
-      }
+
       &.active {
-        background-color: #42b983;
-        color: #fff;
-        border-color: #42b983;
-        &::before {
-          content: '';
-          background: #fff;
-          display: inline-block;
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          position: relative;
-          margin-right: 2px;
+        background: linear-gradient(135deg, $primary-light 0%, $primary 100%);
+        color: white;
+        border-color: transparent;
+        font-weight: $font-weight-medium;
+        box-shadow: 0 4px 12px rgba($primary, 0.4);
+
+        .el-icon-close {
+          color: rgba(255, 255, 255, 0.8);
+
+          &:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+
+      .svg-icon {
+        margin-right: 6px;
+        font-size: 14px;
+      }
+
+      .el-icon-close {
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        text-align: center;
+        border-radius: 50%;
+        margin-left: 6px;
+        font-size: 12px;
+        transform: scale(0.8);
+        transition: all $transition-fast;
+        color: $gray-400;
+
+        &:hover {
+          background: $danger-100;
+          color: $danger;
         }
       }
     }
@@ -292,44 +324,35 @@ export default {
     z-index: 3000;
     position: absolute;
     list-style-type: none;
-    padding: 5px 0;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 400;
-    color: #333;
-    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);
+    padding: 8px 0;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-normal;
+    color: $text-color-regular;
+    box-shadow: $shadow-lg;
+    border: 1px solid $border-color-light;
+    min-width: 140px;
+
     li {
       margin: 0;
-      padding: 7px 16px;
+      padding: 8px 16px;
       cursor: pointer;
-      &:hover {
-        background: #eee;
-      }
-    }
-  }
-}
-</style>
+      transition: all $transition-fast;
+      display: flex;
+      align-items: center;
 
-<style lang="scss">
-//reset element css of el-icon-close
-.tags-view-wrapper {
-  .tags-view-item {
-    .el-icon-close {
-      width: 16px;
-      height: 16px;
-      vertical-align: 2px;
-      border-radius: 50%;
-      text-align: center;
-      transition: all .3s cubic-bezier(.645, .045, .355, 1);
-      transform-origin: 100% 50%;
-      &:before {
-        transform: scale(.6);
-        display: inline-block;
-        vertical-align: -3px;
-      }
       &:hover {
-        background-color: #b4bccc;
-        color: #fff;
+        background: $primary-50;
+        color: $primary;
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid $border-color-light;
+      }
+
+      i {
+        margin-right: 8px;
+        font-size: 14px;
       }
     }
   }
