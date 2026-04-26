@@ -41,7 +41,10 @@ nbdist/
 *.xml.versionsBackup
 *.swp
 
+
+docker/
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml
 .preferences
+/docker/
