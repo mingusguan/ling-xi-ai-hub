@@ -15,9 +15,6 @@ const port = process.env.port || process.env.npm_config_port || 80 // 端口
 //官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
 // 这里只列一部分，具体配置参考文档
 module.exports = {
-  // 部署生产环境和开发环境下的URL。
-  // 默认情况下，Vue CLI 会假设你的应用是被部署在一个域名的根路径上
-  // 例如 https://www.ruoyi.vip/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 https://www.ruoyi.vip/admin/，则设置 baseUrl 为 /admin/。
   publicPath: process.env.NODE_ENV === "production" ? "/" : "/",
   // 在npm run build 或 yarn build 时 ，生成文件的目录名称（要和baseUrl的生产环境路径一致）（默认dist）
   outputDir: 'dist',
@@ -25,14 +22,8 @@ module.exports = {
   assetsDir: 'static',
   // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
   productionSourceMap: false,
-  transpileDependencies: [
-    'quill',
-    /bpmn-js/,
-    /diagram-js/,
-    /diagram-js-direct-editing/,
-    /min-dom/,
-    /domify/
-  ],
+  transpileDependencies: process.env.NODE_ENV === 'development' ? [] : ['quill'],
+  parallel: true,
   // webpack-dev-server 相关配置
   devServer: {
     host: '0.0.0.0',
@@ -64,23 +55,28 @@ module.exports = {
         '@': resolve('src')
       }
     },
+    externals: {
+      'lodash-es': '_',
+      'vuedraggable': 'vuedraggable',
+      'sortablejs': 'Sortable',
+      'echarts': 'echarts',
+      'quill': 'Quill'
+    },
     plugins: [
-      // http://doc.ruoyi.vip/ruoyi-vue/other/faq.html#使用gzip解压缩静态文件
       new CompressionPlugin({
-        cache: false,                                  // 不启用文件缓存
-        test: /\.(js|css|html|jpe?g|png|gif|svg)?$/i,  // 压缩文件格式
-        filename: '[path][base].gz[query]',            // 压缩后的文件名
-        algorithm: 'gzip',                             // 使用gzip压缩
-        minRatio: 0.8,                                 // 压缩比例，小于 80% 的文件不会被压缩
-        deleteOriginalAssets: false                    // 压缩后删除原文件
+        cache: true,
+        test: /\.(js|css|html)?$/i,
+        filename: '[path][base].gz[query]',
+        algorithm: 'gzip',
+        minRatio: 0.8,
+        deleteOriginalAssets: false
       })
-    ],
+    ]
   },
   chainWebpack(config) {
-    config.plugins.delete('preload') // TODO: need test
-    config.plugins.delete('prefetch') // TODO: need test
+    config.plugins.delete('preload')
+    config.plugins.delete('prefetch')
 
-    // set svg-sprite-loader
     config.module
       .rule('svg')
       .exclude.add(resolve('src/assets/icons'))

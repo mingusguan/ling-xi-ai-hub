@@ -29,7 +29,8 @@
 import { mapGetters, mapState } from "vuex"
 import Logo from "./Logo"
 import SidebarItem from "./SidebarItem"
-import variables from "@/assets/styles/variables.scss"
+// 临时注释：从 JS 导入 scss 会导致 sass-loader 无限循环！
+// import variables from "@/assets/styles/variables.scss"
 
 export default {
     components: { SidebarItem, Logo },
@@ -87,7 +88,12 @@ export default {
             return this.$store.state.settings.sidebarLogo
         },
         variables() {
-            return variables
+            return {
+                menuBackground: 'rgba(17, 25, 40, 0.95)',
+                menuLightBackground: '#ffffff',
+                menuColor: '#bfcbd9',
+                menuLightColor: '#303133'
+            }
         },
         isCollapse() {
             return !this.sidebar.opened

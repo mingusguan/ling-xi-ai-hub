@@ -62,12 +62,7 @@
           <el-form-item label="版本" prop="processVersion"><el-input v-model="form.processVersion" /></el-form-item>
           <el-form-item label="表单路由" prop="formRoute"><el-input v-model="form.formRoute" /></el-form-item>
           <el-form-item label="流程内容" prop="processContent" class="process-content-item">
-            <bpmn-editor
-              ref="processEditor"
-              v-model="form.processContent"
-              :process-key="form.processDefinitionKey || 'oa_process'"
-              :process-name="form.processDefinitionName || form.templateName || 'OA流程'"
-            />
+            <el-input type="textarea" v-model="form.processContent" :rows="6" placeholder="流程图编辑器已临时禁用，可编辑XML内容" />
           </el-form-item>
           <el-form-item label="描述"><el-input v-model="form.description" type="textarea" :rows="3" /></el-form-item>
         </el-form>
@@ -96,7 +91,6 @@
 
 <script>
 import { listTemplate, saveTemplate, deployTemplate, getTemplateDetail, cleanupProcessDefinitions } from '@/api/oa/workflow'
-import BpmnEditor from '@/components/BpmnEditor'
 
 const defaultForm = () => ({
   templateId: undefined,
@@ -112,7 +106,6 @@ const defaultForm = () => ({
 
 export default {
   name: 'OaProcess',
-  components: { BpmnEditor },
   data() {
     return {
       loading: false,

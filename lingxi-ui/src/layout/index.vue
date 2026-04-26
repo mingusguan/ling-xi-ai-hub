@@ -12,17 +12,14 @@
       </div>
       <app-main/>
       <settings ref="settingRef"/>
-      <xiao-ling-robot />
     </div>
   </div>
 </template>
 
 <script>
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
-import XiaoLingRobot from '@/components/XiaoLingRobot'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
-import variables from '@/assets/styles/variables.scss'
 
 export default {
   name: 'Layout',
@@ -31,8 +28,7 @@ export default {
     Navbar,
     Settings,
     Sidebar,
-    TagsView,
-    XiaoLingRobot
+    TagsView
   },
   mixins: [ResizeMixin],
   computed: {
@@ -51,141 +47,68 @@ export default {
         withoutAnimation: this.sidebar.withoutAnimation,
         mobile: this.device === 'mobile'
       }
-    },
-    variables() {
-      return variables
     }
   },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
     },
-    setLayout() {
-      this.$refs.settingRef.openSetting()
+    setLayout(setting) {
+      this.$refs.settingRef.setLayout(setting)
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-  @import "~@/assets/styles/mixin.scss";
-  @import "~@/assets/styles/variables.scss";
+<style lang="scss">
+@import "~@/assets/styles/mixin.scss";
+@import "~@/assets/styles/variables.scss";
 
-  .app-wrapper {
-    @include clearfix;
-    position: relative;
-    height: 100%;
-    width: 100%;
-    background: $bg-color;
-    overflow: hidden;
+.app-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: $bg-color;
+}
 
-    &.mobile.openSidebar {
-      position: fixed;
-      top: 0;
-    }
+.drawer-bg {
+  background: #000;
+  opacity: 0.3;
+  width: 100%;
+  top: 0;
+  height: 100%;
+  position: absolute;
+  z-index: 999;
+}
+
+.main-container {
+  min-height: 100%;
+  transition: margin-left $transition-base;
+  margin-left: $sidebar-width;
+  position: relative;
+}
+
+.hasTagsView {
+  .main-container {
+    min-height: calc(100vh - 34px);
   }
+}
 
-  // 流体光晕层
-  .glow-layer {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    z-index: 0;
-    pointer-events: none;
-    animation: float 20s ease-in-out infinite;
-  }
+.hideSidebar .main-container {
+  margin-left: $sidebar-collapse-width;
+}
 
-  .glow-layer-1 {
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
-    top: -200px;
-    left: -100px;
-    animation-delay: 0s;
-  }
+.sidebarHide .main-container {
+  margin-left: 0;
+}
 
-  .glow-layer-2 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
-    top: 40%;
-    right: -150px;
-    animation-delay: -7s;
+.mobile {
+  .main-container {
+    margin-left: 0;
   }
-
-  .glow-layer-3 {
-    width: 450px;
-    height: 450px;
-    background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
-    bottom: -100px;
-    left: 30%;
-    animation-delay: -14s;
+  .hideSidebar .main-container {
+    margin-left: $sidebar-width;
   }
-
-  // 网格背景
-  .bg-grid {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    background-image: 
-      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 50px 50px;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translate(0, 0) scale(1);
-    }
-    25% {
-      transform: translate(40px, -30px) scale(1.05);
-    }
-    50% {
-      transform: translate(-20px, 20px) scale(0.95);
-    }
-    75% {
-      transform: translate(-40px, -20px) scale(1.02);
-    }
-  }
-
-  .main-container:has(.fixed-header) {
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .drawer-bg {
-    background: #000;
-    opacity: 0.3;
-    width: 100%;
-    top: 0;
-    height: 100%;
-    position: absolute;
-    z-index: 999;
-  }
-
-  .fixed-header {
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 9;
-    width: calc(100% - #{$sidebar-width});
-    transition: width 0.28s;
-    padding: 4px 0;
-  }
-
-  .hideSidebar .fixed-header {
-    width: calc(100% - #{$sidebar-collapse-width});
-  }
-
-  .sidebarHide .fixed-header {
-    width: 100%;
-  }
-
-  .mobile .fixed-header {
-    width: 100%;
-  }
+}
 </style>

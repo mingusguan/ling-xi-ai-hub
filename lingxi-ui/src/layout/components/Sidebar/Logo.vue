@@ -53,19 +53,12 @@
 </template>
 
 <script>
-import variables from '@/assets/styles/variables.scss'
-
 export default {
   name: 'SidebarLogo',
   props: {
     collapse: {
       type: Boolean,
       required: true
-    }
-  },
-  computed: {
-    variables() {
-      return variables
     }
   }
 }
