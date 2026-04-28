@@ -1,12 +1,12 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+  <div class="app-container" style="background: rgba(15, 23, 42, 0.8);">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px" style="background: rgba(15, 23, 42, 0.8); padding: 6px 4px 0 10px; border-radius: 4px; margin-bottom: 0;">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
           v-model="queryParams.jobName"
           placeholder="请输入任务名称"
           clearable
-          style="width: 240px"
+          style="width: 160px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -15,7 +15,7 @@
           v-model="queryParams.jobGroup"
           placeholder="请选择任务组名"
           clearable
-          style="width: 240px"
+          style="width: 140px"
         >
           <el-option
             v-for="dict in dict.type.sys_job_group"
@@ -30,7 +30,7 @@
           v-model="queryParams.status"
           placeholder="请选择执行状态"
           clearable
-          style="width: 240px"
+          style="width: 140px"
         >
           <el-option
             v-for="dict in dict.type.sys_common_status"
@@ -57,7 +57,8 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <div style="background: rgba(15, 23, 42, 0.8); padding: 10px; border-radius: 4px; margin-bottom: 0;">
+      <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -100,8 +101,10 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
+    </div>
 
-    <el-table v-loading="loading" :data="jobLogList" @selection-change="handleSelectionChange">
+    <div style="overflow-x: auto; max-height: calc(100vh - 280px); overflow-y: auto; background: rgba(15, 23, 42, 0.8); border-radius: 4px;">
+      <el-table v-loading="loading" :data="jobLogList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="日志编号" width="80" align="center" prop="jobLogId" />
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
@@ -134,14 +137,17 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
 
-    <pagination
+    <div style="text-align: right; padding-right: 10px;">
+      <pagination
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+    </div>
 
     <!-- 调度日志详细 -->
     <el-dialog title="调度日志详细" :visible.sync="open" width="700px" append-to-body>

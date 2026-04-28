@@ -89,7 +89,7 @@ export default {
         },
         variables() {
             return {
-                menuBackground: 'rgba(17, 25, 40, 0.95)',
+                menuBackground: 'transparent',
                 menuLightBackground: '#ffffff',
                 menuColor: '#bfcbd9',
                 menuLightColor: '#303133'
@@ -98,6 +98,39 @@ export default {
         isCollapse() {
             return !this.sidebar.opened
         }
-    }
+  }
 }
 </script>
+
+<style lang="scss" scoped>
+.has-logo,
+.el-scrollbar {
+  background: 
+    radial-gradient(ellipse at 100px 0px, 
+      rgba(59, 130, 246, 0.15) 0%, 
+      rgba(139, 92, 246, 0.08) 15%, 
+      rgba(59, 130, 246, 0.04) 25%, 
+      rgba(59, 130, 246, 0.02) 40%, 
+      transparent 60%),
+    rgba(17, 25, 40, 0.9);
+}
+
+::v-deep .el-menu {
+  background-color: transparent !important;
+}
+
+::v-deep .el-submenu .el-menu {
+  background-color: transparent !important;
+}
+
+::v-deep .el-submenu__title:hover {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+::v-deep .el-menu-item:hover,
+::v-deep .el-menu-item:focus {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+</style>
+
+

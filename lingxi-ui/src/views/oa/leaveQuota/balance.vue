@@ -180,9 +180,68 @@ export default {
 </script>
 
 <style scoped>
+.app-container {
+  padding: 8px !important;
+  padding-top: 5px !important;
+}
+
+/* 操作栏样式 */
+.el-row.mb8 {
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+.el-form {
+  margin-left: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.el-form-item {
+  margin-right: 10px !important;
+  margin-bottom: 5px !important;
+}
+
+.el-form-item__content {
+  margin-bottom: 0 !important;
+}
+
+.el-date-editor {
+  margin-bottom: 0 !important;
+}
+
+.el-button {
+  margin-bottom: 0 !important;
+}
+
+/* 卡片容器 */
+.el-row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.el-col {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
 .balance-card {
   position: relative;
   margin-bottom: 20px;
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 
+    0 0 20px rgba(59, 130, 246, 0.2),
+    0 4px 12px rgba(59, 130, 246, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.balance-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 0 30px rgba(59, 130, 246, 0.3),
+    0 8px 20px rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
 }
 
 .balance-header {
@@ -190,14 +249,14 @@ export default {
   align-items: center;
   margin-bottom: 15px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #ebeef5;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
 }
 
 .balance-title {
   margin-left: 10px;
   font-size: 16px;
   font-weight: bold;
-  color: #303133;
+  color: #E2E8F0;
 }
 
 .balance-content {
@@ -212,7 +271,7 @@ export default {
 }
 
 .balance-item .label {
-  color: #909399;
+  color: #94A3B8;
   font-size: 14px;
 }
 
@@ -222,7 +281,7 @@ export default {
 }
 
 .balance-item .value.total {
-  color: #409eff;
+  color: #60A5FA;
 }
 
 .balance-item .value.used {
@@ -234,7 +293,7 @@ export default {
 }
 
 .balance-item .value.carry {
-  color: #909399;
+  color: #94A3B8;
 }
 
 .progress-bar {
@@ -244,12 +303,54 @@ export default {
 .uninitialized-tip {
   text-align: center;
   padding: 40px 20px;
-  color: #909399;
+  color: #94A3B8;
 }
 
 .uninitialized-tip p {
   margin-top: 15px;
   font-size: 14px;
   color: #e6a23c;
+}
+
+/* 卡片标题 */
+::v-deep .el-card__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #E2E8F0 !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+}
+
+/* 进度条 */
+::v-deep .el-progress__text {
+  color: #94A3B8 !important;
+}
+
+/* 标签 */
+::v-deep .el-tag {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+::v-deep .el-tag--danger {
+  background-color: rgba(245, 108, 108, 0.2) !important;
+  border-color: rgba(245, 108, 108, 0.4) !important;
+  color: #F56C6C !important;
+}
+
+::v-deep .el-tag--success {
+  background-color: rgba(103, 194, 58, 0.2) !important;
+  border-color: rgba(103, 194, 58, 0.4) !important;
+  color: #67c23a !important;
+}
+
+/* 日期选择器 */
+::v-deep .el-date-editor .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-editor .el-input__inner::placeholder {
+  color: #64748B !important;
 }
 </style>

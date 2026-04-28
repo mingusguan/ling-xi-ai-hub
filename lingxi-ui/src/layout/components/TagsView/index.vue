@@ -83,7 +83,9 @@ export default {
       if (!this.isActive(tag)) return {}
       return {
         "background-color": this.theme,
-        "border-color": this.theme
+        "border-color": this.theme,
+        "color": "#FFFFFF",
+        "fill": "#FFFFFF"
       }
     },
     isAffix(tag) {
@@ -232,4 +234,97 @@ export default {
 }
 </script>
 
-<style lang="scss" src="./TagsView.scss" scoped></style>
+<style lang="scss" scoped>
+@import "~@/assets/styles/variables.scss";
+
+.tags-view-container {
+  height: 34px;
+  width: 100%;
+  background: linear-gradient(90deg, #0F172A 0%, #1E293B 100%) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+
+  .tags-view-wrapper {
+    .tags-view-item {
+      display: inline-block;
+      position: relative;
+      cursor: pointer;
+      height: 26px;
+      line-height: 26px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      color: #94A3B8;
+      background: rgba(30, 41, 59, 0.8);
+      padding: 0 8px;
+      font-size: 12px;
+      margin-left: 5px;
+      margin-top: 4px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+
+      &:first-of-type {
+        margin-left: 15px;
+      }
+
+      &:last-of-type {
+        margin-right: 15px;
+      }
+
+      &:hover {
+        color: #60A5FA;
+        border-color: rgba(59, 130, 246, 0.4);
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      &.active {
+        background: linear-gradient(90deg, rgba(59, 130, 246, 0.3) 0%, rgba(59, 130, 246, 0.15) 100%);
+        color: #FFFFFF;
+        border-color: rgba(59, 130, 246, 0.5);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+
+        &::before {
+          content: '';
+          background: #FFFFFF;
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          position: relative;
+          margin-right: 2px;
+        }
+
+        ::v-deep svg {
+          fill: #FFFFFF !important;
+        }
+
+        .el-icon-close {
+          color: #FFFFFF;
+        }
+      }
+    }
+  }
+
+  .contextmenu {
+    margin: 0;
+    background: #fff;
+    z-index: 3000;
+    position: absolute;
+    list-style-type: none;
+    padding: 5px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #333;
+    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);
+
+    li {
+      margin: 0;
+      padding: 7px 16px;
+      cursor: pointer;
+
+      &:hover {
+        background: #f2f3f5;
+      }
+    }
+  }
+}
+</style>

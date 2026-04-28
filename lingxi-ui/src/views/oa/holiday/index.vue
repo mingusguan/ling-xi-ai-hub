@@ -1,12 +1,24 @@
 <template>
   <div class="app-container">
-    <el-card class="box-card">
+    <el-card class="box-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.2);">
       <!-- 年份选择和月份导航 -->
       <div class="calendar-header">
         <div class="header-left">
-          <el-button size="small" @click="prevMonth">上个月</el-button>
-          <el-button size="small" @click="backToToday" style="margin: 0 8px">今天</el-button>
-          <el-button size="small" @click="nextMonth">下个月</el-button>
+          <!-- 图例说明 -->
+          <div class="legend-inline">
+            <span class="legend-item">
+              <i class="legend-color legal-holiday"></i>
+              法定休息日
+            </span>
+            <span class="legend-item">
+              <i class="legend-color fixed-rest"></i>
+              固定休息日
+            </span>
+            <span class="legend-item">
+              <i class="legend-color workday"></i>
+              工作日
+            </span>
+          </div>
         </div>
         <div class="calendar-header-center">
           <el-button icon="el-icon-arrow-left" circle size="small" @click="prevMonth"></el-button>
@@ -21,6 +33,7 @@
             style="margin: 0 12px; width: 150px"
           ></el-date-picker>
           <el-button icon="el-icon-arrow-right" circle size="small" @click="nextMonth"></el-button>
+          <el-button size="small" @click="backToToday" style="margin-left: 8px">今天</el-button>
         </div>
         <div class="header-actions">
           <el-button size="small" type="primary" @click="handleSync">从万年历同步</el-button>
@@ -29,9 +42,9 @@
       </div>
 
       <!-- 日历组件 -->
-      <el-calendar v-model="currentDate" class="holiday-calendar" @contextmenu.native.prevent="handleCalendarContextMenu">
+      <el-calendar v-model="currentDate" class="holiday-calendar">
         <template slot="dateCell" slot-scope="{ date, data }">
-          <div class="calendar-day" :class="getDayClass(data.day)" :data-day="data.day" @contextmenu.prevent.stop="handleContextMenu($event, data.day)">
+          <div class="calendar-day" :class="getDayClass(data.day)" :data-day="data.day" @contextmenu.prevent="handleContextMenu($event, data.day)">
             <div class="day-badge" v-if="getHolidayInfo(data.day) && getHolidayInfo(data.day).holidayType === 0">
               休
             </div>
@@ -50,7 +63,7 @@
       </el-calendar>
 
       <!-- 右键菜单 -->
-      <div v-show="contextMenuVisible" class="context-menu" :style="{ left: contextMenuLeft + 'px', top: contextMenuTop + 'px' }">
+      <div v-show="contextMenuVisible" class="context-menu" ref="contextMenuRef" :style="{ left: contextMenuLeft + 'px', top: contextMenuTop + 'px' }">
         <div class="menu-item" @click="setHolidayType(selectedDay, 0)" v-if="!isRestDay(selectedDay)">
           <i class="el-icon-time"></i> 设为休息日
         </div>
@@ -59,21 +72,7 @@
         </div>
       </div>
 
-      <!-- 图例说明 -->
-      <div class="legend">
-        <span class="legend-item">
-          <i class="legend-color legal-holiday"></i>
-          法定休息日
-        </span>
-        <span class="legend-item">
-          <i class="legend-color fixed-rest"></i>
-          固定休息日
-        </span>
-        <span class="legend-item">
-          <i class="legend-color workday"></i>
-          工作日
-        </span>
-      </div>
+
 
       <!-- 详情对话框 -->
       <el-dialog title="日期详情" :visible.sync="detailDialogVisible" width="600px">
@@ -154,31 +153,52 @@ export default {
   created() {
     this.loadMonthData()
     document.addEventListener('click', this.handleDocumentClick)
+    // 初始化时将菜单移到 body 下，避开所有父级容器的 transform/overflow 影响
+    this.$nextTick(() => {
+      if (this.$refs.contextMenuRef) {
+        document.body.appendChild(this.$refs.contextMenuRef);
+      }
+    })
   },
   beforeDestroy() {
     document.removeEventListener('click', this.handleDocumentClick)
   },
   methods: {
+    /** 处理右键菜单 */
+    handleContextMenu(event, day) {
+      this.selectedDay = day;
+      
+      // 直接使用 pageX/Y，因为菜单现在在 body 下，position: fixed 会相对于视口定位
+      let left = event.pageX;
+      let top = event.pageY;
+
+      this.$nextTick(() => {
+        const menu = this.$refs.contextMenuRef;
+        if (!menu) return;
+
+        const menuWidth = menu.offsetWidth || 140;
+        const menuHeight = menu.offsetHeight || 80;
+        
+        // 边界检查
+        if (left + menuWidth > window.innerWidth + window.scrollX) {
+          left = window.innerWidth + window.scrollX - menuWidth - 5;
+        }
+        if (top + menuHeight > window.innerHeight + window.scrollY) {
+          top = window.innerHeight + window.scrollY - menuHeight - 5;
+        }
+        
+        this.contextMenuLeft = left;
+        this.contextMenuTop = top;
+        this.contextMenuVisible = true;
+      });
+    },
+
     /** 点击 document 关闭右键菜单 */
     handleDocumentClick() {
       this.contextMenuVisible = false
     },
 
-    /** 整个日历区域右键事件委托 */
-    handleCalendarContextMenu(event) {
-      const calendarDay = event.target.closest('.calendar-day')
-      if (calendarDay && calendarDay.dataset.day) {
-        this.handleContextMenu(event, calendarDay.dataset.day)
-      }
-    },
 
-    /** 右键菜单处理 */
-    handleContextMenu(event, day) {
-      this.selectedDay = day
-      this.contextMenuLeft = event.clientX
-      this.contextMenuTop = event.clientY
-      this.contextMenuVisible = true
-    },
 
     /** 判断是否为休息日 */
     isRestDay(day) {
@@ -380,16 +400,36 @@ export default {
 <style scoped>
 .calendar-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
   padding: 6px 10px;
-  background: #f5f7fa;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.6), rgba(15, 23, 42, 0.8));
   border-radius: 4px;
   position: relative;
 }
 
-.header-left,
+.calendar-header-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-inline {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-right: 12px;
+  margin-right: 12px;
+  border-right: 1px solid rgba(59, 130, 246, 0.3);
+}
+
 .header-actions {
   padding-top: 3px;
 }
@@ -416,6 +456,24 @@ export default {
   gap: 8px;
 }
 
+.holiday-calendar {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 4px;
+}
+
+.holiday-calendar ::v-deep .el-calendar-table {
+  background: transparent !important;
+}
+
+.holiday-calendar ::v-deep .el-calendar-table td {
+  background: transparent !important;
+}
+
+.holiday-calendar ::v-deep .el-calendar-table .el-calendar-day {
+  background: rgba(30, 41, 59, 0.6) !important;
+}
+
 .holiday-calendar ::v-deep .el-calendar__header {
   display: none;
 }
@@ -434,7 +492,8 @@ export default {
   padding: 0 !important;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid #ebeef5;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
 }
 
 .holiday-calendar ::v-deep .el-calendar-table .el-calendar-day > div {
@@ -445,19 +504,31 @@ export default {
 }
 
 .holiday-calendar ::v-deep .el-calendar-table .el-calendar-day:hover {
-  background: #f0f9ff;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15);
+  background: rgba(59, 130, 246, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+}
+
+.holiday-calendar ::v-deep .el-calendar-table .el-calendar-day.is-fixed-rest:hover {
+  background: rgba(99, 102, 241, 0.3) !important;
+}
+
+.holiday-calendar ::v-deep .el-calendar-table .el-calendar-day.is-fixed-rest:hover .day-number {
+  color: #e0e7ff !important;
+}
+
+.holiday-calendar ::v-deep .el-calendar-table .el-calendar-day.is-fixed-rest:hover .day-lunar {
+  color: #eef2ff !important;
 }
 
 .holiday-calendar ::v-deep .el-calendar-table th {
   padding: 8px 0;
-  background: #f5f7fa;
-  color: #606266;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.5), rgba(15, 23, 42, 0.7));
+  color: #94a3b8;
   font-weight: 500;
 }
 
 .holiday-calendar ::v-deep .el-calendar-table td.is-selected .el-calendar-day {
-  background: #ecf5ff;
+  background: rgba(59, 130, 246, 0.3);
 }
 
 .holiday-calendar ::v-deep .el-calendar-table td.is-today .el-calendar-day {
@@ -504,55 +575,83 @@ export default {
 .day-number {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: #f1f5f9;
   line-height: 1.1;
 }
 
 .day-lunar {
   font-size: 11px;
-  color: #909399;
+  color: #cbd5e1;
   margin-top: 2px;
 }
 
 .day-holiday {
   font-size: 10px;
-  color: #f56c6c;
+  color: #f87171;
   font-weight: 500;
   margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  background: rgba(245, 108, 108, 0.1);
+  background: rgba(239, 68, 68, 0.15);
   padding: 1px 4px;
   border-radius: 2px;
 }
 
 /* 法定休息日样式 */
 .is-legal-holiday {
-  background: linear-gradient(135deg, #fef0f0, #fde6e6) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.08), rgba(15, 23, 42, 0.6)) !important;
+  box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.1);
 }
 
 .is-legal-holiday .day-number {
-  color: #f56c6c;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+}
+
+.is-legal-holiday .day-lunar {
+  color: #fef2f2;
+}
+
+.is-legal-holiday .day-holiday {
+  color: #ffffff;
+  background: rgba(239, 68, 68, 0.4);
 }
 
 /* 固定休息日样式 */
 .is-fixed-rest {
-  background: linear-gradient(135deg, #fafafa, #f4f4f5) !important;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(79, 70, 229, 0.08), rgba(15, 23, 42, 0.6)) !important;
+  box-shadow: inset 0 0 15px rgba(99, 102, 241, 0.1);
 }
 
 .is-fixed-rest .day-number {
-  color: #909399;
+  color: #c7d2fe;
+}
+
+.is-fixed-rest .day-lunar {
+  color: #ddd6fe;
+}
+
+.is-fixed-rest:hover .day-number {
+  color: #e0e7ff;
+}
+
+.is-fixed-rest:hover .day-lunar {
+  color: #eef2ff;
 }
 
 /* 工作日样式 */
+.is-workday {
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.3), rgba(15, 23, 42, 0.5)) !important;
+}
+
 .is-workday .day-number {
-  color: #303133;
+  color: #e2e8f0;
 }
 
 /* 其他月份日期弱化 */
 .holiday-calendar ::v-deep .el-calendar-table td.other-month .el-calendar-day {
-  background: #fafafa !important;
+  background: rgba(30, 41, 59, 0.3) !important;
   opacity: 0.5;
 }
 
@@ -561,7 +660,7 @@ export default {
   justify-content: center;
   margin-top: 8px;
   padding: 8px 15px;
-  background: #fafafa;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.5), rgba(15, 23, 42, 0.7));
   border-radius: 8px;
   gap: 40px;
 }
@@ -570,7 +669,7 @@ export default {
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: #606266;
+  color: #94a3b8;
   font-weight: 500;
 }
 
@@ -580,29 +679,30 @@ export default {
   height: 20px;
   border-radius: 4px;
   margin-right: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .legend-color.legal-holiday {
-  background: linear-gradient(135deg, #fef0f0, #fde6e6);
-  border: 1px solid #f56c6c;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
 }
 
 .legend-color.fixed-rest {
-  background: linear-gradient(135deg, #fafafa, #f4f4f5);
-  border: 1px solid #909399;
+  background: rgba(100, 116, 139, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.5);
 }
 
 .legend-color.workday {
-  background: #fff;
-  border: 1px solid #dcdfe6;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .context-menu {
   position: fixed;
-  background: #fff;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 4px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
   padding: 6px 0;
   z-index: 9999;
   min-width: 140px;
@@ -612,19 +712,19 @@ export default {
   padding: 8px 16px;
   cursor: pointer;
   font-size: 14px;
-  color: #606266;
+  color: #e2e8f0;
   transition: all 0.2s;
 }
 
 .menu-item:hover:not(.disabled) {
-  background: #f5f7fa;
-  color: #409eff;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
 }
 
 .menu-item.disabled {
-  color: #909399;
+  color: #64748b;
   cursor: not-allowed;
-  background: #fafafa;
+  background: rgba(30, 41, 59, 0.5);
 }
 
 .menu-item i {

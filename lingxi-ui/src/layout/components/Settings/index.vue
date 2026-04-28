@@ -29,15 +29,11 @@
           <el-switch v-model="dynamicTitle" class="drawer-switch" />
         </div>
 
-        <div class="drawer-item">
-          <span>底部版权</span>
-          <el-switch v-model="footerVisible" class="drawer-switch" />
-        </div>
-
         <el-divider/>
 
-        <el-button size="small" type="primary" plain icon="el-icon-document-add" @click="saveSetting">保存配置</el-button>
-        <el-button size="small" plain icon="el-icon-refresh" @click="resetSetting">重置配置</el-button>
+        <div class="button-group">
+          <el-button size="small" type="primary" icon="el-icon-document-add" @click="saveSetting">保存配置</el-button>
+        </div>
       </div>
     </div>
   </el-drawer>
@@ -190,26 +186,62 @@ export default {
 
 <style lang="scss" scoped>
 .drawer-container {
-  padding: 20px;
+  padding: 24px 20px;
   font-size: 14px;
   line-height: 1.5;
   word-wrap: break-word;
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  min-height: 100vh;
 
   .drawer-title {
-    margin-bottom: 12px;
-    color: rgba(0, 0, 0, .85);
-    font-size: 14px;
+    margin-bottom: 24px;
+    color: #E2E8F0;
+    font-size: 18px;
+    font-weight: 600;
     line-height: 22px;
+    background: linear-gradient(135deg, #60A5FA 0%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .drawer-item {
-    color: rgba(0, 0, 0, .65);
+    color: #94A3B8;
     font-size: 14px;
-    padding: 12px 0;
+    padding: 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .drawer-switch {
-    float: right
+    flex-shrink: 0;
   }
+
+  ::v-deep .el-divider {
+    background-color: rgba(59, 130, 246, 0.15);
+    margin: 16px 0 24px;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+  }
+
+  ::v-deep .el-button {
+    min-width: 160px;
+  }
+}
+
+::v-deep .el-drawer__container ::-webkit-scrollbar {
+  display: none;
+}
+
+::v-deep .el-drawer__wrapper {
+  overflow: hidden;
+}
+
+::v-deep .el-drawer__body {
+  overflow: hidden !important;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+  <div class="app-container" style="background: rgba(15, 23, 42, 0.8);">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px" style="background: rgba(15, 23, 42, 0.8); padding: 6px 4px 0 10px; border-radius: 4px; margin-bottom: 0;">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
           v-model="queryParams.jobName"
@@ -35,7 +35,8 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <div style="background: rgba(15, 23, 42, 0.8); padding: 10px; border-radius: 4px; margin-bottom: 0;">
+      <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -90,19 +91,21 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
+    </div>
 
-    <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
+    <div style="overflow-x: auto; max-height: calc(100vh - 280px); overflow-y: auto; background: rgba(15, 23, 42, 0.8); border-radius: 4px;">
+      <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="任务编号" width="100" align="center" prop="jobId" />
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
-      <el-table-column label="任务组名" align="center" prop="jobGroup">
+      <el-table-column label="任务组名" align="center" prop="jobGroup" width="80">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.sys_job_group" :value="scope.row.jobGroup"/>
         </template>
       </el-table-column>
       <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
-      <el-table-column label="cron执行表达式" align="center" prop="cronExpression" :show-overflow-tooltip="true" />
-      <el-table-column label="状态" align="center">
+      <el-table-column label="cron执行表达式" align="center" prop="cronExpression" :show-overflow-tooltip="true" width="120" />
+      <el-table-column label="状态" align="center" width="80">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.status"
@@ -142,14 +145,17 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
 
-    <pagination
+    <div style="text-align: right; padding-right: 10px;">
+      <pagination
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+    </div>
 
     <!-- 添加或修改定时任务对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :inline="true" class="mb8">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px" style="margin-top: 5px; margin-bottom: 2px; margin-left: 5px;">
       <el-form-item label="所属部门">
         <treeselect
           v-model="queryParams.deptId"
@@ -27,37 +27,40 @@
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="docList" border>
-      <el-table-column prop="docId" label="ID" width="70" align="center" />
-      <el-table-column prop="docName" label="文档名称" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="docType" label="类型" width="160" show-overflow-tooltip />
-      <el-table-column prop="fileSize" label="大小" width="100" align="right">
-        <template slot-scope="{ row }">{{ formatSize(row.fileSize) }}</template>
-      </el-table-column>
-      <el-table-column prop="status" label="状态" width="100" align="center">
-        <template slot-scope="{ row }">
-          <el-tag :type="statusType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="上传时间" width="160" align="center">
-        <template slot-scope="{ row }">{{ parseTime(row.createTime) }}</template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" width="200">
-        <template slot-scope="{ row }">
-          <el-button type="text" icon="el-icon-view" size="mini" @click="handleDetail(row)">详情</el-button>
-          <el-button type="text" icon="el-icon-refresh" size="mini" @click="handleReEmbed(row)">重新向量化</el-button>
-          <el-button type="text" icon="el-icon-delete" size="mini" style="color:#F56C6C" @click="handleDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <div style="overflow-x: auto; max-height: calc(100vh - 220px);">
+      <el-table v-loading="loading" :data="docList" border style="min-width: 100%;">
+        <el-table-column prop="docId" label="ID" width="70" align="center" />
+        <el-table-column prop="docName" label="文档名称" min-width="160" show-overflow-tooltip />
+        <el-table-column prop="docType" label="类型" width="80" show-overflow-tooltip />
+        <el-table-column prop="fileSize" label="大小" width="80" align="right">
+          <template slot-scope="{ row }">{{ formatSize(row.fileSize) }}</template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="100" align="center">
+          <template slot-scope="{ row }">
+            <el-tag :type="statusType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" label="上传时间" width="160" align="center">
+          <template slot-scope="{ row }">{{ parseTime(row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" width="200">
+          <template slot-scope="{ row }">
+            <el-button type="text" icon="el-icon-view" size="mini" @click="handleDetail(row)">详情</el-button>
+            <!-- <el-button type="text" icon="el-icon-refresh" size="mini" @click="handleReEmbed(row)">重新向量化</el-button> -->
+            <el-button type="text" icon="el-icon-delete" size="mini" style="color:#F56C6C" @click="handleDelete(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="text-align: right; padding-right: 10px;">
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </div>
+    </div>
 
     <el-dialog title="上传文档" :visible.sync="uploadVisible" width="500px" append-to-body @close="resetUpload">
       <el-form ref="uploadForm" :model="uploadForm" :rules="uploadRules" label-width="100px">
@@ -135,10 +138,11 @@ import { deptTreeSelect } from '@/api/system/user'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import FileUpload from '@/components/FileUpload'
+import Pagination from '@/components/Pagination'
 
 export default {
   name: 'KnowledgeDocument',
-  components: { Treeselect, FileUpload },
+  components: { Treeselect, FileUpload, Pagination },
   data() {
     return {
       loading: false,
@@ -434,7 +438,38 @@ export default {
       this.$nextTick(() => {
         this.$refs.uploadForm && this.$refs.uploadForm.clearValidate('visibleDeptIds')
       })
+    },
+    handleSizeChange(val) {
+      if (this.queryParams.pageNum * val > this.total) {
+        this.queryParams.pageNum = 1
+      }
+      this.queryParams.pageSize = val
+      this.handleQuery()
+    },
+    handleCurrentChange(val) {
+      this.queryParams.pageNum = val
+      this.handleQuery()
     }
   }
 }
 </script>
+
+<style scoped>
+:deep(.vue-treeselect) {
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+:deep(.vue-treeselect__control) {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+:deep(.vue-treeselect__input) {
+  background: rgba(15, 23, 42, 0.8) !important;
+  color: #e5e7eb;
+}
+:deep(.vue-treeselect__value-container) {
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+:deep(.vue-treeselect__placeholder) {
+  color: #6b7280;
+}
+</style>

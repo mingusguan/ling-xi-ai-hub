@@ -8,7 +8,7 @@
           :closable="false"
           style="margin-bottom: 10px;"
         />
-        <el-form :inline="true" class="mb8">
+        <el-form :inline="true" style="margin-top: 15px; margin-bottom: 0px; margin-left: 10px;">
           <el-form-item label="审批状态">
             <el-select v-model="query.approvalStatus" clearable placeholder="请选择" size="mini">
               <el-option label="待审批" value="pending" />
@@ -90,7 +90,19 @@
           </el-table-column>
         </el-table>
 
-        <pagination v-show="total > 0" :total="total" :page.sync="query.pageNum" :limit.sync="query.pageSize" @pagination="getList" />
+        <div style="padding: 10px 16px; border: 1px solid rgba(59, 130, 246, 0.2); border-top: none; border-radius: 0 0 4px 4px; margin: -1px 0 0 0; background: transparent; display: flex; justify-content: flex-end;">
+          <el-pagination
+            v-show="total > 0"
+            background
+            :current-page.sync="query.pageNum"
+            :page-size.sync="query.pageSize"
+            :layout="'total, sizes, prev, pager, next, jumper'"
+            :page-sizes="[10, 20, 30, 50]"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
       </el-tab-pane>
 
       <el-tab-pane label="已处理" name="myApproved">
@@ -137,7 +149,19 @@
           </el-table-column>
         </el-table>
 
-        <pagination v-show="approvedTotal > 0" :total="approvedTotal" :page.sync="approvedQuery.pageNum" :limit.sync="approvedQuery.pageSize" @pagination="getApprovedList" />
+        <div style="padding: 10px 16px; border: 1px solid rgba(59, 130, 246, 0.2); border-top: none; border-radius: 0 0 4px 4px; margin: -1px 0 0 0; background: transparent; display: flex; justify-content: flex-end;">
+          <el-pagination
+            v-show="approvedTotal > 0"
+            background
+            :current-page.sync="approvedQuery.pageNum"
+            :page-size.sync="approvedQuery.pageSize"
+            :layout="'total, sizes, prev, pager, next, jumper'"
+            :page-sizes="[10, 20, 30, 50]"
+            :total="approvedTotal"
+            @size-change="handleApprovedSizeChange"
+            @current-change="handleApprovedCurrentChange"
+          />
+        </div>
       </el-tab-pane>
     </el-tabs>
 
@@ -297,7 +321,7 @@
         <p><strong>类型：</strong>{{ formatLeaveType(detail.leaveType) }}</p>
         <p><strong>开始：</strong>{{ formatTime(detail.startTime) }}</p>
         <p><strong>结束：</strong>{{ formatTime(detail.endTime) }}</p>
-        <p><strong>状态：</strong>{{ formatStatus(detail.approvalStatus) }}</p>
+        <p><strong>状态：</strong><span :class="['status-tag', detail.approvalStatus]">{{ formatStatus(detail.approvalStatus) }}</span></p>
         <p v-if="detail.isOverQuota === 1" style="color: #F56C6C;">
           <strong>⚠️ 超额标记：</strong>是，超额 {{ detail.overQuotaDays }} 天
         </p>
@@ -841,6 +865,32 @@ export default {
         this.approvalVisible = false
         this.getList()
       })
+    },
+    // 分页大小变化
+    handleSizeChange(val) {
+      if (this.query.pageNum * val > this.total) {
+        this.query.pageNum = 1
+      }
+      this.query.pageSize = val
+      this.getList()
+    },
+    // 分页页码变化
+    handleCurrentChange(val) {
+      this.query.pageNum = val
+      this.getList()
+    },
+    // 已处理列表分页大小变化
+    handleApprovedSizeChange(val) {
+      if (this.approvedQuery.pageNum * val > this.approvedTotal) {
+        this.approvedQuery.pageNum = 1
+      }
+      this.approvedQuery.pageSize = val
+      this.getApprovedList()
+    },
+    // 已处理列表分页页码变化
+    handleApprovedCurrentChange(val) {
+      this.approvedQuery.pageNum = val
+      this.getApprovedList()
     }
   }
 }
@@ -848,4 +898,197 @@ export default {
 
 <style scoped>
 .drawer-body { padding: 0 20px 20px; line-height: 1.9; }
+
+/* 深色主题表单样式 */
+::v-deep .el-dialog {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 50%, #1E293B 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  border-radius: 12px !important;
+}
+
+::v-deep .el-dialog__header {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-dialog__title {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-dialog__body {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-form-item__label {
+  color: #94A3B8 !important;
+}
+
+::v-deep .el-input__inner,
+::v-deep .el-textarea__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-input__inner::placeholder,
+::v-deep .el-textarea__inner::placeholder {
+  color: #64748B !important;
+}
+
+::v-deep .el-select .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__editor-wrap {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+::v-deep .el-date-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__cell {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__cell:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+}
+
+::v-deep .el-date-picker__cell.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+::v-deep .el-input-number__decrease,
+::v-deep .el-input-number__increase {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-input-number__decrease:hover,
+::v-deep .el-input-number__increase:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 文本域字数限制 */
+::v-deep .el-textarea__count {
+  background: transparent !important;
+  color: #94A3B8 !important;
+}
+
+/* 详情页样式 */
+::v-deep .el-timeline-item {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-timeline-item .el-timeline-item__content {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-timeline-item__timestamp {
+  color: #94A3B8 !important;
+}
+
+::v-deep .el-divider {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* 强制覆盖所有时间线文字 */
+::v-deep .el-timeline-item * {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-timeline-item__timestamp * {
+  color: #94A3B8 !important;
+}
+
+/* 详情页内容文字 */
+.drawer-body p {
+  color: #E2E8F0 !important;
+}
+
+.drawer-body strong {
+  color: #ffffff !important;
+}
+
+/* 数据显示颜色 */
+.drawer-body p {
+  display: flex;
+  align-items: center;
+}
+
+.drawer-body p strong {
+  min-width: 80px;
+  color: #94A3B8 !important;
+  margin-right: 10px;
+}
+
+.drawer-body p span {
+  color: #E2E8F0 !important;
+  flex: 1;
+}
+
+/* 标签样式 */
+::v-deep .el-tag {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+::v-deep .el-tag--success {
+  background-color: rgba(103, 194, 58, 0.2) !important;
+  border-color: rgba(103, 194, 58, 0.4) !important;
+  color: #67c23a !important;
+}
+
+::v-deep .el-tag--warning {
+  background-color: rgba(230, 162, 60, 0.2) !important;
+  border-color: rgba(230, 162, 60, 0.4) !important;
+  color: #e6a23c !important;
+}
+
+/* 状态标签样式 */
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.status-tag.pending {
+  background-color: rgba(230, 162, 60, 0.2) !important;
+  border-color: rgba(230, 162, 60, 0.4) !important;
+  color: #e6a23c !important;
+}
+
+.status-tag.approved {
+  background-color: rgba(103, 194, 58, 0.2) !important;
+  border-color: rgba(103, 194, 58, 0.4) !important;
+  color: #67c23a !important;
+}
+
+.status-tag.rejected {
+  background-color: rgba(245, 108, 108, 0.2) !important;
+  border-color: rgba(245, 108, 108, 0.4) !important;
+  color: #F56C6C !important;
+}
+
+.status-tag.cancelled {
+  background-color: rgba(148, 163, 184, 0.2) !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
+  color: #94A3B8 !important;
+}
 </style>

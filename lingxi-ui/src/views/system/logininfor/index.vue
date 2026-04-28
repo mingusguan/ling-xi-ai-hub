@@ -1,12 +1,12 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="登录地址" prop="ipaddr">
+  <div class="app-container" style="background: rgba(15, 23, 42, 0.8);">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px" style="background: rgba(15, 23, 42, 0.8); padding: 6px 4px 0 4px; border-radius: 4px; margin-bottom: 0;">
+      <el-form-item label="登录地址" prop="ipaddr" style="margin-left: 10px;">
         <el-input
           v-model="queryParams.ipaddr"
           placeholder="请输入登录地址"
           clearable
-          style="width: 240px;"
+          style="width: 140px;"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -15,7 +15,7 @@
           v-model="queryParams.userName"
           placeholder="请输入用户名称"
           clearable
-          style="width: 240px;"
+          style="width: 140px;"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -24,7 +24,7 @@
           v-model="queryParams.status"
           placeholder="登录状态"
           clearable
-          style="width: 240px"
+          style="width: 140px"
         >
           <el-option
             v-for="dict in dict.type.sys_common_status"
@@ -52,7 +52,8 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <div style="background: rgba(15, 23, 42, 0.8); padding: 10px; border-radius: 4px; margin-bottom: 0;">
+      <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -97,8 +98,10 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
+    </div>
 
-    <el-table ref="tables" v-loading="loading" :data="list" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
+    <div style="overflow-x: auto; max-height: calc(100vh - 280px); overflow-y: auto; background: rgba(15, 23, 42, 0.8); border-radius: 4px;">
+      <el-table ref="tables" v-loading="loading" :data="list" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="访问编号" align="center" prop="infoId" />
       <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
@@ -115,14 +118,17 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
 
-    <pagination
+    <div style="text-align: right; padding-right: 10px;">
+      <pagination
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+    </div>
   </div>
 </template>
 

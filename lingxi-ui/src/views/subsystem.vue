@@ -72,7 +72,6 @@
     <div class="bg-glow glow-1"></div>
     <div class="bg-glow glow-2"></div>
     <div class="bg-glow glow-3"></div>
-    <div class="bg-grid"></div>
 
     <div class="particles">
       <div v-for="n in 50" :key="n" class="particle" :style="{
@@ -142,7 +141,7 @@
       <div 
         v-if="showBasicSystem" 
         class="subsystem-card" 
-        @click="goToSystem('/index', 'basic')"
+        @click="goToSystem('/system/user', 'basic')"
       >
         <div class="card-icon basic-icon">
           <svg-icon icon-class="system" />
@@ -271,8 +270,10 @@ export default {
     },
     goToSystem(path, sysCode) {
       this.$store.commit('SET_SYS_CODE', sysCode)
-      this.$store.dispatch('GenerateRoutes').then(() => {
-        this.$router.push(path)
+      this.$store.dispatch('tagsView/delAllViews').then(() => {
+        this.$store.dispatch('GenerateRoutes').then(() => {
+          this.$router.push(path)
+        })
       })
     },
     logout() {
@@ -381,17 +382,7 @@ export default {
   66% { transform: translate(-20px, 20px) scale(0.95); }
 }
 
-// 网格纹理
-.bg-grid {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background-image: 
-    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-}
+
 
 // 粒子效果
 .particles {

@@ -806,6 +806,17 @@ export default {
   box-sizing: content-box !important;
 }
 
+.login input:-webkit-autofill,
+.login input:-webkit-autofill:hover,
+.login input:-webkit-autofill:focus,
+.login input:-webkit-autofill:active {
+  -webkit-text-fill-color: #E2E8F0 !important;
+  -webkit-box-shadow: 0 0 0 1000px #0F1928 inset !important;
+  transition: background-color 50000s ease-in-out 0s !important;
+  background-color: #0F1928 !important;
+  caret-color: #E2E8F0 !important;
+}
+
 .login .login-form .captcha-input .el-input__prefix .el-input__icon,
 .login .login-form .captcha-input .el-input__prefix .input-icon,
 .login .login-form .captcha-input .el-input__prefix .svg-icon,

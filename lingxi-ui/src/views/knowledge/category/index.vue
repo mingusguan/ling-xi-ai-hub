@@ -1,6 +1,6 @@
-﻿<template>
+<template>
   <div class="app-container">
-    <el-form :inline="true" class="mb8">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px" style="margin-top: 5px; margin-bottom: 2px; margin-left: 5px;">
       <el-form-item label="所属部门">
         <treeselect
           v-model="queryDeptId"
@@ -8,7 +8,7 @@
           :show-count="true"
           :default-expand-level="2"
           placeholder="请选择所属部门"
-          style="width: 240px"
+          style="width: 220px;"
         />
       </el-form-item>
       <el-form-item>
@@ -19,17 +19,20 @@
       </el-form-item>
     </el-form>
 
-    <el-table
-      v-if="refreshTable"
-      v-loading="loading"
-      :data="categoryList"
-      row-key="categoryId"
-      :default-expand-all="isExpandAll"
-      :tree-props="{ children: 'children' }"
-      border
-    >
-      <el-table-column prop="categoryName" label="分类名称" min-width="160" />
-      <el-table-column prop="deptNameText" label="所属部门" min-width="180" show-overflow-tooltip />
+    <div style="overflow-x: auto;">
+      <el-table
+        v-if="refreshTable"
+        v-loading="loading"
+        :data="categoryList"
+        row-key="categoryId"
+        :default-expand-all="isExpandAll"
+        :tree-props="{ children: 'children' }"
+        border
+        height="calc(100vh - 220px)"
+        style="min-width: 100%;"
+      >
+      <el-table-column prop="categoryName" label="分类名称" min-width="120" />
+      <el-table-column prop="deptNameText" label="所属部门" min-width="80" show-overflow-tooltip />
       <el-table-column prop="sort" label="排序" width="80" align="center" />
       <el-table-column prop="status" label="状态" width="90" align="center">
         <template slot-scope="{ row }">
@@ -38,7 +41,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="220">
+      <el-table-column label="操作" align="center" min-width="100">
         <template slot-scope="{ row }">
           <el-button type="text" icon="el-icon-edit" size="mini" @click="handleEdit(row)">修改</el-button>
           <el-button type="text" icon="el-icon-plus" size="mini" @click="handleAddSub(row)">新增子分类</el-button>
@@ -46,6 +49,7 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="480px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
@@ -256,3 +260,6 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+</style>

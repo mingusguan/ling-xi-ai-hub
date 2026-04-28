@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- P1: 查询表单 -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" style="margin-top: 15px; margin-bottom: 0px; margin-left: 10px;">
       <el-form-item label="假期类型" prop="leaveType">
         <el-input
           v-model="queryParams.leaveType"
@@ -19,11 +19,6 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -32,19 +27,28 @@
           @click="handleAdd"
           v-hasPermi="['oa:leave:add']"
         >新增</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+      </el-form-item>
+    </el-form>
 
-    <!-- P1: 规则列表表格 -->
-    <el-table v-loading="loading" :data="ruleList" border>
+    <right-toolbar :showSearch.sync="showSearch" :search="false" :refresh="false" @queryTable="getList"></right-toolbar>
+
+    <!-- 表格容器 -->
+    <div style="border: 1px solid rgba(59, 130, 246, 0.2); border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden;">
+      <!-- P1: 规则列表表格 -->
+      <el-table v-loading="loading" :data="ruleList" border style="min-width: 100%;">
       <el-table-column label="规则ID" align="center" prop="ruleId" width="80" />
       <el-table-column label="假期类型编码" align="center" prop="leaveType" width="120" />
       <el-table-column label="假期类型名称" align="center" prop="leaveName" width="120" />
       <el-table-column label="默认天数" align="center" prop="defaultDays" width="100" />
       <el-table-column label="计算规则" align="center" prop="calculationRule" width="120">
         <template slot-scope="scope">
-          <dict-tag :options="dict.type.oa_calculation_rule" :value="scope.row.calculationRule"/>
+          <el-tag type="info">
+            {{ {
+              'fixed': '固定天数',
+              'by_seniority': '按工龄计算',
+              'by_level': '按职级计算'
+            }[scope.row.calculationRule] || scope.row.calculationRule }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="可结转" align="center" prop="canCarryOver" width="80">
@@ -71,8 +75,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" show-overflow-tooltip />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -80,6 +83,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['oa:leave:edit']"
+            style="margin-right: 15px;"
           >修改</el-button>
           <el-button
             size="mini"
@@ -90,14 +94,21 @@
           >删除</el-button>
         </template>
       </el-table-column>
-    </el-table>
+      </el-table>
+    </div>
 
-    <pagination
+    <!-- 分页组件 -->
+    <el-pagination
       v-show="total>0"
+      background
+      :current-page.sync="queryParams.pageNum"
+      :page-size.sync="queryParams.pageSize"
+      :layout="'total, sizes, prev, pager, next, jumper'"
+      :page-sizes="[10, 20, 30, 50]"
       :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      class="custom-pagination"
     />
 
     <!-- P1: 添加或修改对话框 -->
@@ -191,6 +202,19 @@
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+.custom-pagination {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 16px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  margin: -1px 0 0 0;
+  background: transparent;
+}
+</style>
 
 <script>
 import { listLeaveRule, getLeaveRule, addLeaveRule, updateLeaveRule, delLeaveRule } from "@/api/oa/leaveQuota";
@@ -355,6 +379,19 @@ export default {
         remark: undefined
       };
       this.resetForm("form");
+    },
+    // 分页大小变化
+    handleSizeChange(val) {
+      if (this.queryParams.pageNum * val > this.total) {
+        this.queryParams.pageNum = 1;
+      }
+      this.queryParams.pageSize = val;
+      this.getList();
+    },
+    // 分页页码变化
+    handleCurrentChange(val) {
+      this.queryParams.pageNum = val;
+      this.getList();
     }
   }
 };

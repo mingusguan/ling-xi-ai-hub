@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px">
+  <div class="app-container" style="background: rgba(15, 23, 42, 0.8);">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px" style="background: rgba(15, 23, 42, 0.8); padding: 6px 4px 0 10px; border-radius: 4px; margin-bottom: 0;">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
@@ -21,9 +21,10 @@
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
-
     </el-form>
-    <el-table
+
+    <div style="overflow-x: auto; max-height: calc(100vh - 240px); overflow-y: auto; background: rgba(15, 23, 42, 0.8); border-radius: 4px;">
+      <el-table
       v-loading="loading"
       :data="list.slice((pageNum-1)*pageSize,pageNum*pageSize)"
       style="width: 100%;"
@@ -53,8 +54,11 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
 
-    <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />
+    <div style="text-align: right; padding-right: 10px;">
+      <pagination v-show="total>0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" />
+    </div>
   </div>
 </template>
 

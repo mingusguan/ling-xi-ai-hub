@@ -21,7 +21,7 @@
       <el-col :xs="24" :lg="16">
         <el-card shadow="never">
           <div slot="header"><span>我的待办流程</span></div>
-          <el-table :data="todoList" size="small" border>
+          <el-table :data="todoList" size="small" border height="200px">
             <el-table-column prop="taskName" label="任务名称" min-width="140" />
             <el-table-column prop="templateName" label="流程模板" min-width="140" />
             <el-table-column prop="assignee" label="处理人" width="120" />
@@ -208,9 +208,9 @@ export default {
       approveComment: '',
       editableValues: {},
       cards: [
-        { key: 'unreadCount', label: '未读消息', color: '#f56c6c' },
+        { key: 'unreadCount', label: '未读消息', color: '#e6a23c' },
         { key: 'todoWorkflowCount', label: '待办审批', color: '#409eff' },
-        { key: 'timeoutWarningCount', label: '超时预警', color: '#e6a23c' },
+        { key: 'timeoutWarningCount', label: '超时预警', color: '#f56c6c' },
         { key: 'approvedTodayCount', label: '今日已审批', color: '#67c23a' }
       ],
       unreadCount: 0,
@@ -467,8 +467,8 @@ export default {
 
 <style scoped>
 .app-container {
-  background: #0B1120;
-  min-height: calc(100vh - 84px);
+  background: transparent !important;
+  min-height: 100%;
   padding: 14px;
 }
 
@@ -510,6 +510,99 @@ export default {
   backdrop-filter: blur(10px);
 }
 
+::v-deep .el-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+}
+
+::v-deep .el-table,
+::v-deep .el-table__body-wrapper,
+::v-deep .el-table th,
+::v-deep .el-table tr {
+  background: transparent !important;
+}
+
+::v-deep .el-table td,
+::v-deep .el-table th.is-leaf {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+::v-deep .el-table--border,
+::v-deep .el-table--group {
+  border-color: rgba(59, 130, 246, 0.15);
+}
+
+::v-deep .el-table tbody tr:hover > td {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+::v-deep .el-table th {
+  color: #E2E8F0 !important;
+  font-weight: 600;
+  background: rgba(59, 130, 246, 0.05) !important;
+}
+
+::v-deep .el-drawer {
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%) !important;
+}
+
+::v-deep .el-drawer__header {
+  color: #E2E8F0;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+  margin-bottom: 20px;
+}
+
+::v-deep .el-drawer__close-btn {
+  color: #94A3B8;
+}
+
+.todo-drawer {
+  color: #E2E8F0;
+}
+
+::v-deep .el-divider--horizontal {
+  background-color: rgba(59, 130, 246, 0.15);
+  margin: 16px 0;
+}
+
+::v-deep .el-divider__text {
+  color: #60A5FA;
+  background: transparent;
+}
+
+.todo-rule-grid {
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+::v-deep .el-table,
+::v-deep .el-table__body-wrapper,
+::v-deep .el-table th,
+::v-deep .el-table tr,
+::v-deep .el-table tr:nth-child(even) {
+  background: transparent !important;
+}
+
+::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.todo-field-label {
+  color: #94A3B8;
+}
+
+.todo-field-value {
+  color: #E2E8F0;
+}
+
+::v-deep .todo-field-input .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.2) !important;
+  color: #E2E8F0 !important;
+}
+
 .timeout-header {
   display: flex;
   justify-content: space-between;
@@ -532,7 +625,7 @@ export default {
   border-color: rgba(96, 165, 250, 0.4);
   background: rgba(15, 23, 42, 0.8);
 }
-.timeout-item.level-3 { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
+.timeout-item.level-3 { background: rgba(239, 68, 68, 0.35); border-color: rgba(239, 68, 68, 0.6); }
 .timeout-item.level-2 { background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); }
 .timeout-item.level-1 { background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); }
 

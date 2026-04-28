@@ -1,64 +1,60 @@
 <template>
-  <div class="app-container">
-    <el-row :gutter="20">
-      <splitpanes :horizontal="$store.getters.device === 'mobile'" class="default-theme">
-        <pane size="16">
-          <el-col>
-            <div class="head-container">
-              <el-input
-                v-model="deptName"
-                placeholder="请输入部门名称"
-                clearable
-                size="small"
-                prefix-icon="el-icon-search"
-                style="margin-bottom: 20px"
-              />
-            </div>
-            <div class="head-container">
-              <el-tree
-                ref="tree"
-                :data="deptOptions"
-                :props="defaultProps"
-                :expand-on-click-node="false"
-                :filter-node-method="filterNode"
-                node-key="id"
-                default-expand-all
-                highlight-current
-                @node-click="handleNodeClick"
-              />
-            </div>
-          </el-col>
-        </pane>
-        <pane size="84">
-          <el-col>
-            <el-form
+  <div class="app-container user-management" style="background: rgba(15, 23, 42, 0.8);">
+    <el-row :gutter="0">
+      <el-col :span="4" style="height: 100%;">
+        <div class="head-container" style="background: rgba(15, 23, 42, 0.8); padding: 5px; border-radius: 4px; height: 100%;">
+          <el-input
+            v-model="deptName"
+            placeholder="请输入部门名称"
+            clearable
+            size="small"
+            prefix-icon="el-icon-search"
+            style="margin-bottom: 5px"
+          />
+          <el-tree
+            ref="tree"
+            :data="deptOptions"
+            :props="defaultProps"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            node-key="id"
+            default-expand-all
+            highlight-current
+            @node-click="handleNodeClick"
+            style="background: rgba(15, 23, 42, 0.8); color: #E2E8F0;"
+            class="custom-tree"
+          />
+        </div>
+      </el-col>
+      <el-col :span="20" style="height: 100%;">
+        <el-form
               ref="queryForm"
               :model="queryParams"
               size="small"
               :inline="true"
               v-show="showSearch"
-              label-width="68px"
+              style="background: rgba(15, 23, 42, 0.8); padding: 6px 4px 0 4px; border-radius: 4px; margin-bottom: 0;"
             >
-              <el-form-item label="用户名称" prop="userName">
+              <el-form-item label="用户名" prop="userName">
                 <el-input
                   v-model="queryParams.userName"
                   placeholder="请输入用户名称"
                   clearable
-                  style="width: 240px"
+                  style="width: 140px"
                   @keyup.enter.native="handleQuery"
                 />
               </el-form-item>
-              <el-form-item label="手机号码" prop="phonenumber">
+              <el-form-item label="手机" prop="phonenumber">
                 <el-input
                   v-model="queryParams.phonenumber"
                   placeholder="请输入手机号码"
                   clearable
-                  style="width: 240px"
+                  style="width: 140px"
                   @keyup.enter.native="handleQuery"
                 />
               </el-form-item>
               <el-form-item label="状态" prop="status">
-                <el-select v-model="queryParams.status" placeholder="用户状态" clearable style="width: 240px">
+                <el-select v-model="queryParams.status" placeholder="用户状态" clearable style="width: 110px">
                   <el-option
                     v-for="dict in dict.type.sys_normal_disable"
                     :key="dict.value"
@@ -70,7 +66,7 @@
               <el-form-item label="创建时间">
                 <el-date-picker
                   v-model="dateRange"
-                  style="width: 240px"
+                  style="width: 220px"
                   value-format="yyyy-MM-dd"
                   type="daterange"
                   range-separator="-"
@@ -84,182 +80,155 @@
               </el-form-item>
             </el-form>
 
-            <el-row :gutter="10" class="mb8">
-              <el-col :span="1.5">
-                <el-button
-                  type="primary"
-                  plain
-                  icon="el-icon-plus"
-                  size="mini"
-                  @click="handleAdd"
-                  v-hasPermi="['system:user:add']"
-                >新增</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                <el-button
-                  type="success"
-                  plain
-                  icon="el-icon-edit"
-                  size="mini"
-                  :disabled="single"
-                  @click="handleUpdate"
-                  v-hasPermi="['system:user:edit']"
-                >修改</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                <el-button
-                  type="danger"
-                  plain
-                  icon="el-icon-delete"
-                  size="mini"
-                  :disabled="multiple"
-                  @click="handleDelete"
-                  v-hasPermi="['system:user:remove']"
-                >删除</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                <el-button
-                  type="info"
-                  plain
-                  icon="el-icon-upload2"
-                  size="mini"
-                  @click="handleImport"
-                  v-hasPermi="['system:user:import']"
-                >导入</el-button>
-              </el-col>
-              <el-col :span="1.5">
-                <el-button
-                  type="warning"
-                  plain
-                  icon="el-icon-download"
-                  size="mini"
-                  @click="handleExport"
-                  v-hasPermi="['system:user:export']"
-                >导出</el-button>
-              </el-col>
+            <div style="background: rgba(15, 23, 42, 0.8); padding: 10px; border-radius: 4px; margin-bottom: 0;">
+              <el-button
+                type="primary"
+                plain
+                icon="el-icon-plus"
+                size="mini"
+                @click="handleAdd"
+                v-hasPermi="['system:user:add']"
+              >新增</el-button>
+              <el-button
+                type="success"
+                plain
+                icon="el-icon-edit"
+                size="mini"
+                :disabled="single"
+                @click="handleUpdate"
+                v-hasPermi="['system:user:edit']"
+              >修改</el-button>
+              <el-button
+                type="danger"
+                plain
+                icon="el-icon-delete"
+                size="mini"
+                :disabled="multiple"
+                @click="handleDelete"
+                v-hasPermi="['system:user:remove']"
+              >删除</el-button>
+              <el-button
+                type="info"
+                plain
+                icon="el-icon-upload2"
+                size="mini"
+                @click="handleImport"
+                v-hasPermi="['system:user:import']"
+              >导入</el-button>
+              <el-button
+                type="warning"
+                plain
+                icon="el-icon-download"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:user:export']"
+              >导出</el-button>
               <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns" />
-            </el-row>
+            </div>
 
-            <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
-              <el-table-column type="selection" width="50" align="center" />
-              <el-table-column
-                label="用户编号"
-                align="center"
-                key="userId"
-                prop="userId"
-                v-if="columns.userId.visible"
-              />
-              <el-table-column
-                label="用户名称"
-                align="center"
-                key="userName"
-                prop="userName"
-                v-if="columns.userName.visible"
-                :show-overflow-tooltip="true"
-              />
-              <el-table-column
-                label="用户昵称"
-                align="center"
-                key="nickName"
-                prop="nickName"
-                v-if="columns.nickName.visible"
-                :show-overflow-tooltip="true"
-              />
-              <el-table-column
-                label="部门"
-                align="center"
-                key="deptName"
-                prop="dept.deptName"
-                v-if="columns.deptName.visible"
-                :show-overflow-tooltip="true"
-              />
-              <el-table-column
-                label="手机号码"
-                align="center"
-                key="phonenumber"
-                prop="phonenumber"
-                v-if="columns.phonenumber.visible"
-                width="120"
-              />
-              <el-table-column label="状态" align="center" key="status" v-if="columns.status.visible">
-                <template slot-scope="scope">
-                  <el-switch
-                    v-model="scope.row.status"
-                    active-value="0"
-                    inactive-value="1"
-                    @change="handleStatusChange(scope.row)"
-                  />
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="创建时间"
-                align="center"
-                prop="createTime"
-                v-if="columns.createTime.visible"
-                width="160"
-              >
-                <template slot-scope="scope">
-                  <span>{{ parseTime(scope.row.createTime) }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
-                <template slot-scope="scope">
-                  <el-button
-                    size="mini"
-                    type="text"
-                    icon="el-icon-edit"
-                    @click="handleUpdate(scope.row)"
-                    v-hasPermi="['system:user:edit']"
-                  >修改</el-button>
-                  <!-- <el-button
-                    size="mini"
-                    type="text"
-                    icon="el-icon-user"
-                    @click="handleEmployeeInfo(scope.row)"
-                    v-hasPermi="['system:user:edit']"
-                  >员工信息</el-button> -->
-                  <el-button
-                    v-if="scope.row.userId !== 1"
-                    size="mini"
-                    type="text"
-                    icon="el-icon-delete"
-                    @click="handleDelete(scope.row)"
-                    v-hasPermi="['system:user:remove']"
-                  >删除</el-button>
-                  <el-dropdown
-                    size="mini"
-                    @command="command => handleCommand(command, scope.row)"
-                    v-hasPermi="['system:user:resetPwd', 'system:user:edit']"
-                  >
-                    <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item
-                        command="handleResetPwd"
-                        icon="el-icon-key"
-                        v-hasPermi="['system:user:resetPwd']"
-                      >重置密码</el-dropdown-item>
-                      <el-dropdown-item
-                        command="handleAuthRole"
-                        icon="el-icon-circle-check"
-                        v-hasPermi="['system:user:edit']"
-                      >分配角色</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </template>
-              </el-table-column>
-            </el-table>
+            <div style="overflow-x: auto; background: rgba(15, 23, 42, 0.8); border-radius: 4px;">
+              <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange" height="calc(100vh - 290px)">
+                <el-table-column type="selection" width="50" align="center" />
+                <el-table-column
+                  label="用户编号"
+                  align="center"
+                  key="userId"
+                  prop="userId"
+                  v-if="columns.userId.visible"
+                />
+                <el-table-column
+                  label="用户名称"
+                  align="center"
+                  key="userName"
+                  prop="userName"
+                  v-if="columns.userName.visible"
+                  :show-overflow-tooltip="true"
+                />
+                <el-table-column
+                  label="用户昵称"
+                  align="center"
+                  key="nickName"
+                  prop="nickName"
+                  v-if="columns.nickName.visible"
+                  :show-overflow-tooltip="true"
+                />
+                <el-table-column
+                  label="部门"
+                  align="center"
+                  key="deptName"
+                  prop="dept.deptName"
+                  v-if="columns.deptName.visible"
+                  :show-overflow-tooltip="true"
+                />
+                <el-table-column label="状态" align="center" key="status" v-if="columns.status.visible">
+                  <template slot-scope="scope">
+                    <el-switch
+                      v-model="scope.row.status"
+                      active-value="0"
+                      inactive-value="1"
+                      @change="handleStatusChange(scope.row)"
+                    />
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="创建时间"
+                  align="center"
+                  prop="createTime"
+                  v-if="columns.createTime.visible"
+                  width="160"
+                >
+                  <template slot-scope="scope">
+                    <span>{{ parseTime(scope.row.createTime) }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" align="center" min-width="200" class-name="small-padding">
+                  <template slot-scope="scope">
+                    <el-button
+                      size="mini"
+                      type="text"
+                      icon="el-icon-edit"
+                      @click="handleUpdate(scope.row)"
+                      v-hasPermi="['system:user:edit']"
+                    >修改</el-button>
+                    <el-button
+                      v-if="scope.row.userId !== 1"
+                      size="mini"
+                      type="text"
+                      icon="el-icon-delete"
+                      style="color: #F56C6C"
+                      @click="handleDelete(scope.row)"
+                      v-hasPermi="['system:user:remove']"
+                    >删除</el-button>
+                    <el-button
+                      size="mini"
+                      type="text"
+                      icon="el-icon-key"
+                      @click="handleResetPwd(scope.row)"
+                      v-hasPermi="['system:user:resetPwd']"
+                    >重置密码</el-button>
+                    <el-button
+                      size="mini"
+                      type="text"
+                      icon="el-icon-circle-check"
+                      @click="handleAuthRole(scope.row)"
+                      v-hasPermi="['system:user:edit']"
+                    >分配角色</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
 
-            <pagination
-              v-show="total > 0"
-              :total="total"
-              :page.sync="queryParams.pageNum"
-              :limit.sync="queryParams.pageSize"
-              @pagination="getList"
-            />
-          </el-col>
-        </pane>
-      </splitpanes>
-    </el-row>
+            <div style="text-align: right; padding-right: 10px;">
+              <pagination
+                v-show="total > 0"
+                :total="total"
+                :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize"
+                @pagination="getList"
+              />
+            </div>
+        </el-col>
+      </el-row>
 
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -470,18 +439,134 @@
   </div>
 </template>
 
+<style scoped>
+::v-deep(.custom-tree .el-tree-node__content:hover) {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+}
+::v-deep(.custom-tree .el-tree-node__content) {
+  background-color: transparent !important;
+}
+::v-deep(.custom-tree.el-tree.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content) {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: #E2E8F0 !important;
+}
+::v-deep(.custom-tree.el-tree.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content:hover) {
+  background-color: rgba(59, 130, 246, 0.5) !important;
+}
+::v-deep(.custom-tree.el-tree.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content:focus) {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+}
+::v-deep .el-loading-mask {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+::v-deep .el-loading-spinner .circular {
+  color: #3B82F6 !important;
+}
+::v-deep .el-date-editor {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+::v-deep .el-date-editor .el-range-input {
+  color: #E2E8F0 !important;
+  background: transparent !important;
+}
+::v-deep .el-date-editor .el-range-separator {
+  color: #E2E8F0 !important;
+}
+::v-deep .el-picker-panel {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+::v-deep .el-picker-panel .el-date-table {
+  color: #E2E8F0 !important;
+}
+::v-deep .el-picker-panel .el-date-table td {
+  color: #E2E8F0 !important;
+}
+::v-deep .el-picker-panel .el-date-table td.in-range {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+::v-deep .el-picker-panel .el-date-table td.in-range::before {
+  background: transparent !important;
+}
+::v-deep .el-picker-panel .el-date-table td.start-date, ::v-deep .el-picker-panel .el-date-table td.end-date {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+::v-deep .el-picker-panel .el-date-table td.start-date::before, ::v-deep .el-picker-panel .el-date-table td.end-date::before {
+  background: transparent !important;
+}
+::v-deep .el-picker-panel .el-date-table td.today {
+  color: #3B82F6 !important;
+}
+::v-deep .el-picker-panel .el-date-table td.available:hover {
+  background: rgba(59, 130, 246, 0.4) !important;
+}
+::v-deep .el-picker-panel .el-date-table td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+::v-deep .el-picker-panel .el-calendar-table__row td.in-range {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+::v-deep .el-picker-panel .el-calendar-table__row td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+::v-deep .el-date-range-picker__content {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+::v-deep .el-date-range-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+::v-deep .el-picker-panel__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+::v-deep .el-picker-panel__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+::v-deep .el-date-table td {
+  background: transparent !important;
+}
+::v-deep .el-date-table td.prev-month, ::v-deep .el-date-table td.next-month {
+  color: #666 !important;
+}
+::v-deep .el-month-table td, ::v-deep .el-year-table td {
+  background: transparent !important;
+}
+::v-deep .el-month-table td:hover, ::v-deep .el-year-table td:hover {
+  background: rgba(59, 130, 246, 0.3) !important;
+}
+::v-deep .el-date-editor .el-range-input {
+  background: transparent !important;
+}
+::v-deep .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #E2E8F0 !important;
+}
+::v-deep .el-table__body-wrapper {
+  border-radius: 0 0 4px 4px;
+  overflow: hidden;
+}
+::v-deep .el-table__body tr:last-child td:first-child {
+  border-bottom-left-radius: 4px;
+}
+::v-deep .el-table__body tr:last-child td:last-child {
+  border-bottom-right-radius: 4px;
+}
+</style>
+
 <script>
 import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from '@/api/system/user'
 import { getToken } from '@/utils/auth'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { Splitpanes, Pane } from 'splitpanes'
-import 'splitpanes/dist/splitpanes.css'
 
 export default {
   name: 'User',
   dicts: ['sys_normal_disable', 'sys_user_sex', 'sys_job_level'],
-  components: { Treeselect, Splitpanes, Pane },
+  components: { Treeselect },
   data() {
     return {
       loading: true,

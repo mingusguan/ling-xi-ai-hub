@@ -1,8 +1,5 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
-    <div class="glow-layer glow-layer-1"></div>
-    <div class="glow-layer glow-layer-2"></div>
-    <div class="glow-layer glow-layer-3"></div>
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
     <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
     <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
@@ -68,13 +65,56 @@ export default {
   position: relative;
   height: 100%;
   width: 100%;
-  overflow: hidden;
-  background: $bg-color;
+  background: 
+    radial-gradient(ellipse at 110px 70px, 
+      rgba(59, 130, 246, 0.12) 0%, 
+      rgba(139, 92, 246, 0.06) 15%, 
+      rgba(59, 130, 246, 0.03) 25%, 
+      rgba(59, 130, 246, 0.015) 35%, 
+      rgba(59, 130, 246, 0.008) 50%, 
+      transparent 70%),
+    linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+}
+
+// 整体统一深色科技风
+.main-container,
+.app-main,
+.el-main,
+.el-container {
+  background: transparent !important;
+}
+
+// 深色科技风卡片
+.el-card {
+  background: rgba(30, 41, 59, 0.7) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 20px rgba(59, 130, 246, 0.03);
+  color: #E2E8F0;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(59, 130, 246, 0.25) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 30px rgba(59, 130, 246, 0.08);
+  }
+
+  .el-card__header {
+    border-bottom: 1px solid rgba(59, 130, 246, 0.1) !important;
+    color: #E2E8F0;
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.02);
+  }
+
+  .el-card__body {
+    color: #94A3B8;
+  }
 }
 
 .drawer-bg {
   background: #000;
-  opacity: 0.3;
+  opacity: 0.5;
   width: 100%;
   top: 0;
   height: 100%;
@@ -87,6 +127,7 @@ export default {
   transition: margin-left $transition-base;
   margin-left: $sidebar-width;
   position: relative;
+  overflow: hidden;
 }
 
 .hasTagsView {

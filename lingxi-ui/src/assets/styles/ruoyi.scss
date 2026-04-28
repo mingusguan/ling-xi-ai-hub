@@ -3,6 +3,17 @@
 * Copyright (c) 2019 ruoyi
 */
 
+/** 表格滚动容器 **/
+.table-scroll-container {
+  overflow-x: auto;
+  max-height: calc(100vh - 280px);
+}
+
+.table-scroll-container .el-table {
+  min-width: 100%;
+  max-height: calc(100vh - 300px);
+}
+
 /** 基础通用 **/
 .pt5 {
   padding-top: 5px;
@@ -119,15 +130,33 @@
 .pagination-container {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 20px !important;
+  padding-right: 30px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.pagination-container .el-pagination {
+  margin-right: 0 !important;
 }
 
 /* tree border */
 .tree-border {
   margin-top: 5px;
-  border: 1px solid #e5e6e7;
-  background: #FFFFFF none;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(15, 23, 42, 0.8) none;
   border-radius: 4px;
+}
+
+.tree-border .el-tree-node__content:hover {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.tree-border .el-tree-node.is-current > .el-tree-node__content {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: #E2E8F0 !important;
 }
 
 /* horizontal el menu */
@@ -167,6 +196,37 @@
 
 .el-tree-node__content > .el-checkbox {
   margin-right: 8px;
+}
+
+.user-management .el-tree.custom-tree .el-tree-node__content:hover {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.user-management .el-tree.custom-tree .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: #E2E8F0 !important;
+}
+
+.user-management .el-tree.custom-tree .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content:hover {
+  background-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.el-tree.custom-tree.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-loading-mask {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+.el-loading-spinner .circular {
+  color: #3B82F6 !important;
 }
 
 .list-group-striped > .list-group-item {
@@ -294,4 +354,1321 @@
 /* 分割面板样式 */
 .splitpanes.default-theme .splitpanes__pane {
   background-color: #fff!important;
+}
+
+// ==================== 科技风深色主题 - MessageBox ====================
+.el-message-box {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 50%, #1E293B 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1) !important;
+}
+
+.el-message-box__header {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  padding: 18px 20px !important;
+}
+
+.el-message-box__title {
+  color: #E2E8F0 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+.el-message-box__headerbtn {
+  top: 18px !important;
+}
+
+.el-message-box__headerbtn .el-message-box__close {
+  color: #94A3B8 !important;
+  font-size: 18px !important;
+  transition: color 0.2s !important;
+}
+
+.el-message-box__headerbtn:hover .el-message-box__close {
+  color: #60A5FA !important;
+}
+
+.el-message-box__content {
+  padding: 20px !important;
+  color: #E2E8F0 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+}
+
+.el-message-box__message {
+  color: #E2E8F0 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+}
+
+.el-message-box__status {
+  display: none !important;
+}
+
+.el-message-box__btns {
+  padding: 15px 20px 20px !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.15) !important;
+}
+
+.el-message-box__btns .el-button {
+  border-radius: 8px !important;
+  padding: 10px 20px !important;
+  font-size: 14px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-message-box__btns .el-button--default {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  color: #94A3B8 !important;
+}
+
+.el-message-box__btns .el-button--default:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+  color: #60A5FA !important;
+}
+
+.el-message-box__btns .el-button--primary {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-message-box__btns .el-button--primary:hover {
+  background: linear-gradient(135deg, #60A5FA 0%, #A855F7 100%) !important;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.el-message-box__btns .el-button--warning {
+  background: linear-gradient(135deg, #F59E0B 0%, #F97316 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35) !important;
+}
+
+.el-message-box__btns .el-button--warning:hover {
+  background: linear-gradient(135deg, #FBBF24 0%, #FB923C 100%) !important;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.el-message-box__btns .el-button--danger {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35) !important;
+}
+
+.el-message-box__btns .el-button--danger:hover {
+  background: linear-gradient(135deg, #F87171 0%, #EF4444 100%) !important;
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+.el-message-box__status.el-icon-warning {
+  color: #F59E0B !important;
+}
+
+.el-message-box__status.el-icon-success {
+  color: #10B981 !important;
+}
+
+.el-message-box__status.el-icon-error {
+  color: #EF4444 !important;
+}
+
+.el-message-box__status.el-icon-info {
+  color: #3B82F6 !important;
+}
+
+.v-modal {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+// ==================== 科技风深色主题 - 全局表格 ====================
+.el-table {
+  background-color: transparent !important;
+  color: #E2E8F0 !important;
+  max-height: 600px !important;
+  overflow: hidden !important;
+}
+
+.el-table::before {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+.el-table th.el-table__cell {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #94A3B8 !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-table tr.el-table__row {
+  background: rgba(15, 23, 42, 0.6) !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.el-table tr.el-table__row:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+
+.el-table td.el-table__cell {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+.el-table .el-table__cell {
+  padding: 12px 0 !important;
+}
+
+.el-table__body-wrapper {
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}
+
+.el-table__header-wrapper,
+.el-table__fixed-header-wrapper {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
+.el-table .caret-wrapper {
+  color: #94A3B8 !important;
+}
+
+.el-table .sort-caret.ascending {
+  border-bottom-color: #94A3B8 !important;
+}
+
+.el-table .sort-caret.descending {
+  border-top-color: #94A3B8 !important;
+}
+
+.el-pagination,
+.app-container .el-pagination,
+.pagination,
+.app-container .pagination,
+.pagination-container,
+.app-container .pagination-container,
+.el-pagination *,
+.pagination *,
+.pagination-container * {
+  color: #94A3B8 !important;
+  background: transparent !important;
+}
+
+.app-container {
+  background: transparent !important;
+}
+
+.pagination-container,
+.app-container .pagination-container {
+  padding: 16px 30px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+.el-pagination .el-pager li {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-pagination .el-pager li.is-active {
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%) !important;
+  color: #fff !important;
+}
+
+.el-pagination .el-pager li:hover {
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  background: rgba(59, 130, 246, 0.25) !important;
+  color: #60A5FA !important;
+}
+
+.el-pagination .btn-next,
+.el-pagination .btn-prev {
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  background: rgba(30, 41, 59, 0.7) !important;
+}
+
+.el-pagination .btn-next:hover,
+.el-pagination .btn-prev:hover {
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+.el-pagination .el-pagination__total,
+.el-pagination .el-pagination__jump {
+  color: #94A3B8 !important;
+}
+
+.el-pagination .el-pager li {
+  background: rgba(30, 41, 59, 0.6) !important;
+  color: #94A3B8 !important;
+  border-radius: 6px !important;
+}
+
+.el-pagination .el-pager li.is-active {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%) !important;
+  color: #fff !important;
+}
+
+.el-pagination .el-pager li:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #60A5FA !important;
+}
+
+// ==================== 科技风深色主题 - 表格加载 ====================
+.el-table--loading {
+  background: rgba(15, 23, 42, 0.6) !important;
+}
+
+.el-table--loading .el-table__loading {
+  background: rgba(15, 23, 42, 0.8) !important;
+  color: #94A3B8 !important;
+  border: none !important;
+}
+
+.el-table--loading .el-table__loading .el-icon-loading {
+  color: #60A5FA !important;
+}
+
+.el-table--loading .el-table__body-wrapper {
+  background: rgba(15, 23, 42, 0.6) !important;
+}
+
+.el-table--loading .el-table__header-wrapper,
+.el-table--loading .el-table__fixed-header-wrapper {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+// 强制覆盖所有可能的白色背景
+.el-table--loading * {
+  background: transparent !important;
+}
+
+.el-table--loading .el-table__loading {
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+// ==================== 科技风深色主题 - 表单组件 ====================
+
+// 文本域字数限制
+.el-textarea__count {
+  background: transparent !important;
+  color: #94A3B8 !important;
+}
+
+// 上传组件
+.el-upload-list__item {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-upload-list__item-name {
+  color: #E2E8F0 !important;
+}
+
+.el-upload-list__item-status-label {
+  color: #94A3B8 !important;
+}
+
+// 时间线（审批记录和流程历史）
+.el-timeline-item {
+  color: #E2E8F0 !important;
+}
+
+.el-timeline-item__timestamp {
+  color: #94A3B8 !important;
+}
+
+// 分隔线
+.el-divider {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+// 弹窗表单样式
+.el-dialog {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 50%, #1E293B 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  border-radius: 12px !important;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-dialog__title {
+  color: #E2E8F0 !important;
+}
+
+.el-dialog__body {
+  color: #E2E8F0 !important;
+}
+
+.el-form-item__label {
+  color: #94A3B8 !important;
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-input__inner::placeholder,
+.el-textarea__inner::placeholder {
+  color: #64748B !important;
+}
+
+.el-select .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__editor-wrap {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+.el-date-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__cell {
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__cell:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-date-picker__cell.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-input-number__decrease,
+.el-input-number__increase {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-input-number__decrease:hover,
+.el-input-number__increase:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+// 审批按钮
+.el-radio-button:nth-child(2).is-active .el-radio-button__inner {
+  background-color: #F56C6C !important;
+  border-color: #F56C6C !important;
+  color: #ffffff !important;
+}
+
+.el-radio-button:nth-child(2).is-active .el-radio-button__inner:hover {
+  color: #F56C6C !important;
+}
+
+.el-pagination .btn-next,
+.el-pagination .btn-prev {
+  background: rgba(30, 41, 59, 0.6) !important;
+  color: #94A3B8 !important;
+  border-radius: 6px !important;
+}
+
+.el-pagination .btn-next:hover,
+.el-pagination .btn-prev:hover {
+  color: #60A5FA !important;
+}
+
+.el-pagination .el-pagination__sizes .el-select .el-input .el-input__wrapper {
+  background: rgba(30, 41, 59, 0.8) !important;
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-pagination .el-pagination__sizes .el-select .el-input .el-input__inner {
+  color: #E2E8F0 !important;
+}
+
+.el-input__wrapper {
+  background: rgba(30, 41, 59, 0.8) !important;
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-input__inner {
+  color: #E2E8F0 !important;
+}
+
+.el-input__inner::placeholder {
+  color: #64748B !important;
+}
+
+.el-card {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  border-radius: 12px !important;
+}
+
+.el-card__header {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  color: #E2E8F0 !important;
+  font-weight: 600 !important;
+}
+
+.el-dialog {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 50%, #1E293B 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  border-radius: 12px !important;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-dialog__body {
+  color: #E2E8F0 !important;
+}
+
+.el-form-item__label {
+  color: #94A3B8 !important;
+}
+
+// ==================== 科技风深色主题 - 下拉框 ====================
+.el-select-dropdown {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  border-radius: 8px !important;
+}
+
+.el-select-dropdown__item {
+  color: #E2E8F0 !important;
+  background: transparent !important;
+}
+
+.el-select-dropdown__item:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #60A5FA !important;
+}
+
+.el-select-dropdown__item.is-selected {
+  background: rgba(59, 130, 246, 0.3) !important;
+  color: #60A5FA !important;
+  font-weight: 500 !important;
+}
+
+// ==================== 科技风深色主题 - 输入框 ====================
+.el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  color: #E2E8F0 !important;
+  border-radius: 4px !important;
+}
+
+.el-input__inner::placeholder {
+  color: #64748B !important;
+}
+
+// ==================== 科技风深色主题 - 下拉框输入框 ====================
+.el-select .el-input__inner,
+.el-select .el-input--mini .el-input__inner {
+  background: rgba(30, 41, 59, 0.85) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-select .el-input__inner::placeholder,
+.el-select .el-input--mini .el-input__inner::placeholder {
+  color: #64748B !important;
+}
+
+.el-select .el-input__suffix,
+.el-select .el-input--mini .el-input__suffix {
+  color: #94A3B8 !important;
+}
+
+.el-input--mini .el-input__inner {
+  height: 28px !important;
+  line-height: 28px !important;
+  padding: 0 10px !important;
+}
+
+// ==================== 科技风深色主题 - 按钮发光 ====================
+.el-button--default {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  color: #E2E8F0 !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-button--default:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  color: #60A5FA !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+.el-button--primary {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+.el-button--primary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.6) !important;
+}
+
+.el-button--primary.is-plain {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border: 1px solid rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+  box-shadow: none !important;
+}
+
+.el-button--primary.is-plain:hover {
+  background: rgba(59, 130, 246, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.6) !important;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.35) !important;
+  transform: none !important;
+}
+
+.el-button--mini {
+  padding: 7px 15px !important;
+  font-size: 12px !important;
+}
+
+/* BpmnEditor 深色主题适配 */
+.bpmn-editor {
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  border-radius: 8px !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+}
+
+.bpmn-editor__toolbar {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  background: rgba(30, 41, 59, 0.7) !important;
+}
+
+.bpmn-editor__canvas {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.7)) !important;
+  background-image:
+    linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+}
+
+.bpmn-editor__panel {
+  border-left: 1px solid rgba(59, 130, 246, 0.15) !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+.bpmn-editor__panel-title {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  color: #E2E8F0 !important;
+}
+
+.bpmn-editor__field-card {
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  background: rgba(30, 41, 59, 0.5) !important;
+}
+
+.bpmn-editor__field-grid .el-form-item__label {
+  color: #94A3B8 !important;
+}
+
+.bpmn-editor__field-grid .el-input__inner {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.bpmn-editor__field-grid .el-select .el-input__inner {
+  background: rgba(30, 41, 59, 0.7) !important;
+}
+
+.bpmn-editor__hint,
+.bpmn-editor__empty,
+.bpmn-editor__condition-tip {
+  color: #94A3B8 !important;
+}
+
+.bpmn-editor__canvas .djs-connection path {
+  stroke: #60A5FA !important;
+  stroke-width: 2px !important;
+}
+
+.bpmn-editor__canvas .djs-connection marker path {
+  stroke: #60A5FA !important;
+  fill: #60A5FA !important;
+}
+
+.bpmn-editor__canvas .djs-connection:hover path,
+.bpmn-editor__canvas .djs-connection.selected path {
+  stroke: #3B82F6 !important;
+  stroke-width: 3px !important;
+}
+
+.bpmn-editor__canvas .djs-connection:hover marker path,
+.bpmn-editor__canvas .djs-connection.selected marker path {
+  stroke: #3B82F6 !important;
+  fill: #3B82F6 !important;
+}
+
+.bpmn-editor__canvas .djs-outline {
+  stroke: rgba(59, 130, 246, 0.4) !important;
+  stroke-width: 2px !important;
+}
+
+.bpmn-editor__canvas .djs-element.selected .djs-outline {
+  stroke: #3B82F6 !important;
+  stroke-width: 2px !important;
+}
+
+.bpmn-editor__canvas .djs-shape > g > rect,
+.bpmn-editor__canvas .djs-shape > g > polygon,
+.bpmn-editor__canvas .djs-shape .djs-visual > :nth-child(1) {
+  stroke: #3B82F6 !important;
+  fill: #F8FAFC !important;
+}
+
+.bpmn-editor__canvas .djs-shape > g > path {
+  stroke: #3B82F6 !important;
+  fill: #F8FAFC !important;
+}
+
+.bpmn-editor__canvas .djs-shape text,
+.bpmn-editor__canvas .djs-shape tspan,
+.bpmn-editor__canvas .djs-connection text,
+.bpmn-editor__canvas .djs-connection tspan {
+  fill: #334155 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+.bpmn-editor__canvas svg text,
+.bpmn-editor__canvas svg tspan,
+.bpmn-editor__canvas .djs-label,
+.bpmn-editor__canvas .djs-shape text,
+.bpmn-editor__canvas .djs-shape tspan,
+.bpmn-editor__canvas .djs-connection text,
+.bpmn-editor__canvas .djs-connection tspan {
+  fill: #334155 !important;
+  color: #334155 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+.bpmn-editor__panel .el-textarea__inner,
+.bpmn-editor__panel .el-input__inner,
+.bpmn-editor__panel .el-select .el-input__inner {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.bpmn-editor__panel .el-input__inner::placeholder,
+.bpmn-editor__panel .el-textarea__inner::placeholder {
+  color: #64748B !important;
+}
+
+/* 审批驳回按钮颜色 - 全局强制覆盖 */
+body .el-radio-button:nth-child(2) .el-radio-button__inner {
+  border-left-color: #dcdfe6 !important;
+}
+
+body .el-radio-button:nth-child(2).is-active .el-radio-button__inner {
+  background-color: #F56C6C !important;
+  border-color: #F56C6C !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+body .el-radio-button:nth-child(2) .el-radio-button__inner:hover {
+  color: #F56C6C !important;
+}
+
+/* 直接覆盖驳回按钮span */
+body .el-radio-button:nth-child(2).is-active .el-radio-button__inner {
+  background: #F56C6C !important;
+  border-color: #F56C6C !important;
+  color: #ffffff !important;
+}
+
+body .el-radio-button:nth-child(2) .el-radio-button__inner:hover {
+  color: #F56C6C !important;
+}
+
+/* 最具体的选择器 - 强制覆盖 */
+body .el-radio-group .el-radio-button.is-active .el-radio-button__inner {
+  background: #409EFF !important;
+  border-color: #409EFF !important;
+  color: #ffffff !important;
+}
+
+body .el-radio-group .el-radio-button:nth-child(2).is-active .el-radio-button__inner {
+  background: #F56C6C !important;
+  border-color: #F56C6C !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  background-color: #F56C6C !important;
+}
+
+body .el-radio-group .el-radio-button:nth-child(2) .el-radio-button__inner {
+  color: #F56C6C !important;
+}
+
+/* 直接覆盖span元素 - 强制覆盖内联样式 */
+body .el-radio-button:nth-child(2).is-active .el-radio-button__inner span,
+body .el-radio-button:nth-child(2).is-active .el-radio-button__inner {
+  background: #F56C6C !important;
+  background-color: #F56C6C !important;
+  color: #ffffff !important;
+  border-color: #F56C6C !important;
+  box-shadow: none !important;
+}
+
+body .el-radio-button:nth-child(2) .el-radio-button__inner span,
+body .el-radio-button:nth-child(2) .el-radio-button__inner {
+  color: #F56C6C !important;
+}
+
+// ==================== 科技风深色主题 - 日期选择器和时间选择器 ====================
+
+/* 日期选择器和时间选择器输入框 */
+.el-date-editor {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+  border-radius: 4px !important;
+}
+
+.el-date-editor .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-editor .el-input__inner::placeholder {
+  color: #64748B !important;
+}
+
+.el-date-editor .el-input__prefix-icon,
+.el-date-editor .el-input__suffix-icon {
+  color: #94A3B8 !important;
+}
+
+.el-date-editor .el-input__prefix-icon:hover,
+.el-date-editor .el-input__suffix-icon:hover {
+  color: #60A5FA !important;
+}
+
+/* 日期选择器弹出层 */
+.el-picker-panel {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1) !important;
+}
+
+.el-picker-panel__content {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+.el-picker-panel__icon-btn {
+  color: #94A3B8 !important;
+  transition: color 0.3s ease !important;
+}
+
+.el-picker-panel__icon-btn:hover {
+  color: #60A5FA !important;
+}
+
+/* 日期选择器头部 */
+.el-date-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+  padding: 12px 0 !important;
+}
+
+.el-date-picker__header-label {
+  color: #E2E8F0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: color 0.3s ease !important;
+}
+
+.el-date-picker__header-label:hover {
+  color: #60A5FA !important;
+}
+
+/* 日期选择器表格 */
+.el-date-table {
+  background: transparent !important;
+  border-collapse: separate !important;
+  border-spacing: 2px !important;
+}
+
+.el-date-table th {
+  color: #94A3B8 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 8px 0 !important;
+}
+
+.el-date-table td {
+  color: #E2E8F0 !important;
+  font-size: 13px !important;
+  padding: 6px !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-date-table td:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60A5FA !important;
+}
+
+.el-date-table td.el-date-table__row-cell.current {
+  color: #60A5FA !important;
+  font-weight: 600 !important;
+}
+
+.el-date-table td.el-date-table__row-cell.today {
+  color: #67c23a !important;
+  font-weight: 600 !important;
+  position: relative;
+}
+
+.el-date-table td.el-date-table__row-cell.today::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: #67c23a !important;
+  border-radius: 50%;
+}
+
+.el-date-table td.el-date-table__row-cell.in-range {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.el-date-table td.el-date-table__row-cell.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.el-date-table td.el-date-table__row-cell.disabled {
+  color: #64748B !important;
+  cursor: not-allowed !important;
+}
+
+/* 时间选择器 */
+.el-time-panel {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1) !important;
+}
+
+.el-time-spinner {
+  background: transparent !important;
+}
+
+.el-time-spinner__item {
+  color: #E2E8F0 !important;
+  font-size: 13px !important;
+  padding: 6px 0 !important;
+  margin: 2px !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-time-spinner__item:hover:not(.disabled):not(.active) {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60A5FA !important;
+}
+
+.el-time-spinner__item.active {
+  background: rgba(59, 130, 246, 0.3) !important;
+  color: #60A5FA !important;
+  font-weight: 600 !important;
+}
+
+.el-time-spinner__item.disabled {
+  color: #64748B !important;
+  cursor: not-allowed !important;
+}
+
+/* 时间选择器头部 */
+.el-time-panel__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+  padding: 12px !important;
+}
+
+.el-time-panel__time {
+  color: #E2E8F0 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  letter-spacing: 2px !important;
+}
+
+/* 时间选择器页脚 */
+.el-time-panel__footer {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.2) !important;
+  padding: 10px !important;
+}
+
+.el-time-panel__footer .el-button {
+  border-radius: 4px !important;
+  padding: 6px 16px !important;
+  font-size: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-time-panel__footer .el-button--default {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #94A3B8 !important;
+}
+
+.el-time-panel__footer .el-button--default:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+.el-time-panel__footer .el-button--primary {
+  background: #3B82F6 !important;
+  border: 1px solid #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-time-panel__footer .el-button--primary:hover {
+  background: #60A5FA !important;
+  border-color: #60A5FA !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 日期范围选择器 */
+.el-date-range-picker {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1) !important;
+}
+
+.el-date-range-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-date-range-picker__header .el-button {
+  color: #94A3B8 !important;
+  transition: color 0.3s ease !important;
+}
+
+.el-date-range-picker__header .el-button:hover {
+  color: #60A5FA !important;
+}
+
+/* 年份选择器 */
+.el-year-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-year-picker__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+.el-year-picker__cell {
+  color: #E2E8F0 !important;
+  font-size: 13px !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-year-picker__cell:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60A5FA !important;
+}
+
+.el-year-picker__cell.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* 月份选择器 */
+.el-month-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-month-picker__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+.el-month-picker__cell {
+  color: #E2E8F0 !important;
+  font-size: 13px !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-month-picker__cell:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60A5FA !important;
+}
+
+.el-month-picker__cell.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* 星期选择器 */
+.el-week-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-week-picker__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+/* 时间选择器底部按钮区域 - 强制覆盖 */
+.el-time-panel__footer,
+.el-date-picker__footer {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.2) !important;
+  padding: 10px !important;
+}
+
+.el-time-panel__footer .el-button,
+.el-date-picker__footer .el-button {
+  border-radius: 4px !important;
+  padding: 6px 16px !important;
+  font-size: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-time-panel__footer .el-button--default,
+.el-date-picker__footer .el-button--default {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #94A3B8 !important;
+}
+
+.el-time-panel__footer .el-button--default:hover,
+.el-date-picker__footer .el-button--default:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+.el-time-panel__footer .el-button--primary,
+.el-date-picker__footer .el-button--primary {
+  background: #3B82F6 !important;
+  border: 1px solid #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-time-panel__footer .el-button--primary:hover,
+.el-date-picker__footer .el-button--primary:hover {
+  background: #60A5FA !important;
+  border-color: #60A5FA !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 日期范围选择器底部按钮区域 */
+.el-date-range-picker__footer {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.2) !important;
+  padding: 10px !important;
+}
+
+.el-date-range-picker__footer .el-button {
+  border-radius: 4px !important;
+  padding: 6px 16px !important;
+  font-size: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-date-range-picker__footer .el-button--default {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #94A3B8 !important;
+}
+
+.el-date-range-picker__footer .el-button--default:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+.el-date-range-picker__footer .el-button--primary {
+  background: #3B82F6 !important;
+  border: 1px solid #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-date-range-picker__footer .el-button--primary:hover {
+  background: #60A5FA !important;
+  border-color: #60A5FA !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 强制覆盖所有时间组件底部区域 */
+.el-picker-panel__footer,
+.el-picker-panel__footer.is-with-seconds,
+.el-time-panel__content {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.2) !important;
+  padding: 10px !important;
+}
+
+/* 此刻按钮和确定按钮区域 */
+.el-time-panel__footer .el-button,
+.el-time-panel__footer .el-button--default,
+.el-time-panel__footer .el-button--primary {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #94A3B8 !important;
+  border-radius: 4px !important;
+  padding: 6px 16px !important;
+  font-size: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-time-panel__footer .el-button--primary {
+  background: #3B82F6 !important;
+  border: 1px solid #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-time-panel__footer .el-button:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+.el-time-panel__footer .el-button--primary:hover {
+  background: #60A5FA !important;
+  border-color: #60A5FA !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 全局强制覆盖 - 确保所有时间日期组件的底部区域 */
+body .el-time-panel__footer,
+body .el-date-picker__footer,
+body .el-date-range-picker__footer,
+body .el-picker-panel__footer {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-top: 1px solid rgba(59, 130, 246, 0.2) !important;
+  padding: 10px !important;
+  box-shadow: none !important;
+}
+
+body .el-time-panel__footer .el-button,
+body .el-date-picker__footer .el-button,
+body .el-date-range-picker__footer .el-button,
+body .el-picker-panel__footer .el-button {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #94A3B8 !important;
+  border-radius: 4px !important;
+  padding: 6px 16px !important;
+  font-size: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+body .el-time-panel__footer .el-button--primary,
+body .el-date-picker__footer .el-button--primary,
+body .el-date-range-picker__footer .el-button--primary,
+body .el-picker-panel__footer .el-button--primary {
+  background: #3B82F6 !important;
+  border: 1px solid #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+body .el-time-panel__footer .el-button:hover,
+body .el-date-picker__footer .el-button:hover,
+body .el-date-range-picker__footer .el-button:hover,
+body .el-picker-panel__footer .el-button:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+body .el-time-panel__footer .el-button--primary:hover,
+body .el-date-picker__footer .el-button--primary:hover,
+body .el-date-range-picker__footer .el-button--primary:hover,
+body .el-picker-panel__footer .el-button--primary:hover {
+  background: #60A5FA !important;
+  border-color: #60A5FA !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 确保所有日期时间相关组件都应用样式 */
+.el-date-editor--date,
+.el-date-editor--datetime,
+.el-date-editor--time,
+.el-date-editor--daterange,
+.el-date-editor--datetimerange,
+.el-date-editor--year,
+.el-date-editor--month,
+.el-date-editor--week {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-editor--date .el-input__inner,
+.el-date-editor--datetime .el-input__inner,
+.el-date-editor--time .el-input__inner,
+.el-date-editor--daterange .el-input__inner,
+.el-date-editor--datetimerange .el-input__inner,
+.el-date-editor--year .el-input__inner,
+.el-date-editor--month .el-input__inner,
+.el-date-editor--week .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
 }

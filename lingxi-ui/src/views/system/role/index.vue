@@ -1,12 +1,12 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
-      <el-form-item label="角色名称" prop="roleName">
+  <div class="app-container" style="background: rgba(15, 23, 42, 0.8);">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" style="background: rgba(15, 23, 42, 0.8); padding: 6px 4px 0 4px; border-radius: 4px; margin-bottom: 0;">
+      <el-form-item label="角色名称" prop="roleName" style="margin-left: 10px;">
         <el-input
           v-model="queryParams.roleName"
           placeholder="请输入角色名称"
           clearable
-          style="width: 240px"
+          style="width: 150px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -15,7 +15,7 @@
           v-model="queryParams.roleKey"
           placeholder="请输入权限字符"
           clearable
-          style="width: 240px"
+          style="width: 150px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -24,7 +24,7 @@
           v-model="queryParams.status"
           placeholder="角色状态"
           clearable
-          style="width: 240px"
+          style="width: 110px"
         >
           <el-option
             v-for="dict in dict.type.sys_normal_disable"
@@ -37,7 +37,7 @@
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="dateRange"
-          style="width: 240px"
+          style="width: 220px"
           value-format="yyyy-MM-dd"
           type="daterange"
           range-separator="-"
@@ -51,7 +51,8 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <div style="background: rgba(15, 23, 42, 0.8); padding: 10px; border-radius: 4px; margin-bottom: 0;">
+      <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -96,8 +97,10 @@
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
+    </div>
 
-    <el-table v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
+    <div style="overflow-x: auto; background: rgba(15, 23, 42, 0.8); border-radius: 4px;">
+      <el-table v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="角色编号" prop="roleId" width="120" />
       <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
@@ -146,14 +149,17 @@
         </template>
       </el-table-column>
     </el-table>
+    </div>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <div style="text-align: right; padding-right: 10px;">
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
+    </div>
 
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>

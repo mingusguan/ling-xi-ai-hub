@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 查询表单 -->
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px" style="margin-top: 15px; margin-bottom: 0px; margin-left: 10px;">
       <el-form-item label="用户姓名" prop="userName">
         <el-input
           v-model="queryParams.userName"
@@ -45,59 +45,69 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row> -->
 
-    <!-- 额度列表表格 -->
-    <el-table v-loading="loading" :data="quotaList" border>
-      <el-table-column label="额度ID" align="center" prop="quotaId" width="80" />
-      <el-table-column label="用户姓名" align="center" prop="userName" width="120" />
-      <el-table-column label="假期类型" align="center" prop="leaveType" width="100">
-        <template slot-scope="scope">
-          {{ getLeaveTypeName(scope.row.leaveType) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="年度" align="center" prop="year" width="80" />
-      <el-table-column label="总额度" align="center" prop="totalDays" width="100">
-        <template slot-scope="scope">
-          <span style="color: #409eff;">{{ scope.row.totalDays }}天</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="已使用" align="center" prop="usedDays" width="100">
-        <template slot-scope="scope">
-          <span style="color: #e6a23c;">{{ scope.row.usedDays }}天</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="剩余额度" align="center" prop="remainingDays" width="100">
-        <template slot-scope="scope">
-          <span style="color: #67c23a;">{{ scope.row.remainingDays }}天</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="结转天数" align="center" prop="carryOverDays" width="100" />
-      <el-table-column label="状态" align="center" prop="status" width="80">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status === '1' ? 'danger' : 'success'" size="small">
-            {{ scope.row.status === '1' ? '停用' : '正常' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleAdjust(scope.row)"
-            v-hasPermi="['oa:leave:adjust']"
-          >调整</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 表格容器 -->
+    <div style="border: 1px solid rgba(59, 130, 246, 0.2); border-bottom: none; border-radius: 4px 4px 0 0; overflow: hidden;">
+      <!-- 额度列表表格 -->
+      <el-table v-loading="loading" :data="quotaList" border height="calc(100vh - 220px)" style="min-width: 100%; margin-bottom: 0;">
+        <el-table-column label="额度ID" align="center" prop="quotaId" width="80" />
+        <el-table-column label="用户姓名" align="center" prop="userName" width="120" />
+        <el-table-column label="假期类型" align="center" prop="leaveType" width="100">
+          <template slot-scope="scope">
+            {{ getLeaveTypeName(scope.row.leaveType) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="年度" align="center" prop="year" width="80" />
+        <el-table-column label="总额度" align="center" prop="totalDays" width="100">
+          <template slot-scope="scope">
+            <span style="color: #409eff;">{{ scope.row.totalDays }}天</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="已使用" align="center" prop="usedDays" width="100">
+          <template slot-scope="scope">
+            <span style="color: #e6a23c;">{{ scope.row.usedDays }}天</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="剩余额度" align="center" prop="remainingDays" width="100">
+          <template slot-scope="scope">
+            <span style="color: #67c23a;">{{ scope.row.remainingDays }}天</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="结转天数" align="center" prop="carryOverDays" width="100" />
+        <el-table-column label="状态" align="center" prop="status" width="80">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status === '1' ? 'danger' : 'success'" size="small">
+              {{ scope.row.status === '1' ? '停用' : '正常' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleAdjust(scope.row)"
+              v-hasPermi="['oa:leave:adjust']"
+            >调整</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <!-- 分页组件 -->
+    <div style="padding: 10px 16px; border: 1px solid rgba(59, 130, 246, 0.2); border-top: none; border-radius: 0 0 4px 4px; margin: -1px 0 0 0; background: transparent; display: flex; justify-content: flex-end;">
+      <el-pagination
+        v-show="total>0"
+        background
+        :current-page.sync="queryParams.pageNum"
+        :page-size.sync="queryParams.pageSize"
+        :layout="'total, sizes, prev, pager, next, jumper'"
+        :page-sizes="[10, 20, 30, 50]"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
 
     <!-- 生成年度假额对话框 -->
     <el-dialog title="生成年度假额" :visible.sync="generateDialogVisible" width="500px">
@@ -162,6 +172,14 @@
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+.custom-pagination .pagination-container {
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+</style>
 
 <script>
 import { listLeaveQuota, generateAnnualQuota, adjustLeaveQuota, updateLeaveQuotaStatus } from "@/api/oa/leaveQuota";
@@ -323,6 +341,19 @@ export default {
       }).catch(() => {
         row.status = row.status === "0" ? "1" : "0";
       });
+    },
+    // 分页大小变化
+    handleSizeChange(val) {
+      if (this.queryParams.pageNum * val > this.total) {
+        this.queryParams.pageNum = 1;
+      }
+      this.queryParams.pageSize = val;
+      this.getList();
+    },
+    // 分页页码变化
+    handleCurrentChange(val) {
+      this.queryParams.pageNum = val;
+      this.getList();
     }
   }
 };

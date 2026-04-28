@@ -122,7 +122,7 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     setLayout(event) {
-      this.$emit('setLayout')
+      this.$parent.$refs.settingRef.openSetting()
     },
     loadUnreadReminderCount() {
       getUnreadMessageCount().then(res => {
@@ -152,4 +152,132 @@ export default {
 }
 </script>
 
-<style lang="scss" src="./Navbar.scss" scoped></style>
+<style lang="scss" scoped>
+.navbar {
+  height: 64px;
+  line-height: 64px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(90deg, #0F172A 0%, #1E293B 100%) !important;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  box-sizing: border-box;
+
+  .hamburger-container {
+    line-height: 64px;
+    height: 100%;
+    float: left;
+    cursor: pointer;
+    transition: background .3s;
+    -webkit-tap-highlight-color:transparent;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.15)
+    }
+  }
+
+  .breadcrumb-container {
+    float: left;
+    line-height: 64px;
+  }
+
+  .errLog-container {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .right-menu {
+    display: flex;
+    align-items: center;
+    float: right;
+    height: 100%;
+
+    &:focus {
+      outline: none;
+    }
+
+    .right-menu-item {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      height: 64px;
+      font-size: 18px;
+      color: #E2E8F0;
+
+      &.hover-effect {
+        cursor: pointer;
+        transition: background .2s;
+
+        &:hover {
+          background: rgba(59, 130, 246, 0.15)
+        }
+      }
+
+      & >>> svg {
+        vertical-align: middle;
+      }
+    }
+
+    .reminder-badge {
+      display: flex;
+      align-items: center;
+    }
+
+    .avatar-container {
+      margin-right: 30px;
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+
+      .avatar-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+
+        .user-avatar {
+          cursor: pointer;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+        }
+
+        .user-nickname {
+          color: #E2E8F0;
+          font-size: 14px;
+          line-height: 1;
+        }
+
+        .el-icon-caret-bottom {
+          cursor: pointer;
+          font-size: 12px;
+          color: #E2E8F0;
+          line-height: 1;
+        }
+      }
+    }
+  }
+}
+
+// 深色导航栏适配
+.navbar {
+  ::v-deep .el-breadcrumb__item {
+    color: #94A3B8 !important;
+  }
+
+  ::v-deep .el-breadcrumb__item:last-child {
+    color: #E2E8F0 !important;
+  }
+
+  ::v-deep .el-breadcrumb__separator {
+    color: #64748B !important;
+  }
+
+  ::v-deep .hamburger {
+    color: #E2E8F0 !important;
+  }
+
+  .el-icon-caret-bottom {
+    color: #E2E8F0 !important;
+  }
+}
+</style>

@@ -53,42 +53,37 @@ export default {
 
 <style lang="scss" scoped>
 .app-main {
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - 64px);
   width: 100%;
   position: relative;
   overflow: hidden;
-  padding: 12px 20px 0 20px;
   box-sizing: border-box;
+  background: transparent !important;
 }
 
 .fixed-header + .app-main {
-  overflow-y: auto;
-  scrollbar-gutter: auto;
-  height: calc(100vh - 60px);
+  overflow: hidden;
+  height: calc(100vh - 64px);
   min-height: 0px;
+  box-sizing: border-box;
+  background: transparent !important;
 }
 
 .app-main:has(.copyright) {
-  padding-bottom: 36px;
-}
-
-.fixed-header + .app-main {
-  margin-top: 60px;
-  padding-top: 12px;
 }
 
 .hasTagsView {
   .app-main {
-    /* 98 = navbar 52px + tags-view 34px + padding 12px */
     min-height: calc(100vh - 98px);
-    padding: 8px 20px 0 20px;
+    background: transparent !important;
   }
 
   .fixed-header + .app-main {
-    margin-top: 98px;
+    overflow: hidden;
     height: calc(100vh - 98px);
     min-height: 0px;
-    padding-top: 8px;
+    box-sizing: border-box;
+    background: transparent !important;
   }
 }
 

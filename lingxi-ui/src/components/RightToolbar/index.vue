@@ -4,8 +4,8 @@
       <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top" v-if="search">
         <el-button size="mini" circle icon="el-icon-search" @click="toggleSearch()" />
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
+      <el-tooltip class="item" effect="dark" content="刷新" placement="top" v-if="refresh">
+        <el-button size="mini" circle icon="el-icon-refresh" @click="handleRefresh()" />
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="Object.keys(columns).length > 0">
         <el-button size="mini" circle icon="el-icon-menu" @click="showColumn()" v-if="showColumnsType == 'transfer'"/>
@@ -63,6 +63,11 @@ export default {
     },
     /* 是否显示检索图标 */
     search: {
+      type: Boolean,
+      default: true
+    },
+    /* 是否显示刷新图标 */
+    refresh: {
       type: Boolean,
       default: true
     },
@@ -126,7 +131,7 @@ export default {
       this.$emit("update:showSearch", !this.showSearch)
     },
     // 刷新
-    refresh() {
+    handleRefresh() {
       this.$emit("queryTable")
     },
     // 右侧列表元素变化

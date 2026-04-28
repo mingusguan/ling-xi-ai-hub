@@ -5,26 +5,46 @@
         <div class="form-section">
           <h4 class="section-title">审批表单</h4>
           <div class="form-scroll">
-            <el-descriptions :column="2" border size="small">
-              <el-descriptions-item label="申请人">{{ form.applicantUserName || form.applicantName || form.applicant || '-' }}</el-descriptions-item>
-              <el-descriptions-item label="部门">{{ form.deptName || form.department || form.dept || '-' }}</el-descriptions-item>
-              <el-descriptions-item v-if="form.expenseType" label="报销类型">{{ formatExpenseType(form.expenseType) }}</el-descriptions-item>
-              <el-descriptions-item v-if="form.amount" label="金额">{{ form.amount }} 元</el-descriptions-item>
-              <el-descriptions-item v-if="form.expenseDate" label="报销日期">{{ form.expenseDate }}</el-descriptions-item>
-              <el-descriptions-item v-if="form.leaveType" label="请假类型">{{ formatLeaveType(form.leaveType) }}</el-descriptions-item>
-              <el-descriptions-item v-if="form.leaveHours" label="请假时长">{{ (form.leaveHours / 8).toFixed(1) }} 天</el-descriptions-item>
-              <el-descriptions-item :span="2" label="事由">{{ form.expenseReason || form.leaveReason }}</el-descriptions-item>
-            </el-descriptions>
+            <div class="custom-form-card">
+              <div class="form-grid">
+                <div class="form-item">
+                  <div class="form-label">申请人</div>
+                  <div class="form-value">{{ form.applicantUserName || form.applicantName || form.applicant || '-' }}</div>
+                </div>
+                <div class="form-item">
+                  <div class="form-label">部门</div>
+                  <div class="form-value">{{ form.deptName || form.department || form.dept || '-' }}</div>
+                </div>
+                <div v-if="form.expenseType" class="form-item">
+                  <div class="form-label">报销类型</div>
+                  <div class="form-value">{{ formatExpenseType(form.expenseType) }}</div>
+                </div>
+                <div v-if="form.amount" class="form-item">
+                  <div class="form-label">金额</div>
+                  <div class="form-value">{{ form.amount }} 元</div>
+                </div>
+                <div v-if="form.expenseDate" class="form-item">
+                  <div class="form-label">报销日期</div>
+                  <div class="form-value">{{ form.expenseDate }}</div>
+                </div>
+                <div v-if="form.leaveType" class="form-item">
+                  <div class="form-label">请假类型</div>
+                  <div class="form-value">{{ formatLeaveType(form.leaveType) }}</div>
+                </div>
+                <div v-if="form.leaveHours" class="form-item">
+                  <div class="form-label">请假时长</div>
+                  <div class="form-value">{{ (form.leaveHours / 8).toFixed(1) }} 天</div>
+                </div>
+                <div class="form-item form-item-full">
+                  <div class="form-label">事由</div>
+                  <div class="form-value">{{ form.expenseReason || form.leaveReason }}</div>
+                </div>
+              </div>
+            </div>
 
             <el-divider />
 
             <el-form label-width="80px">
-              <el-form-item label="审批结果">
-                <el-radio-group v-model="approvalResult">
-                  <el-radio-button label="approve">通过</el-radio-button>
-                  <el-radio-button label="reject">驳回</el-radio-button>
-                </el-radio-group>
-              </el-form-item>
               <el-form-item label="审批意见">
                 <el-input
                   v-model="approvalComment"
@@ -39,7 +59,8 @@
 
         <div slot="footer" class="dialog-footer">
           <el-button @click="handleClose">取消</el-button>
-          <el-button type="primary" @click="submitApproval">确认审批</el-button>
+          <el-button type="primary" @click="handleApprove">通过</el-button>
+          <el-button type="danger" @click="handleReject">驳回</el-button>
         </div>
       </div>
 
@@ -181,7 +202,6 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      approvalResult: 'approve',
       approvalComment: '',
       aiLoading: false,
       aiSuggestion: null,
@@ -284,9 +304,29 @@ export default {
       this.approvalComment = template
       this.$message.success('已应用模板')
     },
-    submitApproval() {
+    handleApprove() {
+      this.$confirm('确定要通过这个审批吗？', '确认通过', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      }).then(() => {
+        this.submitApproval('approve')
+      }).catch(() => {})
+    },
+
+    handleReject() {
+      this.$confirm('确定要驳回这个审批吗？', '确认驳回', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.submitApproval('reject')
+      }).catch(() => {})
+    },
+
+    submitApproval(result) {
       this.$emit('submit', {
-        result: this.approvalResult,
+        result: result,
         comment: this.approvalComment,
         form: this.form
       })
@@ -327,7 +367,6 @@ export default {
       }
       if (!val) {
         this.approvalComment = ''
-        this.approvalResult = 'approve'
       }
     }
   }
@@ -335,6 +374,111 @@ export default {
 </script>
 
 <style scoped>
+::v-deep .el-dialog {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 50%, #1E293B 100%) !important;
+}
+
+::v-deep .el-dialog__title {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-dialog__headerbtn .el-dialog__close {
+  color: #94A3B8 !important;
+}
+
+::v-deep .el-descriptions {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-descriptions table,
+::v-deep .el-descriptions table tr {
+  background: transparent !important;
+}
+
+::v-deep th.el-descriptions-item__cell,
+::v-deep .el-descriptions-item__cell.is-bordered-label {
+  background-color: rgba(59, 130, 246, 0.25) !important;
+  color: #94A3B8 !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+::v-deep td.el-descriptions-item__cell,
+::v-deep .el-descriptions-item__cell.is-bordered-content {
+  background-color: rgba(30, 41, 59, 0.85) !important;
+  color: #E2E8F0 !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+::v-deep .el-form-item__label {
+  color: #94A3B8 !important;
+}
+
+::v-deep .el-textarea__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.2) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-textarea__inner::placeholder {
+  color: #64748B !important;
+}
+
+::v-deep .el-divider--horizontal {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+.section-title {
+  color: #E2E8F0;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.custom-form-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.form-item {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: all 0.3s ease;
+}
+
+.form-item:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  background: rgba(30, 41, 59, 0.75);
+}
+
+.form-item-full {
+  grid-column: span 2;
+}
+
+.form-label {
+  color: #94A3B8;
+  font-size: 12px;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.form-value {
+  color: #E2E8F0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 .approval-container {
   display: flex;
   gap: 20px;
@@ -365,17 +509,17 @@ export default {
 }
 
 .form-scroll::-webkit-scrollbar-thumb {
-  background: #c0c4cc;
+  background: rgba(59, 130, 246, 0.3);
   border-radius: 3px;
 }
 
 .form-scroll::-webkit-scrollbar-thumb:hover {
-  background: #909399;
+  background: rgba(59, 130, 246, 0.5);
 }
 
 .ai-sidebar {
   width: 380px;
-  border-left: 1px solid #e4e7ed;
+  border-left: 1px solid rgba(59, 130, 246, 0.15);
   padding-left: 20px;
   display: flex;
   flex-direction: column;
@@ -393,19 +537,19 @@ export default {
 }
 
 .ai-content::-webkit-scrollbar-thumb {
-  background: #c0c4cc;
+  background: rgba(59, 130, 246, 0.3);
   border-radius: 3px;
 }
 
 .ai-content::-webkit-scrollbar-thumb:hover {
-  background: #909399;
+  background: rgba(59, 130, 246, 0.5);
 }
 
 .ai-sidebar-header {
   display: flex;
   align-items: center;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e4e7ed;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
   margin-bottom: 16px;
 }
 
@@ -418,7 +562,11 @@ export default {
 .ai-sidebar-header span {
   flex: 1;
   font-weight: 600;
-  color: #303133;
+  color: #E2E8F0;
+}
+
+.ai-sidebar-header .el-button {
+  color: #60A5FA;
 }
 
 .ai-loading {
@@ -426,7 +574,7 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
-  color: #909399;
+  color: #94A3B8;
 }
 
 .ai-loading i {
@@ -435,14 +583,13 @@ export default {
   color: #409eff;
 }
 
-
-
 .ai-summary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 16px;
   color: #fff;
+  border: 1px solid rgba(96, 165, 250, 0.3);
 }
 
 .summary-header {
@@ -494,15 +641,16 @@ export default {
   margin-left: auto;
   font-weight: normal;
   font-size: 11px;
-  color: #909399;
+  color: #64748B;
 }
 
 .section-content {
-  background: #f5f7fa;
-  border-radius: 4px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 8px;
   padding: 8px;
   max-height: 280px;
   overflow-y: auto;
+  border: 1px solid rgba(59, 130, 246, 0.15);
 }
 
 .section-content::-webkit-scrollbar {
@@ -510,12 +658,12 @@ export default {
 }
 
 .section-content::-webkit-scrollbar-thumb {
-  background: #c0c4cc;
+  background: rgba(59, 130, 246, 0.3);
   border-radius: 3px;
 }
 
 .section-content::-webkit-scrollbar-thumb:hover {
-  background: #909399;
+  background: rgba(59, 130, 246, 0.5);
 }
 
 .risk-item {
@@ -536,17 +684,17 @@ export default {
   display: flex;
   align-items: flex-start;
   padding: 8px;
-  background: #fff;
-  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 6px;
   margin-bottom: 8px;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: 1px solid rgba(59, 130, 246, 0.15);
   transition: all 0.2s;
 }
 
 .template-item:hover {
   border-color: #409eff;
-  background: #f0f7ff;
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .template-item:last-child {
@@ -561,26 +709,26 @@ export default {
 .template-text {
   flex: 1;
   font-size: 12px;
-  color: #606266;
+  color: #E2E8F0;
   line-height: 1.5;
 }
 
 .case-item {
   padding: 12px;
-  background: #fff;
+  background: rgba(15, 23, 42, 0.8);
   border-radius: 6px;
   margin-bottom: 8px;
-  border: 1px solid #e4e7ed;
+  border: 1px solid rgba(59, 130, 246, 0.15);
   transition: all 0.2s;
 }
 
 .case-item:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .case-item.rejected {
   border-left: 3px solid #f56c6c;
-  background: linear-gradient(to right, #fef0f0, #fff);
+  background: linear-gradient(to right, rgba(245, 108, 108, 0.1), rgba(15, 23, 42, 0.8));
 }
 
 .case-item:last-child {
@@ -604,7 +752,7 @@ export default {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #409eff;
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -622,12 +770,12 @@ export default {
 .applicant-info .name {
   font-size: 12px;
   font-weight: 600;
-  color: #303133;
+  color: #E2E8F0;
 }
 
 .applicant-info .dept {
   font-size: 10px;
-  color: #909399;
+  color: #64748B;
 }
 
 .case-info {
@@ -635,14 +783,14 @@ export default {
   gap: 12px;
   margin-bottom: 8px;
   padding: 4px 8px;
-  background: #f5f7fa;
+  background: rgba(30, 41, 59, 0.6);
   border-radius: 4px;
 }
 
 .case-info .type,
 .case-info .value {
   font-size: 11px;
-  color: #606266;
+  color: #94A3B8;
 }
 
 .case-info .type {
@@ -655,13 +803,13 @@ export default {
   gap: 6px;
   padding: 6px 0;
   font-size: 11px;
-  color: #606266;
+  color: #94A3B8;
   line-height: 1.5;
   margin-bottom: 8px;
 }
 
 .case-opinion i {
-  color: #909399;
+  color: #64748B;
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -671,7 +819,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding-top: 8px;
-  border-top: 1px dashed #ebeef5;
+  border-top: 1px dashed rgba(59, 130, 246, 0.15);
 }
 
 .case-footer .approver,
@@ -680,22 +828,52 @@ export default {
   align-items: center;
   gap: 4px;
   font-size: 10px;
-  color: #909399;
+  color: #64748B;
 }
 
 .case-footer i {
   font-size: 11px;
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #303133;
-  margin-bottom: 12px;
-}
-
 .dialog-footer {
   margin-top: 20px;
   text-align: right;
+}
+
+/* 驳回按钮悬浮样式 */
+::v-deep .el-button--danger:hover {
+  background-color: #F78989 !important;
+  border-color: #F78989 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(245, 108, 108, 0.4) !important;
+  transform: translateY(-1px) !important;
+  transition: all 0.3s ease !important;
+}
+
+::v-deep .el-button--danger {
+  transition: all 0.3s ease !important;
+}
+
+</style>
+
+<style>
+/* 全局强制覆盖样式 - 必须生效！ */
+.el-dialog .el-descriptions table th.el-descriptions-item__cell,
+.el-dialog .el-descriptions table th.el-descriptions-item__cell.is-bordered-label {
+  background-color: rgba(59, 130, 246, 0.3) !important;
+  color: #94A3B8 !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-dialog .el-descriptions table td.el-descriptions-item__cell,
+.el-dialog .el-descriptions table td.el-descriptions-item__cell.is-bordered-content {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  color: #E2E8F0 !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-dialog .el-descriptions table,
+.el-dialog .el-descriptions table tr {
+  background: transparent !important;
 }
 </style>

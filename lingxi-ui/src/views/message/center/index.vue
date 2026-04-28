@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
-    <el-card>
-      <div slot="header" class="card-header">
-        <span>消息中心</span>
+    <div class="dark-card">
+      <div class="card-header">
+        <span class="card-title">消息中心</span>
         <div class="header-actions">
           <el-button type="text" size="mini" @click="markAllRead">全部标为已读</el-button>
         </div>
@@ -118,7 +118,7 @@
       </div>
 
       <pagination v-show="total > 0" :total="total" :page.sync="query.pageNum" :limit.sync="query.pageSize" @pagination="getList" />
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -216,10 +216,34 @@ export default {
 </script>
 
 <style scoped>
+.app-container {
+  background: transparent !important;
+}
+
+.dark-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.card-title {
+  color: #E2E8F0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.card-header .el-button {
+  color: #60A5FA;
 }
 
 .stat-row {
@@ -230,27 +254,38 @@ export default {
   display: flex;
   align-items: center;
   padding: 20px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  transform: translateY(-2px);
 }
 
 .stat-card.total {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.25) 100%);
+  border-color: rgba(102, 126, 234, 0.35);
   color: #fff;
 }
 
 .stat-card.unread {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.3) 0%, rgba(245, 87, 108, 0.25) 100%);
+  border-color: rgba(240, 147, 251, 0.35);
   color: #fff;
 }
 
 .stat-card.task {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.3) 0%, rgba(0, 242, 254, 0.25) 100%);
+  border-color: rgba(79, 172, 254, 0.35);
   color: #fff;
 }
 
 .stat-card.timeout {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: linear-gradient(135deg, rgba(250, 112, 154, 0.3) 0%, rgba(254, 225, 64, 0.25) 100%);
+  border-color: rgba(250, 112, 154, 0.35);
   color: #fff;
 }
 
@@ -281,11 +316,17 @@ export default {
 .filter-bar {
   margin-bottom: 16px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 8px;
 }
 
 .filter-bar .el-radio-group,
 .filter-bar .el-select {
-  margin-right: 12px;
+  margin-right: 0;
 }
 
 .message-list {
@@ -296,28 +337,35 @@ export default {
   display: flex;
   align-items: flex-start;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 12px;
-  background: #f5f7fa;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(59, 130, 246, 0.15);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   position: relative;
 }
 
 .message-item:hover {
-  background: #e6f7ff;
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.35);
+  transform: translateX(4px);
 }
 
 .message-item.unread {
-  background: #fffbe6;
+  background: rgba(230, 162, 60, 0.15);
   border-left: 3px solid #e6a23c;
+  border-top: 1px solid rgba(230, 162, 60, 0.3);
+  border-right: 1px solid rgba(230, 162, 60, 0.1);
+  border-bottom: 1px solid rgba(230, 162, 60, 0.1);
 }
 
 .message-icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #fff;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,7 +381,7 @@ export default {
 .message-title {
   font-size: 14px;
   font-weight: 600;
-  color: #303133;
+  color: #E2E8F0;
   margin-bottom: 6px;
   display: flex;
   align-items: center;
@@ -345,7 +393,7 @@ export default {
 
 .message-desc {
   font-size: 13px;
-  color: #606266;
+  color: #94A3B8;
   line-height: 1.5;
   margin-bottom: 4px;
 }
@@ -355,7 +403,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
-  color: #909399;
+  color: #64748B;
 }
 
 .message-source {
@@ -370,7 +418,7 @@ export default {
 
 .message-time {
   font-size: 12px;
-  color: #909399;
+  color: #64748B;
 }
 
 .unread-dot {
@@ -378,24 +426,28 @@ export default {
   height: 8px;
   border-radius: 50%;
   background: #f56c6c;
+  box-shadow: 0 0 10px rgba(245, 108, 108, 0.5);
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 18px;
+  right: 18px;
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #909399;
+  color: #64748B;
 }
 
 .empty-state i {
   font-size: 48px;
+  color: #60A5FA;
   margin-bottom: 12px;
   display: block;
+  opacity: 0.6;
 }
 
 .empty-state p {
   margin: 0;
+  font-size: 14px;
 }
 </style>

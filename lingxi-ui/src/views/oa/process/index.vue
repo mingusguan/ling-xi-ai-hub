@@ -1,18 +1,20 @@
 <template>
   <div class="app-container">
-    <el-form :inline="true" class="mb8">
-      <el-form-item label="业务类型">
-        <el-select v-model="query.businessType" clearable placeholder="请选择" size="mini">
-          <el-option label="请假" value="leave" />
-          <el-option label="报销" value="expense" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" size="mini" icon="el-icon-search" @click="getList">搜索</el-button>
-        <el-button size="mini" icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-        <el-button type="primary" plain size="mini" icon="el-icon-plus" @click="handleAdd">新建模板</el-button>
-      </el-form-item>
-    </el-form>
+    <div class="filter-container">
+      <el-form :inline="true" class="mb0">
+        <el-form-item label="业务类型">
+          <el-select v-model="query.businessType" clearable placeholder="请选择" size="mini">
+            <el-option label="请假" value="leave" />
+            <el-option label="报销" value="expense" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" size="mini" icon="el-icon-search" @click="getList">搜索</el-button>
+          <el-button size="mini" icon="el-icon-refresh" @click="resetQuery">重置</el-button>
+          <el-button type="primary" plain size="mini" icon="el-icon-plus" @click="handleAdd">新建模板</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
 
     <el-table v-loading="loading" :data="list" border>
       <el-table-column prop="templateName" label="模板名称" min-width="160" />
@@ -45,7 +47,19 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="query.pageNum" :limit.sync="query.pageSize" @pagination="getList" />
+    <div style="padding: 10px 16px; border: 1px solid rgba(59, 130, 246, 0.2); border-top: none; border-radius: 0 0 4px 4px; margin: -1px 0 0 0; background: transparent; display: flex; justify-content: flex-end;">
+      <el-pagination
+        v-show="total > 0"
+        background
+        :current-page.sync="query.pageNum"
+        :page-size.sync="query.pageSize"
+        :layout="'total, sizes, prev, pager, next, jumper'"
+        :page-sizes="[10, 20, 30, 50]"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
 
     <el-dialog :title="title" :visible.sync="open" width="1400px" :close-on-click-modal="false" append-to-body destroy-on-close custom-class="process-dialog">
       <div class="dialog-content">
@@ -62,7 +76,12 @@
           <el-form-item label="版本" prop="processVersion"><el-input v-model="form.processVersion" /></el-form-item>
           <el-form-item label="表单路由" prop="formRoute"><el-input v-model="form.formRoute" /></el-form-item>
           <el-form-item label="流程内容" prop="processContent" class="process-content-item">
-            <el-input type="textarea" v-model="form.processContent" :rows="6" placeholder="流程图编辑器已临时禁用，可编辑XML内容" />
+            <BpmnEditor
+              ref="processEditor"
+              v-model="form.processContent"
+              :process-key="form.processDefinitionKey"
+              :process-name="form.processDefinitionName"
+            />
           </el-form-item>
           <el-form-item label="描述"><el-input v-model="form.description" type="textarea" :rows="3" /></el-form-item>
         </el-form>
@@ -87,10 +106,35 @@
 .process-content-item .el-form-item__content {
   line-height: 1;
 }
+
+.process-dialog .el-textarea__inner,
+.process-dialog .el-input__inner {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.process-dialog .el-input__inner::placeholder,
+.process-dialog .el-textarea__inner::placeholder {
+  color: #64748B !important;
+}
+
+.filter-container {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.filter-container .el-form-item {
+  margin-bottom: 0;
+}
 </style>
 
 <script>
 import { listTemplate, saveTemplate, deployTemplate, getTemplateDetail, cleanupProcessDefinitions } from '@/api/oa/workflow'
+import BpmnEditor from '@/components/BpmnEditor'
 
 const defaultForm = () => ({
   templateId: undefined,
@@ -106,6 +150,9 @@ const defaultForm = () => ({
 
 export default {
   name: 'OaProcess',
+  components: {
+    BpmnEditor
+  },
   data() {
     return {
       loading: false,
@@ -228,6 +275,19 @@ export default {
       }).catch(() => {
         // 用户取消操作
       })
+    },
+    // 分页大小变化
+    handleSizeChange(val) {
+      if (this.query.pageNum * val > this.total) {
+        this.query.pageNum = 1
+      }
+      this.query.pageSize = val
+      this.getList()
+    },
+    // 分页页码变化
+    handleCurrentChange(val) {
+      this.query.pageNum = val
+      this.getList()
     }
   }
 }

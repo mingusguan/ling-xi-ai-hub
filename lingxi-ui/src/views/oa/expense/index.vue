@@ -8,7 +8,7 @@
           :closable="false"
           style="margin-bottom: 10px;"
         />
-        <el-form :inline="true" class="mb8">
+        <el-form :inline="true" style="margin-top: 15px; margin-bottom: 0px; margin-left: 10px;">
           <el-form-item label="审批状态">
             <el-select v-model="query.approvalStatus" clearable placeholder="请选择" size="mini">
               <el-option label="待审批" value="pending" />
@@ -82,7 +82,19 @@
           </el-table-column>
         </el-table>
 
-        <pagination v-show="total > 0" :total="total" :page.sync="query.pageNum" :limit.sync="query.pageSize" @pagination="getList" />
+        <div style="padding: 10px 16px; border: 1px solid rgba(59, 130, 246, 0.2); border-top: none; border-radius: 0 0 4px 4px; margin: -1px 0 0 0; background: transparent; display: flex; justify-content: flex-end;">
+          <el-pagination
+            v-show="total > 0"
+            background
+            :current-page.sync="query.pageNum"
+            :page-size.sync="query.pageSize"
+            :layout="'total, sizes, prev, pager, next, jumper'"
+            :page-sizes="[10, 20, 30, 50]"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
       </el-tab-pane>
 
       <el-tab-pane label="已处理" name="myApproved">
@@ -92,7 +104,7 @@
           :closable="false"
           style="margin-bottom: 10px;"
         />
-        <el-form :inline="true" class="mb8">
+        <el-form :inline="true" style="margin-top: 15px; margin-bottom: 0px; margin-left: 10px;">
           <el-form-item label="审批状态">
             <el-select v-model="approvedQuery.approvalStatus" clearable placeholder="请选择" size="mini">
               <el-option label="待审批" value="pending" />
@@ -129,7 +141,19 @@
           </el-table-column>
         </el-table>
 
-        <pagination v-show="approvedTotal > 0" :total="approvedTotal" :page.sync="approvedQuery.pageNum" :limit.sync="approvedQuery.pageSize" @pagination="getApprovedList" />
+        <div style="padding: 10px 16px; border: 1px solid rgba(59, 130, 246, 0.2); border-top: none; border-radius: 0 0 4px 4px; margin: -1px 0 0 0; background: transparent; display: flex; justify-content: flex-end;">
+          <el-pagination
+            v-show="approvedTotal > 0"
+            background
+            :current-page.sync="approvedQuery.pageNum"
+            :page-size.sync="approvedQuery.pageSize"
+            :layout="'total, sizes, prev, pager, next, jumper'"
+            :page-sizes="[10, 20, 30, 50]"
+            :total="approvedTotal"
+            @size-change="handleApprovedSizeChange"
+            @current-change="handleApprovedCurrentChange"
+          />
+        </div>
       </el-tab-pane>
     </el-tabs>
 
@@ -239,9 +263,9 @@
         <p><strong>申请人：</strong>{{ detail.applicantUserName }}</p>
         <p><strong>部门：</strong>{{ detail.deptName }}</p>
         <p><strong>类型：</strong>{{ formatExpenseType(detail.expenseType) }}</p>
-        <p><strong>金额：</strong>{{ detail.amount }}</p>
+        <p><strong>金额：</strong><span class="amount-tag">{{ detail.amount }} 元</span></p>
         <p><strong>日期：</strong>{{ formatTime(detail.expenseDate) }}</p>
-        <p><strong>状态：</strong>{{ formatStatus(detail.approvalStatus) }}</p>
+        <p><strong>状态：</strong><span :class="['status-tag', detail.approvalStatus]">{{ formatStatus(detail.approvalStatus) }}</span></p>
         <p><strong>事由：</strong>{{ detail.expenseReason }}</p>
         <div v-if="detail.invoiceUrl">
           <strong>发票附件：</strong>
@@ -625,6 +649,32 @@ export default {
     isPdf(urlStr) {
       if (!urlStr) return false
       return urlStr.includes('.pdf')
+    },
+    // 分页大小变化
+    handleSizeChange(val) {
+      if (this.query.pageNum * val > this.total) {
+        this.query.pageNum = 1
+      }
+      this.query.pageSize = val
+      this.getList()
+    },
+    // 分页页码变化
+    handleCurrentChange(val) {
+      this.query.pageNum = val
+      this.getList()
+    },
+    // 已处理列表分页大小变化
+    handleApprovedSizeChange(val) {
+      if (this.approvedQuery.pageNum * val > this.approvedTotal) {
+        this.approvedQuery.pageNum = 1
+      }
+      this.approvedQuery.pageSize = val
+      this.getApprovedList()
+    },
+    // 已处理列表分页页码变化
+    handleApprovedCurrentChange(val) {
+      this.approvedQuery.pageNum = val
+      this.getApprovedList()
     }
   }
 }
@@ -632,4 +682,298 @@ export default {
 
 <style scoped>
 .drawer-body { padding: 0 20px 20px; line-height: 1.9; }
+
+/* 深色主题表单样式 */
+::v-deep .el-dialog {
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 50%, #1E293B 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  border-radius: 12px !important;
+}
+
+::v-deep .el-dialog__header {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-dialog__title {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-dialog__body {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-form-item__label {
+  color: #94A3B8 !important;
+}
+
+::v-deep .el-input__inner,
+::v-deep .el-textarea__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-input__inner::placeholder,
+::v-deep .el-textarea__inner::placeholder {
+  color: #64748B !important;
+}
+
+::v-deep .el-select .el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__editor-wrap {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+::v-deep .el-date-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__cell {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-date-picker__cell:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+}
+
+::v-deep .el-date-picker__cell.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+::v-deep .el-input-number__decrease,
+::v-deep .el-input-number__increase {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-input-number__decrease:hover,
+::v-deep .el-input-number__increase:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+/* 上传组件样式 */
+::v-deep .el-upload {
+  background: transparent !important;
+}
+
+::v-deep .el-upload-list__item {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+  border-radius: 8px !important;
+}
+
+::v-deep .el-upload-list__item:hover {
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.2) !important;
+}
+
+::v-deep .el-upload-list__item-name {
+  color: #E2E8F0 !important;
+  font-size: 12px !important;
+}
+
+::v-deep .el-upload-list__item-status-label {
+  color: #94A3B8 !important;
+  font-size: 12px !important;
+}
+
+::v-deep .el-upload-list__item-actions {
+  background: rgba(30, 41, 59, 0.9) !important;
+  opacity: 0.8 !important;
+  border-radius: 0 0 8px 8px !important;
+}
+
+::v-deep .el-upload-list__item-actions:hover {
+  opacity: 1 !important;
+  background: rgba(30, 41, 59, 0.95) !important;
+}
+
+::v-deep .el-upload-list__item-action {
+  color: #E2E8F0 !important;
+  font-size: 14px !important;
+  margin: 0 5px !important;
+}
+
+::v-deep .el-upload-list__item-action:hover {
+  color: #60A5FA !important;
+}
+
+/* 上传按钮 */
+::v-deep .el-upload--picture-card {
+  background: rgba(30, 41, 59, 0.5) !important;
+  border: 2px dashed rgba(59, 130, 246, 0.3) !important;
+  border-radius: 8px !important;
+  width: 100px !important;
+  height: 100px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+}
+
+::v-deep .el-upload--picture-card:hover {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+::v-deep .el-upload--picture-card i {
+  color: #94A3B8 !important;
+  font-size: 24px !important;
+  transition: color 0.3s ease !important;
+}
+
+::v-deep .el-upload--picture-card:hover i {
+  color: #60A5FA !important;
+}
+
+::v-deep .el-upload__tip {
+  color: #94A3B8 !important;
+  font-size: 12px !important;
+  margin-top: 8px !important;
+  text-align: center !important;
+}
+
+/* 详情页样式 */
+::v-deep .el-timeline-item {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-timeline-item .el-timeline-item__content {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-timeline-item__timestamp {
+  color: #94A3B8 !important;
+}
+
+::v-deep .el-divider {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* 强制覆盖所有时间线文字 */
+::v-deep .el-timeline-item * {
+  color: #E2E8F0 !important;
+}
+
+::v-deep .el-timeline-item__timestamp * {
+  color: #94A3B8 !important;
+}
+
+/* 详情页内容文字 */
+.drawer-body p {
+  color: #E2E8F0 !important;
+}
+
+.drawer-body strong {
+  color: #ffffff !important;
+}
+
+/* 数据显示颜色 */
+.drawer-body p {
+  display: flex;
+  align-items: center;
+}
+
+.drawer-body p strong {
+  min-width: 80px;
+  color: #94A3B8 !important;
+  margin-right: 10px;
+}
+
+.drawer-body p span {
+  color: #E2E8F0 !important;
+  flex: 1;
+}
+
+/* 标签样式 */
+::v-deep .el-tag {
+  background-color: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  color: #60A5FA !important;
+}
+
+::v-deep .el-tag--success {
+  background-color: rgba(103, 194, 58, 0.2) !important;
+  border-color: rgba(103, 194, 58, 0.4) !important;
+  color: #67c23a !important;
+}
+
+::v-deep .el-tag--warning {
+  background-color: rgba(230, 162, 60, 0.2) !important;
+  border-color: rgba(230, 162, 60, 0.4) !important;
+  color: #e6a23c !important;
+}
+
+/* 状态标签样式 */
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.status-tag.pending {
+  background-color: rgba(230, 162, 60, 0.2) !important;
+  border-color: rgba(230, 162, 60, 0.4) !important;
+  color: #e6a23c !important;
+}
+
+.status-tag.approved {
+  background-color: rgba(103, 194, 58, 0.2) !important;
+  border-color: rgba(103, 194, 58, 0.4) !important;
+  color: #67c23a !important;
+}
+
+.status-tag.rejected {
+  background-color: rgba(245, 108, 108, 0.2) !important;
+  border-color: rgba(245, 108, 108, 0.4) !important;
+  color: #F56C6C !important;
+}
+
+.status-tag.cancelled {
+  background-color: rgba(148, 163, 184, 0.2) !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
+  color: #94A3B8 !important;
+}
+
+/* 金额标签样式 */
+.amount-tag {
+  color: #67c23a !important;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: rgba(103, 194, 58, 0.1) !important;
+  border: 1px solid rgba(103, 194, 58, 0.3) !important;
+  border-radius: 6px;
+}
+
+/* 发票附件链接 */
+.drawer-body a {
+  color: #60A5FA !important;
+}
+
+.drawer-body a:hover {
+  color: #3B82F6 !important;
+  text-decoration: underline !important;
+}
 </style>

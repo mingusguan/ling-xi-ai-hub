@@ -1,5 +1,220 @@
 @import 'variables.scss';
 
+// 日期选择器深色主题样式
+// 通用输入框背景
+.el-input__inner {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-editor {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-editor .el-range-input {
+  color: #E2E8F0 !important;
+  background: transparent !important;
+}
+
+.el-date-editor .el-range-separator {
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__editor-wrap {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+.el-date-picker__header {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__cell {
+  color: #E2E8F0 !important;
+}
+
+.el-date-picker__cell:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+}
+
+.el-date-picker__cell.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-date-picker__cell.in-range {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-date-picker__cell.start-date,
+.el-date-picker__cell.end-date {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-date-picker__cell.today {
+  color: #3B82F6 !important;
+}
+
+.el-picker-panel {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+.el-picker-panel .el-date-table {
+  color: #E2E8F0 !important;
+}
+
+.el-picker-panel .el-date-table td {
+  color: #E2E8F0 !important;
+}
+
+.el-picker-panel .el-date-table td.in-range {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-picker-panel .el-date-table td.in-range::before {
+  background: transparent !important;
+}
+
+.el-picker-panel .el-date-table td.start-date,
+.el-picker-panel .el-date-table td.end-date {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-picker-panel .el-date-table td.start-date::before,
+.el-picker-panel .el-date-table td.end-date::before {
+  background: transparent !important;
+}
+
+.el-picker-panel .el-date-table td.today {
+  color: #3B82F6 !important;
+}
+
+.el-picker-panel .el-date-table td.available:hover {
+  background: rgba(59, 130, 246, 0.4) !important;
+}
+
+.el-picker-panel .el-date-table td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-picker-panel .el-calendar-table__row td.in-range {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-picker-panel .el-calendar-table__row td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-picker-panel .el-month-table td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-picker-panel .el-year-table td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+// 日期范围选择器特殊样式
+.el-date-range-picker {
+  .el-picker-panel__content {
+    background: rgba(15, 23, 42, 0.95) !important;
+  }
+}
+
+.el-date-range-picker__content {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+.el-picker-panel__body-wrapper {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+.el-date-table__row td {
+  background: transparent !important;
+}
+
+.el-date-table__row td.in-range {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-date-table__row td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.el-date-table__row td.start-date,
+.el-date-table__row td.end-date {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+// 通用日期单元格样式
+.el-calendar-table__row td {
+  background: transparent !important;
+}
+
+.el-calendar-table__row td.in-range {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+
+.el-calendar-table__row td.is-selected {
+  background: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+// 日期表格单元格通用样式
+.el-date-table td {
+  background: transparent !important;
+}
+
+.el-date-table td.available {
+  background: transparent !important;
+}
+
+.el-date-table td.available:hover {
+  background: rgba(59, 130, 246, 0.3) !important;
+}
+
+.el-date-table td.current {
+  background: transparent !important;
+}
+
+.el-date-table td.today {
+  background: transparent !important;
+}
+
+.el-date-table td.disabled {
+  background: transparent !important;
+}
+
+// 日期范围选择时的单元格内部div背景
+.el-date-table td.in-range div {
+  background: rgba(59, 130, 246, 0.35) !important;
+}
+
+// 日期范围选择器面板背景
+.el-date-range-picker .el-picker-panel__body {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+.el-date-range-picker .el-picker-panel__content {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,12 +224,23 @@ html,
 body,
 #app {
   height: 100%;
+  width: 100%;
+  overflow: hidden;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-family: $font-family;
-  color: $text-color-primary;
-  background: transparent;
+  color: #E2E8F0;
+}
+
+// 隐藏所有滚动条
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 label {
@@ -53,13 +279,6 @@ div:focus {
 
 ul {
   list-style: none;
-}
-
-// 提升内容层级，置于光晕之上
-.sidebar-container,
-.main-container {
-  position: relative;
-  z-index: 1;
 }
 
 // ============================================================================
@@ -523,4 +742,100 @@ body .el-dropdown-menu__item--divided {
 body .el-dropdown-menu__item--divided::before {
   display: none !important;
   background: none !important;
+}
+
+// ============================================================================
+//  Vue Treeselect 深色主题
+// ============================================================================
+.vue-treeselect {
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+.vue-treeselect__control {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-radius: 6px;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+  }
+}
+
+.vue-treeselect__input {
+  background: rgba(15, 23, 42, 0.8) !important;
+  color: #e5e7eb !important;
+}
+
+.vue-treeselect__value-container {
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+.vue-treeselect__placeholder {
+  color: #6b7280 !important;
+}
+
+.vue-treeselect__single-value {
+  color: #e5e7eb !important;
+}
+
+.vue-treeselect__multi-value {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  
+  .vue-treeselect__multi-value__label {
+    color: #e5e7eb !important;
+  }
+}
+
+.vue-treeselect__menu-container {
+  background: rgba(30, 41, 59, 0.95) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-radius: 8px;
+  backdrop-filter: blur(20px);
+}
+
+.vue-treeselect__menu {
+  background: rgba(30, 41, 59, 0.95) !important;
+}
+
+.vue-treeselect__option {
+  color: #e5e7eb !important;
+  background: rgba(30, 41, 59, 0.95) !important;
+  
+  &:hover {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #3b82f6 !important;
+  }
+  
+  &.vue-treeselect__option--selected {
+    background: rgba(59, 130, 246, 0.25) !important;
+    color: #3b82f6 !important;
+  }
+  
+  &.vue-treeselect__option--highlighted {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #3b82f6 !important;
+  }
+}
+
+.vue-treeselect__group-header {
+  color: #9ca3af !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.vue-treeselect__option-group {
+  background: rgba(30, 41, 59, 0.95) !important;
+}
+
+.vue-treeselect__scrollbar {
+  background: rgba(30, 41, 59, 0.95) !important;
+  
+  .vue-treeselect__scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.3) !important;
+    
+    &:hover {
+      background: rgba(59, 130, 246, 0.5) !important;
+    }
+  }
 }

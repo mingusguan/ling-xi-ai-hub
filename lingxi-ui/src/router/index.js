@@ -15,7 +15,7 @@ export const constantRoutes = [
   { path: '', component: Layout, redirect: '/subsystem', hidden: true, children: [{ path: 'index', component: () => import('@/views/index'), name: 'Index', meta: { title: '首页', icon: 'dashboard' } }] },
   { path: '/user', component: Layout, hidden: true, redirect: 'noredirect', children: [{ path: 'profile', component: () => import('@/views/system/user/profile/index'), name: 'Profile', meta: { title: '个人中心', icon: 'user' } }] },
   { path: '/message', component: Layout, hidden: true, children: [{ path: 'center', component: () => import('@/views/message/center/index'), name: 'MessageCenter', meta: { title: '消息中心', icon: 'bell' } }] },
-  { path: '/system', component: Layout, hidden: true, children: [
+  { path: '/system', component: Layout, hidden: true, redirect: '/system/user', children: [
     { path: 'user', component: () => import('@/views/system/user/index'), name: 'SystemUser', meta: { title: '用户管理', activeMenu: '/system/user' } },
     { path: 'role', component: () => import('@/views/system/role/index'), name: 'SystemRole', meta: { title: '角色管理', activeMenu: '/system/role' } },
     { path: 'menu', component: () => import('@/views/system/menu/index'), name: 'SystemMenu', meta: { title: '菜单管理', activeMenu: '/system/menu' } },

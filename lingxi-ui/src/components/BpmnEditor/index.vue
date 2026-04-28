@@ -945,5 +945,101 @@ export default {
   font-size: 12px;
   line-height: 1.5;
 }
+
+::v-deep .djs-connection path {
+  stroke: #60A5FA !important;
+  stroke-width: 2px !important;
+}
+
+::v-deep .djs-connection marker path {
+  stroke: #60A5FA !important;
+  fill: #60A5FA !important;
+}
+
+::v-deep .djs-connection:hover path,
+::v-deep .djs-connection.selected path {
+  stroke: #3B82F6 !important;
+  stroke-width: 3px !important;
+}
+
+::v-deep .djs-connection:hover marker path,
+::v-deep .djs-connection.selected marker path {
+  stroke: #3B82F6 !important;
+  fill: #3B82F6 !important;
+}
+
+::v-deep .djs-outline {
+  stroke: rgba(59, 130, 246, 0.4) !important;
+  stroke-width: 2px !important;
+}
+
+::v-deep .djs-element.selected .djs-outline {
+  stroke: #3B82F6 !important;
+  stroke-width: 2px !important;
+}
+
+::v-deep .djs-shape > g > rect,
+::v-deep .djs-shape > g > polygon {
+  stroke: #3B82F6 !important;
+  fill: #F8FAFC !important;
+}
+
+::v-deep .djs-shape > g > path {
+  stroke: #3B82F6 !important;
+  fill: #F8FAFC !important;
+}
+
+
+
+::v-deep .djs-shape .djs-visual > :nth-child(1) {
+  stroke: #3B82F6 !important;
+  fill: #F8FAFC !important;
+}
+
+::v-deep .djs-label {
+  fill: #334155 !important;
+  color: #334155 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+}
+
+::v-deep .bpmn-editor__canvas svg text,
+::v-deep .bpmn-editor__canvas svg tspan {
+  fill: #334155 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+::v-deep .djs-shape text,
+::v-deep .djs-shape tspan,
+::v-deep .djs-connection text,
+::v-deep .djs-connection tspan {
+  fill: #334155 !important;
+  font-size: 12px !important;
+  font-weight: normal !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+::v-deep .bpmn-editor__panel-body .el-textarea__inner {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .bpmn-editor__panel-body .el-input__inner {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+
+::v-deep .bpmn-editor__panel-body .el-select .el-input__inner {
+  background: rgba(30, 41, 59, 0.7) !important;
+}
+
+::v-deep .bpmn-editor__panel-body .el-input__inner::placeholder,
+::v-deep .bpmn-editor__panel-body .el-textarea__inner::placeholder {
+  color: #64748B !important;
+}
 </style>
 
