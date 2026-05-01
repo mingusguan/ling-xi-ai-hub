@@ -1,5 +1,5 @@
 import auth from '@/plugins/auth'
-import router, { constantRoutes, dynamicRoutes, oaRoutes } from '@/router'
+import router, { constantRoutes, dynamicRoutes, oaRoutes, aiRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
@@ -55,6 +55,11 @@ const permission = {
             addPathPrefix(sdata, prefix)
             addPathPrefix(rdata, prefix)
           }
+          if (sysCode === 'ai_tool') {
+            const prefix = '/' + 'ai' + '/'
+            addPathPrefix(sdata, prefix)
+            addPathPrefix(rdata, prefix)
+          }
           const sidebarRoutes = filterAsyncRouter(sdata)
           const rewriteRoutes = filterAsyncRouter(rdata, false, true)
           const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
@@ -64,6 +69,16 @@ const permission = {
           if (sysCode === 'oa' && rewriteRoutes.length <= 1) {
             const staticOaRoutes = JSON.parse(JSON.stringify(oaRoutes))
             const filteredRoutes = filterDynamicRoutes(staticOaRoutes)
+            commit('SET_ROUTES', filteredRoutes)
+            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
+            commit('SET_DEFAULT_ROUTES', filteredRoutes)
+            commit('SET_TOPBAR_ROUTES', filteredRoutes)
+            resolve(filteredRoutes)
+            return
+          }
+          if (sysCode === 'ai_tool' && rewriteRoutes.length <= 1) {
+            const staticAiRoutes = JSON.parse(JSON.stringify(aiRoutes))
+            const filteredRoutes = filterDynamicRoutes(staticAiRoutes)
             commit('SET_ROUTES', filteredRoutes)
             commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
             commit('SET_DEFAULT_ROUTES', filteredRoutes)
@@ -81,6 +96,16 @@ const permission = {
           if (sysCode === 'oa') {
             const staticOaRoutes = JSON.parse(JSON.stringify(oaRoutes))
             const filteredRoutes = filterDynamicRoutes(staticOaRoutes)
+            commit('SET_ROUTES', filteredRoutes)
+            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
+            commit('SET_DEFAULT_ROUTES', filteredRoutes)
+            commit('SET_TOPBAR_ROUTES', filteredRoutes)
+            resolve(filteredRoutes)
+            return
+          }
+          if (sysCode === 'ai_tool') {
+            const staticAiRoutes = JSON.parse(JSON.stringify(aiRoutes))
+            const filteredRoutes = filterDynamicRoutes(staticAiRoutes)
             commit('SET_ROUTES', filteredRoutes)
             commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
             commit('SET_DEFAULT_ROUTES', filteredRoutes)

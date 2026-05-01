@@ -22,7 +22,7 @@ module.exports = {
   assetsDir: 'static',
   // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
   productionSourceMap: false,
-  transpileDependencies: ['quill', /domify/, /min-dom/, /diagram-js-direct-editing/],
+  transpileDependencies: ['quill', /domify/, /min-dom/, /diagram-js-direct-editing/, 'jsmind'],
   parallel: true,
   // webpack-dev-server 相关配置
   devServer: {
@@ -76,6 +76,7 @@ module.exports = {
   chainWebpack(config) {
     config.plugins.delete('preload')
     config.plugins.delete('prefetch')
+    config.plugins.delete('optimize-css')
 
     config.module
       .rule('svg')

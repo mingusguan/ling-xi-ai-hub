@@ -3,38 +3,96 @@ package com.lingxi.ai.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.util.Date;
 
 /**
- * AI聊天会话实体
- *
- * @author lingxi
+ * AI 聊天会话实体。
  */
-@Data
 @TableName("ai_chat_session")
-public class AiChatSession {
-
-    /** 会话ID */
+public class AiChatSession
+{
     @TableId(type = IdType.AUTO)
     private Long sessionId;
 
-    /** 用户ID */
     private Long userId;
 
-    /** 用户名 */
     private String userName;
 
-    /** 会话标题 */
     private String title;
 
-    /** 是否收藏（0否 1是） */
     private String isBookmarked;
 
-    /** 最后消息时间 */
     private Date lastMessageTime;
 
-    /** 创建时间 */
     private Date createTime;
+
+    public Long getSessionId()
+    {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId)
+    {
+        this.sessionId = sessionId;
+    }
+
+    public Long getUserId()
+    {
+        return userId;
+    }
+
+    public void setUserId(Long userId)
+    {
+        this.userId = userId;
+    }
+
+    public String getUserName()
+    {
+        return userName;
+    }
+
+    public void setUserName(String userName)
+    {
+        this.userName = userName;
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public String getIsBookmarked()
+    {
+        return isBookmarked;
+    }
+
+    public void setIsBookmarked(String isBookmarked)
+    {
+        this.isBookmarked = isBookmarked;
+    }
+
+    public Date getLastMessageTime()
+    {
+        return lastMessageTime;
+    }
+
+    public void setLastMessageTime(Date lastMessageTime)
+    {
+        this.lastMessageTime = lastMessageTime;
+    }
+
+    public Date getCreateTime()
+    {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime)
+    {
+        this.createTime = createTime;
+    }
 }

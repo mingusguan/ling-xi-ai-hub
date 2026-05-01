@@ -10,8 +10,9 @@ import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
 import dev.langchain4j.store.embedding.EmbeddingSearchResult;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.filter.comparison.IsEqualTo;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,9 +22,9 @@ import java.util.Map;
 /**
  * 知识库查询工具
  */
-@Slf4j
 @Component
 public class KnowledgeTool {
+    private static final Logger log = LoggerFactory.getLogger(KnowledgeTool.class);
 
     private final EmbeddingModel embeddingModel;
     private final EmbeddingStore<TextSegment> embeddingStore;

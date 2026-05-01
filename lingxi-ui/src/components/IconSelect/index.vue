@@ -55,9 +55,23 @@ export default {
   .icon-body {
     width: 100%;
     padding: 10px;
+    background: rgba(15, 23, 42, 0.95);
+    border-radius: 8px;
     .icon-search {
       position: relative;
       margin-bottom: 5px;
+      :deep(.el-input__inner) {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border: 1px solid rgba(59, 130, 246, 0.25) !important;
+        color: #E2E8F0 !important;
+        border-radius: 4px;
+      }
+      :deep(.el-input__inner::placeholder) {
+        color: #64748B !important;
+      }
+      :deep(.el-input__suffix) {
+        color: #94A3B8 !important;
+      }
     }
     .icon-list {
       height: 200px;
@@ -76,12 +90,14 @@ export default {
             max-width: 100%;
             height: 100%;
             padding: 0 5px;
+            color: #E2E8F0;
             &:hover {
-              background: #ececec;
+              background: rgba(59, 130, 246, 0.2);
               border-radius: 5px;
             }
             .icon {
               flex-shrink: 0;
+              color: #94A3B8;
             }
             span {
               display: inline-block;
@@ -91,11 +107,15 @@ export default {
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
+              font-size: 12px;
             }
           }
           .icon-item.active {
-            background: #ececec;
+            background: rgba(59, 130, 246, 0.3);
             border-radius: 5px;
+            .icon {
+              color: #60A5FA;
+            }
           }
         }
       }

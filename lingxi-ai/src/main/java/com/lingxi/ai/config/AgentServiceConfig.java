@@ -1,6 +1,9 @@
 package com.lingxi.ai.config;
 
 import com.lingxi.ai.agent.ApprovalAssistantAgent;
+import com.lingxi.ai.agent.DocumentWritingAgent;
+import com.lingxi.ai.agent.MindmapAgent;
+import com.lingxi.ai.agent.ReportAnalysisAgent;
 import com.lingxi.ai.agent.XiaolingAgent;
 import com.lingxi.ai.agent.tools.KnowledgeTool;
 import com.lingxi.ai.agent.tools.OaTool;
@@ -44,6 +47,36 @@ public class AgentServiceConfig {
         return AiServices.builder(ApprovalAssistantAgent.class)
                 .chatLanguageModel(chatLanguageModel)
                 .tools(oaTool)
+                .build();
+    }
+
+    /**
+     * 创建思维导图生成Agent
+     */
+    @Bean
+    public MindmapAgent mindmapAgent() {
+        return AiServices.builder(MindmapAgent.class)
+                .chatLanguageModel(chatLanguageModel)
+                .build();
+    }
+
+    /**
+     * 创建公文助手 Agent
+     */
+    @Bean
+    public DocumentWritingAgent documentWritingAgent() {
+        return AiServices.builder(DocumentWritingAgent.class)
+                .chatLanguageModel(chatLanguageModel)
+                .build();
+    }
+
+    /**
+     * 创建报表解读 Agent
+     */
+    @Bean
+    public ReportAnalysisAgent reportAnalysisAgent() {
+        return AiServices.builder(ReportAnalysisAgent.class)
+                .chatLanguageModel(chatLanguageModel)
                 .build();
     }
 }

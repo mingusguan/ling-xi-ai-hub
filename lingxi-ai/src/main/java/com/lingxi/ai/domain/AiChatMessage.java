@@ -3,32 +3,72 @@ package com.lingxi.ai.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.util.Date;
 
 /**
- * AI聊天消息实体
- *
- * @author lingxi
+ * AI 聊天消息实体。
  */
-@Data
 @TableName("ai_chat_message")
-public class AiChatMessage {
-
-    /** 消息ID */
+public class AiChatMessage
+{
     @TableId(type = IdType.AUTO)
     private Long messageId;
 
-    /** 会话ID */
     private Long sessionId;
 
-    /** 角色（user/assistant） */
     private String role;
 
-    /** 消息内容 */
     private String content;
 
-    /** 创建时间 */
     private Date createTime;
+
+    public Long getMessageId()
+    {
+        return messageId;
+    }
+
+    public void setMessageId(Long messageId)
+    {
+        this.messageId = messageId;
+    }
+
+    public Long getSessionId()
+    {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId)
+    {
+        this.sessionId = sessionId;
+    }
+
+    public String getRole()
+    {
+        return role;
+    }
+
+    public void setRole(String role)
+    {
+        this.role = role;
+    }
+
+    public String getContent()
+    {
+        return content;
+    }
+
+    public void setContent(String content)
+    {
+        this.content = content;
+    }
+
+    public Date getCreateTime()
+    {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime)
+    {
+        this.createTime = createTime;
+    }
 }

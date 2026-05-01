@@ -72,6 +72,21 @@ export const oaRoutes = [
   { path: '/oa', redirect: '/oa/dashboard', hidden: true }
 ]
 
+export const aiRoutes = [
+  {
+    path: '/ai',
+    component: Layout,
+    redirect: 'noredirect',
+    hidden: true,
+    children: [
+      { path: 'document', component: () => import('@/views/ai/document/index'), name: 'AiDocument', meta: { title: 'AI公文助手', icon: 'documentation', sysCode: 'ai_tool' }, permissions: ['ai:document:view'] },
+      { path: 'report', component: () => import('@/views/ai/report/index'), name: 'AiReport', meta: { title: 'AI报表解读', icon: 'chart', sysCode: 'ai_tool' }, permissions: ['ai:report:view'] },
+      { path: 'mindmap', component: () => import('@/views/ai/mindmap/index'), name: 'AiMindmap', meta: { title: 'AI思维导图', icon: 'skill', sysCode: 'ai_tool' }, permissions: ['ai:mindmap:view'] }
+    ]
+  },
+  { path: '/ai', redirect: '/ai/document', hidden: true }
+]
+
 export const dynamicRoutes = [
   { path: '/system/user-auth', component: Layout, hidden: true, permissions: ['system:user:edit'], children: [{ path: 'role/:userId(\\d+)', component: () => import('@/views/system/user/authRole'), name: 'AuthRole', meta: { title: '分配角色', activeMenu: '/system/user' } }] },
   { path: '/system/role-auth', component: Layout, hidden: true, permissions: ['system:role:edit'], children: [{ path: 'user/:roleId(\\d+)', component: () => import('@/views/system/role/authUser'), name: 'AuthUser', meta: { title: '分配用户', activeMenu: '/system/role' } }] },
@@ -88,5 +103,5 @@ Router.prototype.replace = function replace(location) { return routerReplace.cal
 export default new Router({
   mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...knowledgeRoutes, ...oaRoutes]
+  routes: [...constantRoutes, ...knowledgeRoutes, ...oaRoutes, ...aiRoutes]
 })

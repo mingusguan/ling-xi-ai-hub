@@ -180,9 +180,23 @@
         </div>
         <div class="card-arrow"><i class="el-icon-arrow-right"></i></div>
       </div>
+      <div 
+        v-if="showAiSystem" 
+        class="subsystem-card" 
+        @click="goToSystem('/ai/mindmap', 'ai_tool')"
+      >
+        <div class="card-icon ai-icon">
+          <svg-icon icon-class="skill" />
+        </div>
+        <div class="card-content">
+          <h3>AI工具库</h3>
+          <p>提供AI思维导图、智能问答、文档处理和AI助手等智能工具</p>
+        </div>
+        <div class="card-arrow"><i class="el-icon-arrow-right"></i></div>
+      </div>
     </div>
 
-    <div class="empty-tip" v-if="!showBasicSystem && !showKnowledgeSystem && !showOaSystem">
+    <div class="empty-tip" v-if="!showBasicSystem && !showKnowledgeSystem && !showOaSystem && !showAiSystem">
       <i class="el-icon-warning" style="font-size: 48px; color: #94A3B8;"></i>
       <p style="margin-top: 20px; color: #64748B;">暂无可用的子系统权限，请联系管理员分配权限</p>
     </div>
@@ -246,6 +260,14 @@ export default {
         'oa:leave:adjustment:list',
         'oa:expense:list',
         'oa:reminder:list'
+      ])
+    },
+    showAiSystem() {
+      return this.isAdmin || auth.hasPermiOr([
+        'ai:document:view',
+        'ai:report:view',
+        'ai:mindmap:view',
+        'ai:chat:view'
       ])
     },
     isAdmin() {
@@ -607,6 +629,11 @@ export default {
 .oa-icon {
   background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+}
+
+.ai-icon {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
 }
 
 .card-content {
