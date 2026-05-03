@@ -35,7 +35,7 @@ public interface ApprovalAssistantAgent {
         - riskLevel取值：low（低风险）、normal（中风险）、high（高风险）
         - riskPoints列出具体风险点，无风险则为空数组
         - aiSuggestion是综合分析文本，50-300字，包含合规性、风险评估、建议操作
-        - 如果是请假申请，需调用 OaTool.calculateLeaveDuration(startDate, endDate) 重新计算有效工作天数（已自动排除周末和法定节假日），并与申请的 leaveDays 对比，说明是否存在差异及是否包含休息日。
+        - 如果是请假申请，需调用 calculateLeaveDuration(startDate, endDate) 重新计算有效工作天数（已自动排除周末和法定节假日），并与申请的 leaveDays 对比，说明是否存在差异及是否包含休息日。
         - templates生成3-5个不同风格的审批意见，每个不超过50字
         - 包含通过、有条件通过、驳回等不同倾向
         """)

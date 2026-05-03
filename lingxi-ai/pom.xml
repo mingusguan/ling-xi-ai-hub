@@ -95,18 +95,6 @@
             <artifactId>lingxi-api-ai</artifactId>
         </dependency>
         
-        <!-- Lingxi API OA -->
-        <dependency>
-            <groupId>com.lingxi</groupId>
-            <artifactId>lingxi-api-oa</artifactId>
-        </dependency>
-
-        <!-- Lingxi API Knowledge -->
-        <dependency>
-            <groupId>com.lingxi</groupId>
-            <artifactId>lingxi-api-knowledge</artifactId>
-        </dependency>
-        
         <!-- LangChain4j -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
@@ -119,12 +107,11 @@
             <artifactId>langchain4j-dashscope</artifactId>
             <version>${langChain4j.version}</version>
         </dependency>
-        
-        <!-- LangChain4j Milvus -->
+
+        <!-- MCP Client -->
         <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-milvus</artifactId>
-            <version>${langChain4j.version}</version>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-client</artifactId>
         </dependency>
         
         <!-- Fastjson -->

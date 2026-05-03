@@ -21,10 +21,6 @@ public class ReportInterpretRequest
     @Size(max = 20000, message = "表格内容长度不能超过20000个字符")
     private String tableContent;
 
-    private Boolean generateMindmap;
-
-    private String mindmapLayoutType;
-
     public String getReportTitle()
     {
         return reportTitle;
@@ -65,23 +61,4 @@ public class ReportInterpretRequest
         this.tableContent = tableContent;
     }
 
-    public Boolean getGenerateMindmap()
-    {
-        return generateMindmap;
-    }
-
-    public void setGenerateMindmap(Boolean generateMindmap)
-    {
-        this.generateMindmap = generateMindmap;
-    }
-
-    public String getMindmapLayoutType()
-    {
-        return mindmapLayoutType;
-    }
-
-    public void setMindmapLayoutType(String mindmapLayoutType)
-    {
-        this.mindmapLayoutType = mindmapLayoutType;
-    }
 }

@@ -2,11 +2,10 @@ package com.lingxi.ai.config;
 
 import com.lingxi.ai.agent.ApprovalAssistantAgent;
 import com.lingxi.ai.agent.DocumentWritingAgent;
-import com.lingxi.ai.agent.MindmapAgent;
 import com.lingxi.ai.agent.ReportAnalysisAgent;
 import com.lingxi.ai.agent.XiaolingAgent;
-import com.lingxi.ai.agent.tools.KnowledgeTool;
-import com.lingxi.ai.agent.tools.OaTool;
+import com.lingxi.ai.agent.tools.WeatherTool;
+import com.lingxi.ai.agent.tools.XiaolingMcpTool;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.service.AiServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +22,10 @@ public class AgentServiceConfig {
     private ChatLanguageModel chatLanguageModel;
 
     @Autowired
-    private KnowledgeTool knowledgeTool;
+    private XiaolingMcpTool xiaolingMcpTool;
 
     @Autowired
-    private OaTool oaTool;
+    private WeatherTool weatherTool;
 
     /**
      * 创建小灵儿助手Agent
@@ -35,7 +34,7 @@ public class AgentServiceConfig {
     public XiaolingAgent xiaolingAgent() {
         return AiServices.builder(XiaolingAgent.class)
                 .chatLanguageModel(chatLanguageModel)
-                .tools(knowledgeTool, oaTool)
+                .tools(xiaolingMcpTool, weatherTool)
                 .build();
     }
 
@@ -46,17 +45,7 @@ public class AgentServiceConfig {
     public ApprovalAssistantAgent approvalAssistant() {
         return AiServices.builder(ApprovalAssistantAgent.class)
                 .chatLanguageModel(chatLanguageModel)
-                .tools(oaTool)
-                .build();
-    }
-
-    /**
-     * 创建思维导图生成Agent
-     */
-    @Bean
-    public MindmapAgent mindmapAgent() {
-        return AiServices.builder(MindmapAgent.class)
-                .chatLanguageModel(chatLanguageModel)
+                .tools(xiaolingMcpTool)
                 .build();
     }
 

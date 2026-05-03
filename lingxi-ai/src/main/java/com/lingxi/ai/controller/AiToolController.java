@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +44,7 @@ public class AiToolController extends BaseController
     @RequiresPermissions("ai:document:generate")
     @Log(title = "AI公文助手", businessType = BusinessType.OTHER)
     @PostMapping("/document/write")
-    public AjaxResult writeDocument(@Valid @org.springframework.web.bind.annotation.RequestBody DocumentWritingRequest request)
+    public AjaxResult writeDocument(@Valid @RequestBody DocumentWritingRequest request)
     {
         DocumentWritingResult result = aiToolService.writeDocument(request);
         return AjaxResult.success("生成成功", result);

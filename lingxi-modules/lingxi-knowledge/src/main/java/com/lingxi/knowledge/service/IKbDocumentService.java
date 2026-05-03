@@ -2,6 +2,7 @@ package com.lingxi.knowledge.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lingxi.knowledge.domain.KbDocument;
+import com.lingxi.knowledge.domain.dto.KnowledgeSearchResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface IKbDocumentService extends IService<KbDocument> {
 
     /** 重新向量化（对已入库文档重新划分并 embed） */
     void reEmbed(Long docId);
+
+    KnowledgeSearchResponse searchKnowledge(String query, Long deptId, Integer maxResults, Double minScore);
 }

@@ -26,8 +26,7 @@ public interface ReportAnalysisAgent
           "risks": ["风险1", "风险2"],
           "suggestions": ["建议1", "建议2", "建议3"],
           "trendAnalysis": "趋势分析文本",
-          "managementBrief": "适合给管理层汇报的结论",
-          "mindmapPrompt": "适合生成思维导图的主题与结构描述"
+          "managementBrief": "适合给管理层汇报的结论"
         }
 
         要求：
@@ -36,8 +35,7 @@ public interface ReportAnalysisAgent
         3. keyFindings、risks、suggestions 各返回 2-6 条，内容具体可执行。
         4. trendAnalysis 要概括变化趋势和主要驱动因素。
         5. managementBrief 要适合领导快速阅读。
-        6. mindmapPrompt 需要适合进一步生成思维导图，应提炼核心主题与一级、二级结构。
-        7. 所有字段不能为空；不确定时给出合理保守的结论。
+        6. 所有字段不能为空；不确定时给出合理保守的结论。
         """)
     String analyze(@UserMessage String prompt);
 }

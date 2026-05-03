@@ -1,6 +1,7 @@
 package com.lingxi.ai.domain.vo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,10 +22,6 @@ public class DocumentWritingResult
     private List<String> outline = new ArrayList<>();
 
     private List<String> polishPoints = new ArrayList<>();
-
-    private String mindmapPrompt;
-
-    private AiMindmapPayload mindmap;
 
     public String getTitle()
     {
@@ -83,7 +80,7 @@ public class DocumentWritingResult
 
     public void setOutline(List<String> outline)
     {
-        this.outline = outline;
+        this.outline = outline == null ? Collections.emptyList() : outline;
     }
 
     public List<String> getPolishPoints()
@@ -93,26 +90,7 @@ public class DocumentWritingResult
 
     public void setPolishPoints(List<String> polishPoints)
     {
-        this.polishPoints = polishPoints;
+        this.polishPoints = polishPoints == null ? Collections.emptyList() : polishPoints;
     }
 
-    public String getMindmapPrompt()
-    {
-        return mindmapPrompt;
-    }
-
-    public void setMindmapPrompt(String mindmapPrompt)
-    {
-        this.mindmapPrompt = mindmapPrompt;
-    }
-
-    public AiMindmapPayload getMindmap()
-    {
-        return mindmap;
-    }
-
-    public void setMindmap(AiMindmapPayload mindmap)
-    {
-        this.mindmap = mindmap;
-    }
 }

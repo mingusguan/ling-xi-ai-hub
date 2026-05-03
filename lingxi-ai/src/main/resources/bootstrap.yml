@@ -6,6 +6,23 @@ server:
 spring:
   application:
     name: lingxi-ai
+  ai:
+    mcp:
+      client:
+        enabled: true
+        name: lingxi-ai-mcp-client
+        version: 1.0.0
+        initialized: true
+        request-timeout: 20s
+        type: SYNC
+        sse:
+          connections:
+            knowledge:
+              url: http://localhost:9800
+              sse-endpoint: /mcp/sse
+            oa:
+              url: http://localhost:9810
+              sse-endpoint: /mcp/sse
   profiles:
     active: dev
   cloud:
@@ -24,17 +41,21 @@ spring:
       - optional:nacos:application-${spring.profiles.active}.${spring.config.file-extension}
       - optional:nacos:${spring.application.name}-${spring.profiles.active}.${spring.config.file-extension}
 
-# 阿里云 通义千问 + 向量模型
+# DashScope chat model
 dashscope:
   api-key: sk-0ec5886dc7c94cf9a49752131f180d05
   model: qwen-plus
-  embedding-model: text-embedding-v3
 
-# Milvus 向量库配置
-milvus:
-  host: localhost
-  port: 19530
-  collection-name: kb_embedding
+# Seniverse weather
+seniverse:
+  weather:
+    enabled: true
+    api-key: ${SENIVERSE_WEATHER_API_KEY:S_ZEODoiCji4fHPNq}
+    base-url: https://api.seniverse.com
+    language: zh-Hans
+    unit: c
+    forecast-days: 3
+    request-timeout: 8s
 
 # MyBatis-Plus
 mybatis-plus:

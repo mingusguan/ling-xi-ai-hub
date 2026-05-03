@@ -1,21 +1,26 @@
 package com.lingxi.ai.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.lingxi.ai.agent.DocumentWritingAgent;
 import com.lingxi.ai.agent.ReportAnalysisAgent;
 import com.lingxi.ai.domain.dto.DocumentWritingRequest;
 import com.lingxi.ai.domain.dto.ReportInterpretRequest;
-import com.lingxi.ai.domain.vo.AiMindmapPayload;
 import com.lingxi.ai.domain.vo.DocumentWritingResult;
 import com.lingxi.ai.domain.vo.ReportInterpretResult;
 import com.lingxi.ai.service.IAiToolService;
-import com.lingxi.ai.service.IMindmapService;
 import com.lingxi.ai.util.ExcelTableParser;
 import com.lingxi.common.core.exception.ServiceException;
 import com.lingxi.common.core.utils.StringUtils;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,62 +33,83 @@ import org.springframework.web.multipart.MultipartFile;
 public class AiToolServiceImpl implements IAiToolService
 {
     private static final Logger log = LoggerFactory.getLogger(AiToolServiceImpl.class);
-    private static final String DEFAULT_LAYOUT = "logical";
+
+    private static final Pattern FULL_DATE_WEEKDAY_PATTERN =
+            Pattern.compile(
+                    "(\\d{4})\u5e74(\\d{1,2})\u6708(\\d{1,2})\u65e5\uff08\u661f\u671f"
+                            + "[\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u65e5\u5929]\uff09");
+
+    private static final Pattern MONTH_DATE_WEEKDAY_PATTERN =
+            Pattern.compile(
+                    "(?<!\u5e74)(\\d{1,2})\u6708(\\d{1,2})\u65e5\uff08\u661f\u671f"
+                            + "[\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u65e5\u5929]\uff09");
+
+    private static final Pattern YEAR_PATTERN = Pattern.compile("(20\\d{2})\u5e74");
+
+    private static final String DOCUMENT_FAILURE_MESSAGE = "公文助手处理失败";
+
+    private static final String REPORT_FAILURE_MESSAGE = "报表解读处理失败";
+
+    private static final List<String> DEFAULT_OUTLINE = List.of("核心事项", "执行要求", "保障措施");
+
+    private static final List<String> DEFAULT_POLISH_POINTS = List.of("突出正式表达", "增强结构条理");
+
+    private static final List<String> DEFAULT_KEY_FINDINGS = List.of("建议结合重点指标进一步核对异常波动");
+
+    private static final List<String> DEFAULT_RISKS = List.of("当前报表未识别出显著高风险项，建议持续监控关键指标");
+
+    private static final List<String> DEFAULT_SUGGESTIONS = List.of("建议针对关键指标建立定期复盘机制");
 
     private final DocumentWritingAgent documentWritingAgent;
 
     private final ReportAnalysisAgent reportAnalysisAgent;
 
-    private final IMindmapService mindmapService;
-
     public AiToolServiceImpl(DocumentWritingAgent documentWritingAgent,
-            ReportAnalysisAgent reportAnalysisAgent,
-            IMindmapService mindmapService)
+            ReportAnalysisAgent reportAnalysisAgent)
     {
         this.documentWritingAgent = documentWritingAgent;
         this.reportAnalysisAgent = reportAnalysisAgent;
-        this.mindmapService = mindmapService;
     }
 
     @Override
     public DocumentWritingResult writeDocument(DocumentWritingRequest request)
     {
-        try
-        {
-            String prompt = buildDocumentPrompt(request);
-            String resultJson = documentWritingAgent.write(prompt);
-            DocumentWritingResult result = parseDocumentResult(resultJson, request);
-            attachMindmapIfNeeded(Boolean.TRUE.equals(request.getGenerateMindmap()),
-                    request.getMindmapLayoutType(),
-                    result.getMindmapPrompt(),
-                    result::setMindmap);
-            return result;
-        }
-        catch (ServiceException e)
-        {
-            throw e;
-        }
-        catch (Exception e)
-        {
-            log.error("公文助手处理失败", e);
-            throw new ServiceException("公文助手处理失败，请稍后重试");
-        }
+        return executeAiTool(DOCUMENT_FAILURE_MESSAGE, () -> doWriteDocument(request));
     }
 
     @Override
     public ReportInterpretResult interpretReport(ReportInterpretRequest request, MultipartFile file)
     {
+        return executeAiTool(REPORT_FAILURE_MESSAGE, () -> doInterpretReport(request, file));
+    }
+
+    private DocumentWritingResult doWriteDocument(DocumentWritingRequest request)
+    {
+        validateDocumentRequest(request);
+
+        String prompt = buildDocumentPrompt(request);
+        String resultJson = documentWritingAgent.write(prompt);
+        log.info("AI 公文写作结果：{}", resultJson);
+        DocumentWritingResult result = parseDocumentResult(resultJson, request);
+        normalizeDocumentWeekdays(result);
+        return result;
+    }
+
+    private ReportInterpretResult doInterpretReport(ReportInterpretRequest request, MultipartFile file)
+    {
+        validateReportRequest(request);
+
+        String parsedTable = resolveTableContent(request, file);
+        String prompt = buildReportPrompt(request, parsedTable);
+        String resultJson = reportAnalysisAgent.analyze(prompt);
+        return parseReportResult(resultJson, request, parsedTable);
+    }
+
+    private <T> T executeAiTool(String failureMessage, Supplier<T> action)
+    {
         try
         {
-            String parsedTable = resolveTableContent(request, file);
-            String prompt = buildReportPrompt(request, parsedTable);
-            String resultJson = reportAnalysisAgent.analyze(prompt);
-            ReportInterpretResult result = parseReportResult(resultJson, request, parsedTable);
-            attachMindmapIfNeeded(Boolean.TRUE.equals(request.getGenerateMindmap()),
-                    request.getMindmapLayoutType(),
-                    result.getMindmapPrompt(),
-                    result::setMindmap);
-            return result;
+            return action.get();
         }
         catch (ServiceException e)
         {
@@ -91,8 +117,24 @@ public class AiToolServiceImpl implements IAiToolService
         }
         catch (Exception e)
         {
-            log.error("报表解读处理失败", e);
-            throw new ServiceException("报表解读处理失败，请稍后重试");
+            log.error(failureMessage, e);
+            throw new ServiceException(failureMessage + "，请稍后重试");
+        }
+    }
+
+    private void validateDocumentRequest(DocumentWritingRequest request)
+    {
+        if (request == null)
+        {
+            throw new ServiceException("公文写作请求不能为空");
+        }
+    }
+
+    private void validateReportRequest(ReportInterpretRequest request)
+    {
+        if (request == null)
+        {
+            throw new ServiceException("报表解读请求不能为空");
         }
     }
 
@@ -112,23 +154,20 @@ public class AiToolServiceImpl implements IAiToolService
     private String buildDocumentPrompt(DocumentWritingRequest request)
     {
         StringBuilder builder = new StringBuilder(2048);
-        builder.append("【任务类型】公文写作与润色\n");
-        builder.append("【处理模式】").append(request.getMode()).append('\n');
-        builder.append("【文稿类型】").append(request.getDocumentType()).append('\n');
-        builder.append("【语气风格】").append(request.getTone()).append('\n');
-        builder.append("【主题】").append(request.getTopic()).append('\n');
-        if (StringUtils.isNotBlank(request.getBackground()))
-        {
-            builder.append("【背景信息】\n").append(request.getBackground().trim()).append('\n');
-        }
-        if (StringUtils.isNotBlank(request.getSourceContent()))
-        {
-            builder.append("【原始内容】\n").append(request.getSourceContent().trim()).append('\n');
-        }
-        if (StringUtils.isNotBlank(request.getRequirements()))
-        {
-            builder.append("【附加要求】\n").append(request.getRequirements().trim()).append('\n');
-        }
+        LocalDate currentDate = LocalDate.now();
+        appendLine(builder, "【当前日期】" + currentDate.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                + "（" + toChineseWeekday(currentDate.getDayOfWeek()) + "）");
+        appendLine(builder, "【日期校验要求】所有日期对应的星期必须真实准确，不能臆造星期。");
+        appendLine(builder, "【任务类型】公文写作与润色");
+        appendLine(builder, "【当前日期】" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        appendLine(builder, "【日期要求】如正文需要出现年份、日期或时间节点，必须以当前日期为基准；不要使用过期年份。");
+        appendLine(builder, "【处理模式】" + request.getMode());
+        appendLine(builder, "【文稿类型】" + request.getDocumentType());
+        appendLine(builder, "【语气风格】" + request.getTone());
+        appendLine(builder, "【主题】" + request.getTopic());
+        appendOptionalSection(builder, "背景信息", request.getBackground());
+        appendOptionalSection(builder, "原始内容", request.getSourceContent());
+        appendOptionalSection(builder, "附加要求", request.getRequirements());
         builder.append("【输出要求】请生成适合正式办公场景直接使用的中文结果。");
         return builder.toString();
     }
@@ -136,19 +175,34 @@ public class AiToolServiceImpl implements IAiToolService
     private String buildReportPrompt(ReportInterpretRequest request, String parsedTable)
     {
         StringBuilder builder = new StringBuilder(4096);
-        builder.append("【任务类型】报表解读\n");
-        builder.append("【报表名称】").append(request.getReportTitle()).append('\n');
-        if (StringUtils.isNotBlank(request.getBusinessContext()))
-        {
-            builder.append("【业务背景】\n").append(request.getBusinessContext().trim()).append('\n');
-        }
-        if (StringUtils.isNotBlank(request.getAnalysisFocus()))
-        {
-            builder.append("【分析重点】\n").append(request.getAnalysisFocus().trim()).append('\n');
-        }
-        builder.append("【报表内容】\n").append(parsedTable).append('\n');
+        appendLine(builder, "【任务类型】报表解读");
+        appendLine(builder, "【报表名称】" + request.getReportTitle());
+        appendOptionalSection(builder, "业务背景", request.getBusinessContext());
+        appendOptionalSection(builder, "分析重点", request.getAnalysisFocus());
+        appendRequiredSection(builder, "报表内容", parsedTable);
         builder.append("【输出要求】请重点关注异常、趋势、风险、排名变化与管理建议。");
         return builder.toString();
+    }
+
+    private void appendLine(StringBuilder builder, String content)
+    {
+        builder.append(content).append('\n');
+    }
+
+    private void appendOptionalSection(StringBuilder builder, String title, String content)
+    {
+        if (StringUtils.isBlank(content))
+        {
+            return;
+        }
+        appendRequiredSection(builder, title, content.trim());
+    }
+
+    private void appendRequiredSection(StringBuilder builder, String title, String content)
+    {
+        builder.append('【').append(title).append("】\n")
+                .append(content)
+                .append('\n');
     }
 
     private DocumentWritingResult parseDocumentResult(String resultJson, DocumentWritingRequest request)
@@ -156,28 +210,8 @@ public class AiToolServiceImpl implements IAiToolService
         try
         {
             JSONObject jsonObject = JSON.parseObject(resultJson);
-            DocumentWritingResult result = new DocumentWritingResult();
-            result.setTitle(StringUtils.defaultIfBlank(jsonObject.getString("title"), request.getTopic()));
-            result.setSummary(StringUtils.defaultIfBlank(jsonObject.getString("summary"), "已生成公文内容摘要"));
-            result.setDocumentType(StringUtils.defaultIfBlank(jsonObject.getString("documentType"), request.getDocumentType()));
-            result.setTone(StringUtils.defaultIfBlank(jsonObject.getString("tone"), request.getTone()));
-            result.setContent(StringUtils.defaultIfBlank(jsonObject.getString("content"), request.getSourceContent()));
-            result.setOutline(toStringList(jsonObject.getJSONArray("outline")));
-            result.setPolishPoints(toStringList(jsonObject.getJSONArray("polishPoints")));
-            result.setMindmapPrompt(StringUtils.defaultIfBlank(jsonObject.getString("mindmapPrompt"),
-                    result.getTitle() + " 思维导图"));
-            if (StringUtils.isBlank(result.getContent()))
-            {
-                throw new ServiceException("AI 未返回有效公文内容");
-            }
-            if (result.getOutline().isEmpty())
-            {
-                result.setOutline(List.of("核心事项", "执行要求", "保障措施"));
-            }
-            if (result.getPolishPoints().isEmpty())
-            {
-                result.setPolishPoints(List.of("突出正式表达", "增强结构条理"));
-            }
+            DocumentWritingResult result = buildDocumentResult(jsonObject, request);
+            fillDocumentDefaults(result);
             return result;
         }
         catch (ServiceException e)
@@ -191,34 +225,42 @@ public class AiToolServiceImpl implements IAiToolService
         }
     }
 
+    private DocumentWritingResult buildDocumentResult(JSONObject jsonObject, DocumentWritingRequest request)
+    {
+        DocumentWritingResult result = new DocumentWritingResult();
+        result.setTitle(defaultIfBlank(jsonObject.getString("title"), request.getTopic()));
+        result.setSummary(defaultIfBlank(jsonObject.getString("summary"), "已生成公文内容摘要"));
+        result.setDocumentType(defaultIfBlank(jsonObject.getString("documentType"), request.getDocumentType()));
+        result.setTone(defaultIfBlank(jsonObject.getString("tone"), request.getTone()));
+        result.setContent(defaultIfBlank(jsonObject.getString("content"), request.getSourceContent()));
+        result.setOutline(toStringList(jsonObject.getJSONArray("outline")));
+        result.setPolishPoints(toStringList(jsonObject.getJSONArray("polishPoints")));
+        return result;
+    }
+
+    private void fillDocumentDefaults(DocumentWritingResult result)
+    {
+        if (StringUtils.isBlank(result.getContent()))
+        {
+            throw new ServiceException("AI 未返回有效公文内容");
+        }
+        if (result.getOutline().isEmpty())
+        {
+            result.setOutline(DEFAULT_OUTLINE);
+        }
+        if (result.getPolishPoints().isEmpty())
+        {
+            result.setPolishPoints(DEFAULT_POLISH_POINTS);
+        }
+    }
+
     private ReportInterpretResult parseReportResult(String resultJson, ReportInterpretRequest request, String parsedTable)
     {
         try
         {
             JSONObject jsonObject = JSON.parseObject(resultJson);
-            ReportInterpretResult result = new ReportInterpretResult();
-            result.setReportTitle(StringUtils.defaultIfBlank(jsonObject.getString("reportTitle"), request.getReportTitle()));
-            result.setSummary(StringUtils.defaultIfBlank(jsonObject.getString("summary"), "已完成报表摘要"));
-            result.setKeyFindings(toStringList(jsonObject.getJSONArray("keyFindings")));
-            result.setRisks(toStringList(jsonObject.getJSONArray("risks")));
-            result.setSuggestions(toStringList(jsonObject.getJSONArray("suggestions")));
-            result.setTrendAnalysis(StringUtils.defaultIfBlank(jsonObject.getString("trendAnalysis"), "已完成趋势分析"));
-            result.setManagementBrief(StringUtils.defaultIfBlank(jsonObject.getString("managementBrief"), "已完成管理汇报摘要"));
-            result.setMindmapPrompt(StringUtils.defaultIfBlank(jsonObject.getString("mindmapPrompt"),
-                    result.getReportTitle() + " 解读思维导图"));
-            result.setParsedTablePreview(parsedTable);
-            if (result.getKeyFindings().isEmpty())
-            {
-                result.setKeyFindings(List.of("建议结合重点指标进一步核对异常波动"));
-            }
-            if (result.getRisks().isEmpty())
-            {
-                result.setRisks(List.of("当前报表未识别出显著高风险项，建议持续监控关键指标"));
-            }
-            if (result.getSuggestions().isEmpty())
-            {
-                result.setSuggestions(List.of("建议针对关键指标建立定期复盘机制"));
-            }
+            ReportInterpretResult result = buildReportResult(jsonObject, request, parsedTable);
+            fillReportDefaults(result);
             return result;
         }
         catch (Exception e)
@@ -228,39 +270,132 @@ public class AiToolServiceImpl implements IAiToolService
         }
     }
 
-    private void attachMindmapIfNeeded(boolean generateMindmap,
-            String layoutType,
-            String mindmapPrompt,
-            java.util.function.Consumer<AiMindmapPayload> consumer)
+    private ReportInterpretResult buildReportResult(JSONObject jsonObject, ReportInterpretRequest request, String parsedTable)
     {
-        if (!generateMindmap)
-        {
-            return;
-        }
-        String actualPrompt = StringUtils.defaultIfBlank(mindmapPrompt, "业务主题思维导图");
-        String actualLayout = StringUtils.defaultIfBlank(layoutType, DEFAULT_LAYOUT);
-        String dataJson = mindmapService.generateMindmapByAI(actualPrompt, actualLayout);
-        AiMindmapPayload payload = new AiMindmapPayload();
-        payload.setDataJson(dataJson);
-        payload.setLayoutType(actualLayout);
-        payload.setTopic(extractTopic(dataJson, actualPrompt));
-        consumer.accept(payload);
+        ReportInterpretResult result = new ReportInterpretResult();
+        result.setReportTitle(defaultIfBlank(jsonObject.getString("reportTitle"), request.getReportTitle()));
+        result.setSummary(defaultIfBlank(jsonObject.getString("summary"), "已完成报表摘要"));
+        result.setKeyFindings(toStringList(jsonObject.getJSONArray("keyFindings")));
+        result.setRisks(toStringList(jsonObject.getJSONArray("risks")));
+        result.setSuggestions(toStringList(jsonObject.getJSONArray("suggestions")));
+        result.setTrendAnalysis(defaultIfBlank(jsonObject.getString("trendAnalysis"), "已完成趋势分析"));
+        result.setManagementBrief(defaultIfBlank(jsonObject.getString("managementBrief"), "已完成管理汇报摘要"));
+        result.setParsedTablePreview(parsedTable);
+        return result;
     }
 
-    private String extractTopic(String dataJson, String fallback)
+    private void fillReportDefaults(ReportInterpretResult result)
     {
-        try
+        if (result.getKeyFindings().isEmpty())
         {
-            JSONObject jsonObject = JSON.parseObject(dataJson);
-            return StringUtils.defaultIfBlank(jsonObject.getString("topic"), fallback);
+            result.setKeyFindings(DEFAULT_KEY_FINDINGS);
         }
-        catch (Exception ignored)
+        if (result.getRisks().isEmpty())
         {
-            return fallback;
+            result.setRisks(DEFAULT_RISKS);
+        }
+        if (result.getSuggestions().isEmpty())
+        {
+            result.setSuggestions(DEFAULT_SUGGESTIONS);
         }
     }
 
-    private List<String> toStringList(com.alibaba.fastjson2.JSONArray jsonArray)
+    private void normalizeDocumentWeekdays(DocumentWritingResult result)
+    {
+        int referenceYear = resolveReferenceYear(result);
+        result.setTitle(normalizeWeekdays(result.getTitle(), referenceYear));
+        result.setSummary(normalizeWeekdays(result.getSummary(), referenceYear));
+        result.setContent(normalizeWeekdays(result.getContent(), referenceYear));
+        result.setOutline(normalizeWeekdayList(result.getOutline(), referenceYear));
+        result.setPolishPoints(normalizeWeekdayList(result.getPolishPoints(), referenceYear));
+    }
+
+    private List<String> normalizeWeekdayList(List<String> values, int referenceYear)
+    {
+        List<String> normalized = new ArrayList<>();
+        if (values == null)
+        {
+            return normalized;
+        }
+        for (String value : values)
+        {
+            normalized.add(normalizeWeekdays(value, referenceYear));
+        }
+        return normalized;
+    }
+
+    private int resolveReferenceYear(DocumentWritingResult result)
+    {
+        String text = String.join("\n",
+                defaultIfBlank(result.getTitle(), ""),
+                defaultIfBlank(result.getSummary(), ""),
+                defaultIfBlank(result.getContent(), ""));
+        Matcher matcher = YEAR_PATTERN.matcher(text);
+        if (matcher.find())
+        {
+            return Integer.parseInt(matcher.group(1));
+        }
+        return LocalDate.now().getYear();
+    }
+
+    private String normalizeWeekdays(String text, int referenceYear)
+    {
+        if (StringUtils.isBlank(text))
+        {
+            return text;
+        }
+        String normalized = replaceFullDateWeekdays(text);
+        return replaceMonthDateWeekdays(normalized, referenceYear);
+    }
+
+    private String replaceFullDateWeekdays(String text)
+    {
+        Matcher matcher = FULL_DATE_WEEKDAY_PATTERN.matcher(text);
+        StringBuffer buffer = new StringBuffer();
+        while (matcher.find())
+        {
+            int year = Integer.parseInt(matcher.group(1));
+            int month = Integer.parseInt(matcher.group(2));
+            int day = Integer.parseInt(matcher.group(3));
+            String replacement = year + "年" + month + "月" + day + "日（"
+                    + toChineseWeekday(LocalDate.of(year, month, day).getDayOfWeek()) + "）";
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    private String replaceMonthDateWeekdays(String text, int referenceYear)
+    {
+        Matcher matcher = MONTH_DATE_WEEKDAY_PATTERN.matcher(text);
+        StringBuffer buffer = new StringBuffer();
+        while (matcher.find())
+        {
+            int month = Integer.parseInt(matcher.group(1));
+            int day = Integer.parseInt(matcher.group(2));
+            String replacement = month + "月" + day + "日（"
+                    + toChineseWeekday(LocalDate.of(referenceYear, month, day).getDayOfWeek()) + "）";
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    private String toChineseWeekday(DayOfWeek dayOfWeek)
+    {
+        return switch (dayOfWeek)
+        {
+            case MONDAY -> "星期一";
+            case TUESDAY -> "星期二";
+            case WEDNESDAY -> "星期三";
+            case THURSDAY -> "星期四";
+            case FRIDAY -> "星期五";
+            case SATURDAY -> "星期六";
+            case SUNDAY -> "星期日";
+        };
+    }
+
+    private List<String> toStringList(JSONArray jsonArray)
     {
         List<String> results = new ArrayList<>();
         if (jsonArray == null)
@@ -276,5 +411,10 @@ public class AiToolServiceImpl implements IAiToolService
             }
         }
         return results;
+    }
+
+    private String defaultIfBlank(String value, String defaultValue)
+    {
+        return StringUtils.isBlank(value) ? defaultValue : value;
     }
 }

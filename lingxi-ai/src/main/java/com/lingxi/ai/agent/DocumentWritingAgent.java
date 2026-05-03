@@ -26,8 +26,7 @@ public interface DocumentWritingAgent
           "tone": "语气风格",
           "content": "最终正文",
           "outline": ["要点1", "要点2", "要点3"],
-          "polishPoints": ["优化点1", "优化点2"],
-          "mindmapPrompt": "适合生成思维导图的主题与结构描述"
+          "polishPoints": ["优化点1", "优化点2"]
         }
 
         要求：
@@ -37,8 +36,7 @@ public interface DocumentWritingAgent
         4. summary 为对正文的简明提炼。
         5. outline 用简短短语列出正文主结构，3-8 项。
         6. polishPoints 用于说明本次写作或润色重点，2-5 项。
-        7. mindmapPrompt 需要适合进一步生成思维导图，应提炼核心主题与一级、二级结构。
-        8. 所有字段不能为空；不确定时也要给出合理、稳健的结果。
+        7. 所有字段不能为空；不确定时也要给出合理、稳健的结果。
         """)
     String write(@UserMessage String prompt);
 }

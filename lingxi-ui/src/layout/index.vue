@@ -9,12 +9,14 @@
       </div>
       <app-main/>
       <settings ref="settingRef"/>
+      <xiao-ling-robot/>
     </div>
   </div>
 </template>
 
 <script>
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
+import XiaoLingRobot from '@/components/XiaoLingRobot'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
 
@@ -25,7 +27,8 @@ export default {
     Navbar,
     Settings,
     Sidebar,
-    TagsView
+    TagsView,
+    XiaoLingRobot
   },
   mixins: [ResizeMixin],
   computed: {

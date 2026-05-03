@@ -183,14 +183,14 @@
       <div 
         v-if="showAiSystem" 
         class="subsystem-card" 
-        @click="goToSystem('/ai/mindmap', 'ai_tool')"
+        @click="goToSystem('/ai/document', 'ai_tool')"
       >
         <div class="card-icon ai-icon">
           <svg-icon icon-class="skill" />
         </div>
         <div class="card-content">
           <h3>AI工具库</h3>
-          <p>提供AI思维导图、智能问答、文档处理和AI助手等智能工具</p>
+          <p>提供公文助手、报表解读、智能问答和AI助手等智能工具</p>
         </div>
         <div class="card-arrow"><i class="el-icon-arrow-right"></i></div>
       </div>
@@ -266,7 +266,6 @@ export default {
       return this.isAdmin || auth.hasPermiOr([
         'ai:document:view',
         'ai:report:view',
-        'ai:mindmap:view',
         'ai:chat:view'
       ])
     },

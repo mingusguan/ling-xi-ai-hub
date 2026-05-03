@@ -30,10 +30,6 @@ public class DocumentWritingRequest
     @Size(max = 3000, message = "附加要求长度不能超过3000个字符")
     private String requirements;
 
-    private Boolean generateMindmap;
-
-    private String mindmapLayoutType;
-
     public String getMode()
     {
         return mode;
@@ -104,23 +100,4 @@ public class DocumentWritingRequest
         this.requirements = requirements;
     }
 
-    public Boolean getGenerateMindmap()
-    {
-        return generateMindmap;
-    }
-
-    public void setGenerateMindmap(Boolean generateMindmap)
-    {
-        this.generateMindmap = generateMindmap;
-    }
-
-    public String getMindmapLayoutType()
-    {
-        return mindmapLayoutType;
-    }
-
-    public void setMindmapLayoutType(String mindmapLayoutType)
-    {
-        this.mindmapLayoutType = mindmapLayoutType;
-    }
 }

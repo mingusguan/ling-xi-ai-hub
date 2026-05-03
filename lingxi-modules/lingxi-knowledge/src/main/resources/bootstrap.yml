@@ -6,6 +6,21 @@ server:
 spring:
   application:
     name: lingxi-knowledge
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: lingxi-knowledge-mcp
+        version: 1.0.0
+        type: SYNC
+        instructions: 企业知识库 MCP Server，只提供只读知识检索工具。
+        sse-endpoint: /mcp/sse
+        sse-message-endpoint: /mcp/message
+        capabilities:
+          tool: true
+          resource: false
+          prompt: false
+          completion: false
   profiles:
     active: dev
   cloud:

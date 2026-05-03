@@ -433,22 +433,22 @@ export default {
 
 @keyframes pulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.55);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+    box-shadow: 0 0 0 10px rgba(96, 165, 250, 0);
   }
 }
 
 .robot-avatar {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.32);
 }
 
 .robot-emoji {
@@ -458,7 +458,7 @@ export default {
 .robot-name {
   margin-top: 4px;
   font-size: 12px;
-  color: #606266;
+  color: #cbd5e1;
   font-weight: 500;
 }
 
@@ -504,16 +504,17 @@ export default {
   position: absolute;
   width: 700px;
   height: 500px;
-  background: #fff;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(96, 165, 250, 0.2);
   border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -537,9 +538,9 @@ export default {
 }
 
 .header-status {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(219, 234, 254, 0.92);
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(96, 165, 250, 0.18);
   padding: 2px 8px;
   border-radius: 10px;
 }
@@ -572,15 +573,15 @@ export default {
 
 .chat-sidebar {
   width: 180px;
-  border-right: 1px solid #e4e7ed;
+  border-right: 1px solid rgba(96, 165, 250, 0.14);
   display: flex;
   flex-direction: column;
-  background: #fafafa;
+  background: rgba(15, 23, 42, 0.72);
 }
 
 .sidebar-header {
   padding: 12px;
-  border-bottom: 1px solid #e4e7ed;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.14);
 }
 
 .sidebar-header .el-button {
@@ -603,16 +604,16 @@ export default {
 }
 
 .session-item:hover {
-  background: #f0f2f5;
+  background: rgba(37, 99, 235, 0.16);
 }
 
 .session-item.active {
-  background: #e6f7ff;
-  border-right: 3px solid #409eff;
+  background: rgba(37, 99, 235, 0.24);
+  border-right: 3px solid #60a5fa;
 }
 
 .session-icon {
-  color: #909399;
+  color: #93c5fd;
   margin-right: 6px;
   font-size: 14px;
 }
@@ -622,11 +623,11 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: #606266;
+  color: #cbd5e1;
 }
 
 .session-delete {
-  color: #909399;
+  color: #94a3b8;
   font-size: 14px;
   opacity: 0;
   transition: all 0.2s;
@@ -644,6 +645,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: rgba(15, 23, 42, 0.52);
 }
 
 .chat-messages {
@@ -665,13 +667,13 @@ export default {
 .welcome-title {
   font-size: 18px;
   font-weight: 600;
-  color: #303133;
+  color: #e2e8f0;
   margin-bottom: 8px;
 }
 
 .welcome-desc {
   font-size: 13px;
-  color: #909399;
+  color: #94a3b8;
   margin-bottom: 20px;
 }
 
@@ -682,17 +684,19 @@ export default {
 
 .question-item {
   padding: 10px 16px;
-  background: #f5f7fa;
+  background: rgba(30, 41, 59, 0.72);
+  border: 1px solid rgba(96, 165, 250, 0.14);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 13px;
-  color: #606266;
+  color: #cbd5e1;
 }
 
 .question-item:hover {
-  background: #e6f7ff;
-  color: #409eff;
+  background: rgba(37, 99, 235, 0.2);
+  color: #bfdbfe;
+  border-color: rgba(96, 165, 250, 0.3);
 }
 
 .message-item {
@@ -715,7 +719,7 @@ export default {
 }
 
 .message-item.assistant .message-avatar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
   color: #fff;
   margin-right: 10px;
 }
@@ -747,12 +751,13 @@ export default {
 }
 
 .message-item.assistant .message-bubble {
-  background: #f5f7fa;
-  color: #303133;
+  background: rgba(30, 41, 59, 0.78);
+  border: 1px solid rgba(96, 165, 250, 0.12);
+  color: #e2e8f0;
 }
 
 .message-item.user .message-bubble {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #0f766e 100%);
   color: #fff;
 }
 
@@ -765,7 +770,7 @@ export default {
 
 .message-time {
   font-size: 11px;
-  color: #c0c4cc;
+  color: #64748b;
   margin-top: 4px;
 }
 
@@ -782,7 +787,7 @@ export default {
 .typing-dot {
   width: 6px;
   height: 6px;
-  background: #909399;
+  background: #93c5fd;
   border-radius: 50%;
   animation: typing 1.4s infinite;
 }
@@ -806,12 +811,19 @@ export default {
 
 .chat-input-area {
   padding: 12px 16px;
-  border-top: 1px solid #e4e7ed;
+  border-top: 1px solid rgba(96, 165, 250, 0.14);
+  background: rgba(15, 23, 42, 0.88);
 }
 
 .chat-input-area .el-textarea__inner {
+  background: #fff !important;
+  color: #1f2937 !important;
   font-size: 13px;
   resize: none;
+}
+
+.chat-input-area .el-textarea__inner::placeholder {
+  color: #9ca3af;
 }
 
 .input-actions {

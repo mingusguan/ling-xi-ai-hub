@@ -80,8 +80,7 @@ export const aiRoutes = [
     hidden: true,
     children: [
       { path: 'document', component: () => import('@/views/ai/document/index'), name: 'AiDocument', meta: { title: 'AI公文助手', icon: 'documentation', sysCode: 'ai_tool' }, permissions: ['ai:document:view'] },
-      { path: 'report', component: () => import('@/views/ai/report/index'), name: 'AiReport', meta: { title: 'AI报表解读', icon: 'chart', sysCode: 'ai_tool' }, permissions: ['ai:report:view'] },
-      { path: 'mindmap', component: () => import('@/views/ai/mindmap/index'), name: 'AiMindmap', meta: { title: 'AI思维导图', icon: 'skill', sysCode: 'ai_tool' }, permissions: ['ai:mindmap:view'] }
+      { path: 'report', component: () => import('@/views/ai/report/index'), name: 'AiReport', meta: { title: 'AI报表解读', icon: 'chart', sysCode: 'ai_tool' }, permissions: ['ai:report:view'] }
     ]
   },
   { path: '/ai', redirect: '/ai/document', hidden: true }

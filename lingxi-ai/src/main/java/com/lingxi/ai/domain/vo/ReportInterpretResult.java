@@ -1,6 +1,7 @@
 package com.lingxi.ai.domain.vo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,11 +23,7 @@ public class ReportInterpretResult
 
     private String managementBrief;
 
-    private String mindmapPrompt;
-
     private String parsedTablePreview;
-
-    private AiMindmapPayload mindmap;
 
     public String getReportTitle()
     {
@@ -55,7 +52,7 @@ public class ReportInterpretResult
 
     public void setKeyFindings(List<String> keyFindings)
     {
-        this.keyFindings = keyFindings;
+        this.keyFindings = keyFindings == null ? Collections.emptyList() : keyFindings;
     }
 
     public List<String> getRisks()
@@ -65,7 +62,7 @@ public class ReportInterpretResult
 
     public void setRisks(List<String> risks)
     {
-        this.risks = risks;
+        this.risks = risks == null ? Collections.emptyList() : risks;
     }
 
     public List<String> getSuggestions()
@@ -75,7 +72,7 @@ public class ReportInterpretResult
 
     public void setSuggestions(List<String> suggestions)
     {
-        this.suggestions = suggestions;
+        this.suggestions = suggestions == null ? Collections.emptyList() : suggestions;
     }
 
     public String getTrendAnalysis()
@@ -98,16 +95,6 @@ public class ReportInterpretResult
         this.managementBrief = managementBrief;
     }
 
-    public String getMindmapPrompt()
-    {
-        return mindmapPrompt;
-    }
-
-    public void setMindmapPrompt(String mindmapPrompt)
-    {
-        this.mindmapPrompt = mindmapPrompt;
-    }
-
     public String getParsedTablePreview()
     {
         return parsedTablePreview;
@@ -118,13 +105,4 @@ public class ReportInterpretResult
         this.parsedTablePreview = parsedTablePreview;
     }
 
-    public AiMindmapPayload getMindmap()
-    {
-        return mindmap;
-    }
-
-    public void setMindmap(AiMindmapPayload mindmap)
-    {
-        this.mindmap = mindmap;
-    }
 }
