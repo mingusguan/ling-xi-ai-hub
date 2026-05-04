@@ -1,6 +1,8 @@
 package com.lingxi.ai.agent.tools;
 
 import com.alibaba.fastjson2.JSON;
+import com.lingxi.ai.mcp.config.McpPlatformProperties.ToolDefinition;
+import com.lingxi.ai.mcp.service.McpPlatformService;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
@@ -22,23 +24,31 @@ public class McpToolInvoker {
 
     private final List<McpSyncClient> mcpClients;
 
+    private final McpPlatformService platformService;
+
     private final Map<String, McpSyncClient> toolClientCache = new ConcurrentHashMap<>();
 
-    public McpToolInvoker(List<McpSyncClient> mcpClients) {
+    public McpToolInvoker(List<McpSyncClient> mcpClients, McpPlatformService platformService) {
         this.mcpClients = mcpClients;
+        this.platformService = platformService;
     }
 
     public String call(String toolName, Map<String, Object> arguments, String failureMessage) {
         if (mcpClients == null || mcpClients.isEmpty()) {
-            return "MCP client is not configured.";
+            return "MCP 客户端未配置。";
         }
 
+        ToolDefinition definition = null;
+        long startTime = System.currentTimeMillis();
         try {
+            definition = platformService.beforeCall(toolName, arguments);
             McpSyncClient client = findClient(toolName);
             CallToolResult result = client.callTool(new CallToolRequest(toolName, arguments));
+            platformService.auditSuccess(definition, toolName, System.currentTimeMillis() - startTime);
             return formatResult(result);
         } catch (Exception e) {
             log.warn("Call MCP tool failed, toolName={}, arguments={}", toolName, arguments, e);
+            platformService.auditFailure(definition, toolName, System.currentTimeMillis() - startTime, e);
             return failureMessage;
         }
     }
@@ -55,7 +65,7 @@ public class McpToolInvoker {
                 return client;
             }
         }
-        throw new IllegalStateException("No MCP server exposes tool: " + toolName);
+        throw new IllegalStateException("没有 MCP Server 暴露该工具：" + toolName);
     }
 
     private boolean hasTool(McpSyncClient client, String toolName) {
@@ -68,13 +78,13 @@ public class McpToolInvoker {
 
     private String formatResult(CallToolResult result) {
         if (result == null) {
-            return "MCP tool returned no result.";
+            return "MCP 工具未返回结果。";
         }
         if (Boolean.TRUE.equals(result.isError())) {
-            return "MCP tool returned an error: " + JSON.toJSONString(result.content());
+            return "MCP 工具返回错误：" + JSON.toJSONString(result.content());
         }
         if (result.content() == null || result.content().isEmpty()) {
-            return "MCP tool returned an empty result.";
+            return "MCP 工具返回空结果。";
         }
 
         StringBuilder builder = new StringBuilder();

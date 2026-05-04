@@ -62,3 +62,107 @@ mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+
+# MCP platform governance
+lingxi:
+  mcp:
+    enabled: true
+    default-timeout: 20s
+    servers:
+      - name: knowledge
+        display-name: 企业知识库 MCP
+        enabled: true
+        url: http://localhost:9800
+        sse-endpoint: /mcp/sse
+        token: ${LINGXI_MCP_KNOWLEDGE_TOKEN:}
+        version: 1.0.0
+        owner-team: knowledge-team
+        tenant-ids: []
+      - name: oa
+        display-name: OA MCP
+        enabled: true
+        url: http://localhost:9810
+        sse-endpoint: /mcp/sse
+        token: ${LINGXI_MCP_OA_TOKEN:}
+        version: 1.0.0
+        owner-team: oa-team
+        tenant-ids: []
+    tools:
+      search_knowledge:
+        name: search_knowledge
+        display-name: 知识库语义检索
+        description: 按语义相似度检索企业知识库内容片段。
+        server-name: knowledge
+        enabled: true
+        version: 1.0.0
+        category: knowledge
+        owner-team: knowledge-team
+        required-permission: ai:mcp:knowledge:search
+        tenant-ids: []
+        audit-enabled: true
+        marketplace-visible: true
+      query_pending_tasks:
+        name: query_pending_tasks
+        display-name: 查询待审批任务
+        description: 查询用户待审批的 OA 任务列表。
+        server-name: oa
+        enabled: true
+        version: 1.0.0
+        category: oa
+        owner-team: oa-team
+        required-permission: ai:mcp:oa:query
+        tenant-ids: []
+        audit-enabled: true
+        marketplace-visible: true
+      query_leave_balance:
+        name: query_leave_balance
+        display-name: 查询假期余额
+        description: 查询用户假期余额，包括年假、调休假等。
+        server-name: oa
+        enabled: true
+        version: 1.0.0
+        category: oa
+        owner-team: oa-team
+        required-permission: ai:mcp:oa:query
+        tenant-ids: []
+        audit-enabled: true
+        marketplace-visible: true
+      query_expense_status:
+        name: query_expense_status
+        display-name: 查询报销状态
+        description: 查询用户近期 OA 报销记录及审批状态。
+        server-name: oa
+        enabled: true
+        version: 1.0.0
+        category: oa
+        owner-team: oa-team
+        required-permission: ai:mcp:oa:query
+        tenant-ids: []
+        audit-enabled: true
+        marketplace-visible: true
+      query_timeout_warning:
+        name: query_timeout_warning
+        display-name: 查询超时预警
+        description: 查询用户超时未审批的预警任务。
+        server-name: oa
+        enabled: true
+        version: 1.0.0
+        category: oa
+        owner-team: oa-team
+        required-permission: ai:mcp:oa:query
+        tenant-ids: []
+        audit-enabled: true
+        marketplace-visible: true
+      calculate_leave_duration:
+        name: calculate_leave_duration
+        display-name: 计算请假时长
+        description: 按工作时间计算请假时长，自动排除周末和已配置节假日。
+        server-name: oa
+        enabled: true
+        version: 1.0.0
+        category: oa
+        owner-team: oa-team
+        required-permission: ai:mcp:oa:query
+        tenant-ids: []
+        audit-enabled: true
+        marketplace-visible: true
