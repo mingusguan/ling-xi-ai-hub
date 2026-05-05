@@ -194,9 +194,23 @@
         </div>
         <div class="card-arrow"><i class="el-icon-arrow-right"></i></div>
       </div>
+      <div
+        v-if="showMcpMarketSystem"
+        class="subsystem-card"
+        @click="goToSystem('/mcp-market/tools', 'mcp_market')"
+      >
+        <div class="card-icon mcp-icon">
+          <svg-icon icon-class="list" />
+        </div>
+        <div class="card-content">
+          <h3>MCP工具市场</h3>
+          <p>统一管理 MCP 工具发现、发布、申请审批、版本治理、审计监控和助手编排复用</p>
+        </div>
+        <div class="card-arrow"><i class="el-icon-arrow-right"></i></div>
+      </div>
     </div>
 
-    <div class="empty-tip" v-if="!showBasicSystem && !showKnowledgeSystem && !showOaSystem && !showAiSystem">
+    <div class="empty-tip" v-if="!showBasicSystem && !showKnowledgeSystem && !showOaSystem && !showAiSystem && !showMcpMarketSystem">
       <i class="el-icon-warning" style="font-size: 48px; color: #94A3B8;"></i>
       <p style="margin-top: 20px; color: #64748B;">暂无可用的子系统权限，请联系管理员分配权限</p>
     </div>
@@ -267,6 +281,16 @@ export default {
         'ai:document:view',
         'ai:report:view',
         'ai:chat:view'
+      ])
+    },
+    showMcpMarketSystem() {
+      return this.isAdmin || auth.hasPermiOr([
+        'ai:mcp:market:list',
+        'ai:mcp:market:edit',
+        'ai:mcp:market:apply',
+        'ai:mcp:market:approve',
+        'ai:mcp:market:audit',
+        'ai:mcp:market:bind'
       ])
     },
     isAdmin() {
@@ -633,6 +657,11 @@ export default {
 .ai-icon {
   background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
   box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
+}
+
+.mcp-icon {
+  background: linear-gradient(135deg, #14B8A6 0%, #0F766E 100%);
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.35);
 }
 
 .card-content {

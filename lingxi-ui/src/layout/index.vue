@@ -2,6 +2,7 @@
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
     <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
+    <xiao-ling-robot/>
     <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar @setLayout="setLayout"/>
@@ -9,7 +10,6 @@
       </div>
       <app-main/>
       <settings ref="settingRef"/>
-      <xiao-ling-robot/>
     </div>
   </div>
 </template>

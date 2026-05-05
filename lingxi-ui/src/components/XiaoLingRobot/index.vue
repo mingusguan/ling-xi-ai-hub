@@ -1,5 +1,5 @@
 <template>
-  <div class="xiaoling-robot" :style="positionStyle">
+  <div class="xiaoling-robot" :class="{ 'sidebar-mode': isSidebarMode, collapse: collapse }" :style="positionStyle">
     <div 
       class="robot-launcher" 
       :class="{ pulse: hasNewMessage, dragging: isDragging }"
@@ -127,9 +127,44 @@ import { getChatSessions, createChatSession, getSessionMessages, deleteChatSessi
 
 export default {
   name: 'XiaoLingRobot',
+  props: {
+    mode: {
+      type: String,
+      default: 'float'
+    },
+    collapse: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     ...mapGetters(['avatar']),
+    isSidebarMode() {
+      return this.mode === 'sidebar'
+    },
     positionStyle() {
+      if (this.isSidebarMode) {
+        if (this.hasCustomPosition) {
+          return {
+            position: 'fixed',
+            left: this.dragPosition.x + 'px',
+            right: 'auto',
+            top: this.dragPosition.y + 'px',
+            bottom: 'auto',
+            width: this.collapse ? '48px' : '236px',
+            zIndex: 1002
+          }
+        }
+        return {
+          position: 'fixed',
+          left: this.collapse ? '8px' : '12px',
+          right: 'auto',
+          top: 'auto',
+          bottom: '14px',
+          width: this.collapse ? '48px' : '236px',
+          zIndex: 1002
+        }
+      }
       return {
         right: 'auto',
         bottom: 'auto',
@@ -140,6 +175,14 @@ export default {
     chatWindowStyle() {
       const windowWidth = 700
       const windowHeight = 500
+
+      if (this.isSidebarMode) {
+        return {
+          left: this.collapse ? '72px' : '272px',
+          bottom: '16px',
+          top: 'auto'
+        }
+      }
       
       let left = -windowWidth + 50
       let top = -windowHeight - 20
@@ -174,7 +217,8 @@ export default {
       dragPosition: { x: 24, y: 24 },
       dragStart: { x: 0, y: 0 },
       dragStartPosition: { x: 0, y: 0 },
-      isDragged: false
+      isDragged: false,
+      hasCustomPosition: false
     }
   },
   mounted() {
@@ -189,12 +233,22 @@ export default {
   },
   methods: {
     initPosition() {
+      if (this.isSidebarMode) {
+        return
+      }
       this.dragPosition = {
-        x: window.innerWidth - 100,
+        x: 24,
         y: window.innerHeight - 120
       }
     },
     startDrag(e) {
+      if (this.isSidebarMode && !this.hasCustomPosition) {
+        const rect = this.$el.getBoundingClientRect()
+        this.dragPosition = {
+          x: rect.left,
+          y: rect.top
+        }
+      }
       this.isDragging = true
       this.isDragged = false
       this.dragStart = { x: e.clientX, y: e.clientY }
@@ -214,13 +268,17 @@ export default {
       
       if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
         this.isDragged = true
+        this.hasCustomPosition = true
       }
       
       let newX = this.dragStartPosition.x + deltaX
       let newY = this.dragStartPosition.y + deltaY
       
-      const maxX = window.innerWidth - 80
-      const maxY = window.innerHeight - 100
+      const launcherWidth = this.isSidebarMode ? (this.collapse ? 48 : 236) : 80
+      const launcherHeight = this.isSidebarMode ? 48 : 76
+      const bottomGap = this.isSidebarMode ? 14 : 24
+      const maxX = window.innerWidth - launcherWidth
+      const maxY = window.innerHeight - launcherHeight - bottomGap
       newX = Math.max(10, Math.min(newX, maxX))
       newY = Math.max(10, Math.min(newY, maxY))
       
@@ -408,14 +466,41 @@ export default {
   z-index: 9999;
 }
 
+.xiaoling-robot.sidebar-mode {
+  right: auto;
+  top: auto;
+}
+
+.xiaoling-robot.sidebar-mode.collapse {
+  right: auto;
+}
+
 .robot-launcher {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 8px;
   cursor: grab;
   user-select: none;
   transition: all 0.3s ease;
+}
+
+.sidebar-mode .robot-launcher {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 10px;
+  height: 48px;
+  padding: 0 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.sidebar-mode.collapse .robot-launcher {
+  justify-content: center;
+  padding: 0;
 }
 
 .robot-launcher.dragging {
@@ -427,39 +512,114 @@ export default {
   transform: scale(1.05);
 }
 
+.sidebar-mode .robot-launcher:hover {
+  transform: none;
+  background: transparent;
+  border-color: transparent;
+}
+
 .robot-launcher.pulse .robot-avatar {
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.55);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.3), 0 0 0 0 rgba(8, 145, 178, 0.18);
   }
   50% {
-    box-shadow: 0 0 0 10px rgba(96, 165, 250, 0);
+    box-shadow: 0 0 0 10px rgba(37, 99, 235, 0), 0 0 0 18px rgba(8, 145, 178, 0);
   }
 }
 
 .robot-avatar {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+  position: relative;
+  background:
+    radial-gradient(circle at 30% 28%, rgba(219, 234, 254, 0.92) 0%, rgba(96, 165, 250, 0.86) 18%, rgba(37, 99, 235, 0.94) 46%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1px solid rgba(191, 219, 254, 0.28);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.32);
+  overflow: hidden;
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.42),
+    0 0 0 1px rgba(37, 99, 235, 0.14),
+    0 0 24px rgba(8, 145, 178, 0.16);
+}
+
+.sidebar-mode .robot-avatar {
+  width: 34px;
+  height: 34px;
+  box-shadow:
+    0 8px 18px rgba(15, 23, 42, 0.32),
+    0 0 16px rgba(8, 145, 178, 0.12);
+}
+
+.robot-avatar::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  width: 24px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  filter: blur(8px);
+  transform: rotate(-22deg);
+}
+
+.robot-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 1px solid rgba(219, 234, 254, 0.14);
+  pointer-events: none;
+}
+
+.robot-launcher:hover .robot-avatar {
+  box-shadow:
+    0 16px 38px rgba(15, 23, 42, 0.5),
+    0 0 0 1px rgba(59, 130, 246, 0.2),
+    0 0 28px rgba(8, 145, 178, 0.22);
 }
 
 .robot-emoji {
   font-size: 28px;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 4px 12px rgba(15, 23, 42, 0.4);
+}
+
+.sidebar-mode .robot-emoji {
+  font-size: 18px;
 }
 
 .robot-name {
-  margin-top: 4px;
   font-size: 12px;
-  color: #cbd5e1;
-  font-weight: 500;
+  color: #dbeafe;
+  font-weight: 600;
+  line-height: 1;
+  padding: 6px 10px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(96, 165, 250, 0.18);
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.24);
+}
+
+.sidebar-mode .robot-name {
+  color: #dbeafe;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  font-size: 13px;
+}
+
+.sidebar-mode.collapse .robot-name {
+  display: none;
 }
 
 .badge-dot {
@@ -470,7 +630,8 @@ export default {
   height: 12px;
   background: #f56c6c;
   border-radius: 50%;
-  border: 2px solid #fff;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 2px rgba(248, 250, 252, 0.08);
 }
 
 .bounce-enter-active {
@@ -511,6 +672,10 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.sidebar-mode .chat-window {
+  position: fixed;
 }
 
 .chat-header {

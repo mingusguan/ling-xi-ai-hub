@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.McpToolBindingMapper">
+
+    <resultMap type="com.lingxi.ai.mcp.domain.McpToolBinding" id="McpToolBindingResult">
+        <id property="bindingId" column="binding_id"/>
+        <result property="agentCode" column="agent_code"/>
+        <result property="toolId" column="tool_id"/>
+        <result property="toolName" column="tool_name"/>
+        <result property="enabled" column="enabled"/>
+        <result property="configJson" column="config_json"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectBindingColumns">
+        SELECT binding_id, agent_code, tool_id, tool_name, enabled, config_json, create_by, create_time, update_by,
+               update_time
+        FROM ai_mcp_tool_binding
+    </sql>
+
+    <select id="selectBindingList" resultMap="McpToolBindingResult">
+        <include refid="selectBindingColumns"/>
+        <where>
+            <if test="agentCode != null and agentCode != ''">
+                agent_code = #{agentCode}
+            </if>
+        </where>
+        ORDER BY update_time DESC, binding_id DESC
+    </select>
+
+    <select id="selectBindingById" resultMap="McpToolBindingResult">
+        <include refid="selectBindingColumns"/>
+        WHERE binding_id = #{bindingId}
+    </select>
+
+    <select id="selectBindingByAgentAndTool" resultMap="McpToolBindingResult">
+        <include refid="selectBindingColumns"/>
+        WHERE agent_code = #{agentCode}
+          AND tool_id = #{toolId}
+        LIMIT 1
+    </select>
+
+    <select id="countEnabledBindingByAgentAndToolName" resultType="int">
+        SELECT COUNT(1)
+        FROM ai_mcp_tool_binding b
+                 INNER JOIN ai_mcp_tool_registry r ON b.tool_id = r.tool_id
+        WHERE b.agent_code = #{agentCode}
+          AND b.tool_name = #{toolName}
+          AND b.enabled = '1'
+          AND r.status = 'PUBLISHED'
+    </select>
+
+    <insert id="insertBinding" parameterType="com.lingxi.ai.mcp.domain.McpToolBinding"
+            useGeneratedKeys="true" keyProperty="bindingId">
+        INSERT INTO ai_mcp_tool_binding
+        (agent_code, tool_id, tool_name, enabled, config_json, create_by, create_time, update_by, update_time)
+        VALUES
+        (#{agentCode}, #{toolId}, #{toolName}, #{enabled}, #{configJson}, #{createBy}, #{createTime}, #{updateBy},
+         #{updateTime})
+    </insert>
+
+    <update id="updateBinding" parameterType="com.lingxi.ai.mcp.domain.McpToolBinding">
+        UPDATE ai_mcp_tool_binding
+        <set>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="configJson != null">config_json = #{configJson},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime}
+        </set>
+        WHERE binding_id = #{bindingId}
+    </update>
+
+    <delete id="deleteBindingById">
+        DELETE FROM ai_mcp_tool_binding WHERE binding_id = #{bindingId}
+    </delete>
+</mapper>

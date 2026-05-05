@@ -1,5 +1,5 @@
 import auth from '@/plugins/auth'
-import router, { constantRoutes, dynamicRoutes, oaRoutes, aiRoutes } from '@/router'
+import router, { constantRoutes, dynamicRoutes, oaRoutes, aiRoutes, mcpMarketRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
@@ -40,6 +40,7 @@ const permission = {
                 route.path = route.path.replace(new RegExp('^' + prefix.replace(/\//g, '\\/')), '')
                 route.path = route.path.replace(/^\/?oa\//, '')
                 route.path = route.path.replace(/^\/?knowledge\//, '')
+                route.path = route.path.replace(/^\/?mcp-market\//, '')
                 // 所有路由(包括children)都统一加前缀！
                 route.path = prefix + route.path.replace(/^\//, '')
               }
@@ -57,6 +58,11 @@ const permission = {
           }
           if (sysCode === 'ai_tool') {
             const prefix = '/' + 'ai' + '/'
+            addPathPrefix(sdata, prefix)
+            addPathPrefix(rdata, prefix)
+          }
+          if (sysCode === 'mcp_market') {
+            const prefix = '/mcp-market/'
             addPathPrefix(sdata, prefix)
             addPathPrefix(rdata, prefix)
           }
@@ -86,6 +92,16 @@ const permission = {
             resolve(filteredRoutes)
             return
           }
+          if (sysCode === 'mcp_market' && rewriteRoutes.length <= 1) {
+            const staticMcpMarketRoutes = JSON.parse(JSON.stringify(mcpMarketRoutes))
+            const filteredRoutes = filterDynamicRoutes(staticMcpMarketRoutes)
+            commit('SET_ROUTES', filteredRoutes)
+            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
+            commit('SET_DEFAULT_ROUTES', filteredRoutes)
+            commit('SET_TOPBAR_ROUTES', filteredRoutes)
+            resolve(filteredRoutes)
+            return
+          }
 
           commit('SET_ROUTES', rewriteRoutes)
           commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
@@ -106,6 +122,16 @@ const permission = {
           if (sysCode === 'ai_tool') {
             const staticAiRoutes = JSON.parse(JSON.stringify(aiRoutes))
             const filteredRoutes = filterDynamicRoutes(staticAiRoutes)
+            commit('SET_ROUTES', filteredRoutes)
+            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
+            commit('SET_DEFAULT_ROUTES', filteredRoutes)
+            commit('SET_TOPBAR_ROUTES', filteredRoutes)
+            resolve(filteredRoutes)
+            return
+          }
+          if (sysCode === 'mcp_market') {
+            const staticMcpMarketRoutes = JSON.parse(JSON.stringify(mcpMarketRoutes))
+            const filteredRoutes = filterDynamicRoutes(staticMcpMarketRoutes)
             commit('SET_ROUTES', filteredRoutes)
             commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
             commit('SET_DEFAULT_ROUTES', filteredRoutes)

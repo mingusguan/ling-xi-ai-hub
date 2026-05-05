@@ -41,7 +41,18 @@
 
   &.has-logo {
     .el-scrollbar {
-      height: calc(100% - 64px);
+      height: calc(100% - 126px);
+    }
+  }
+
+  > div {
+    position: relative;
+    height: 100%;
+  }
+
+  > div:not(.has-logo) {
+    .el-scrollbar {
+      height: calc(100% - 62px);
     }
   }
 

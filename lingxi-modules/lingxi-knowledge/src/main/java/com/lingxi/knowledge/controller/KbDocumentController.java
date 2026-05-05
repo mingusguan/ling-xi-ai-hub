@@ -28,9 +28,8 @@ public class KbDocumentController extends BaseController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("fileUrl") String fileUrl,
             @RequestParam(value = "visibleDeptIds", required = false) List<Long> visibleDeptIds,
-            @RequestParam Long categoryId,
-            @RequestParam(required = false) List<Long> tagIds) throws Exception {
-        Long docId = documentService.uploadDocument(file, fileUrl, visibleDeptIds, categoryId, tagIds);
+            @RequestParam Long categoryId) throws Exception {
+        Long docId = documentService.uploadDocument(file, fileUrl, visibleDeptIds, categoryId);
         return R.ok(Map.of("docId", docId, "status", 0));
     }
 

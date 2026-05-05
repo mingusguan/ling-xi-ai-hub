@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.McpToolGrantMapper">
+
+    <insert id="upsertGrant" parameterType="com.lingxi.ai.mcp.domain.McpToolGrant">
+        INSERT INTO ai_mcp_tool_grant
+        (tool_id, tool_name, grant_type, grant_target_id, grant_target_name, application_id, status, expire_time,
+         create_by, create_time, update_by, update_time)
+        VALUES
+        (#{toolId}, #{toolName}, #{grantType}, #{grantTargetId}, #{grantTargetName}, #{applicationId}, #{status},
+         #{expireTime}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime})
+        ON DUPLICATE KEY UPDATE
+            grant_target_name = VALUES(grant_target_name),
+            application_id = VALUES(application_id),
+            status = VALUES(status),
+            expire_time = VALUES(expire_time),
+            update_by = VALUES(update_by),
+            update_time = VALUES(update_time)
+    </insert>
+
+    <select id="countActiveGrant" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM ai_mcp_tool_grant
+        WHERE tool_name = #{toolName}
+          AND grant_type = #{grantType}
+          AND grant_target_id = #{grantTargetId}
+          AND status = 'ACTIVE'
+          AND (expire_time IS NULL OR expire_time > NOW())
+    </select>
+</mapper>

@@ -10,7 +10,7 @@ import java.util.List;
 public interface IKbDocumentService extends IService<KbDocument> {
 
     /** 上传并入库（包含分块 + 向量化） */
-    Long uploadDocument(MultipartFile file, String fileUrl, List<Long> visibleDeptIds, Long categoryId, List<Long> tagIds) throws Exception;
+    Long uploadDocument(MultipartFile file, String fileUrl, List<Long> visibleDeptIds, Long categoryId) throws Exception;
 
     /** 按部门/分类分页查询文档列表 */
     List<KbDocument> listByDept(Long deptId, Long categoryId);

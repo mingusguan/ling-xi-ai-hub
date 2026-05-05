@@ -60,7 +60,7 @@ public class KbDocumentServiceImpl extends ServiceImpl<KbDocumentMapper, KbDocum
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Long uploadDocument(MultipartFile file, String fileUrl, List<Long> visibleDeptIds, Long categoryId, List<Long> tagIds) throws Exception {
+    public Long uploadDocument(MultipartFile file, String fileUrl, List<Long> visibleDeptIds, Long categoryId) throws Exception {
         // 1. 提取文本
         String fullText = DocumentUtil.extractText(file);
         

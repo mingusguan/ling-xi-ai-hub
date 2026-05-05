@@ -80,10 +80,24 @@ export const aiRoutes = [
     hidden: true,
     children: [
       { path: 'document', component: () => import('@/views/ai/document/index'), name: 'AiDocument', meta: { title: 'AI公文助手', icon: 'documentation', sysCode: 'ai_tool' }, permissions: ['ai:document:view'] },
-      { path: 'report', component: () => import('@/views/ai/report/index'), name: 'AiReport', meta: { title: 'AI报表解读', icon: 'chart', sysCode: 'ai_tool' }, permissions: ['ai:report:view'] }
+      { path: 'report', component: () => import('@/views/ai/report/index'), name: 'AiReport', meta: { title: 'AI报表解读', icon: 'chart', sysCode: 'ai_tool' }, permissions: ['ai:report:view'] },
+      { path: 'mcp-market', component: () => import('@/views/ai/mcp-market/index'), name: 'AiMcpMarket', meta: { title: 'MCP工具市场', icon: 'list', sysCode: 'ai_tool' }, permissions: ['ai:mcp:market:list'] }
     ]
   },
   { path: '/ai', redirect: '/ai/document', hidden: true }
+]
+
+export const mcpMarketRoutes = [
+  {
+    path: '/mcp-market',
+    component: Layout,
+    redirect: '/mcp-market/tools',
+    hidden: true,
+    children: [
+      { path: 'tools', component: () => import('@/views/ai/mcp-market/index'), name: 'McpToolMarket', meta: { title: 'MCP工具市场', icon: 'list', sysCode: 'mcp_market' }, permissions: ['ai:mcp:market:list'] }
+    ]
+  },
+  { path: '/mcp-market', redirect: '/mcp-market/tools', hidden: true }
 ]
 
 export const dynamicRoutes = [
@@ -102,5 +116,5 @@ Router.prototype.replace = function replace(location) { return routerReplace.cal
 export default new Router({
   mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...knowledgeRoutes, ...oaRoutes, ...aiRoutes]
+  routes: [...constantRoutes, ...knowledgeRoutes, ...oaRoutes, ...aiRoutes, ...mcpMarketRoutes]
 })

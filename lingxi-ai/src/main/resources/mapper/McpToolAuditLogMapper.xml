@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.McpToolAuditLogMapper">
+
+    <resultMap type="com.lingxi.ai.mcp.domain.McpToolAuditLog" id="McpToolAuditLogResult">
+        <id property="logId" column="log_id"/>
+        <result property="toolName" column="tool_name"/>
+        <result property="serverName" column="server_name"/>
+        <result property="version" column="version"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="status" column="status"/>
+        <result property="costMillis" column="cost_millis"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectAuditLogList" resultMap="McpToolAuditLogResult">
+        SELECT log_id, tool_name, server_name, version, user_id, username, dept_id, tenant_id, status, cost_millis,
+               error_message, create_time
+        FROM ai_mcp_tool_audit_log
+        <where>
+            <if test="toolName != null and toolName != ''">
+                AND tool_name LIKE CONCAT('%', #{toolName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="tenantId != null and tenantId != ''">
+                AND tenant_id = #{tenantId}
+            </if>
+        </where>
+        ORDER BY create_time DESC, log_id DESC
+    </select>
+
+    <insert id="insertAuditLog" parameterType="com.lingxi.ai.mcp.domain.McpToolAuditLog"
+            useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO ai_mcp_tool_audit_log
+        (tool_name, server_name, version, user_id, username, dept_id, tenant_id, status, cost_millis, error_message,
+         create_time)
+        VALUES
+        (#{toolName}, #{serverName}, #{version}, #{userId}, #{username}, #{deptId}, #{tenantId}, #{status},
+         #{costMillis}, #{errorMessage}, #{createTime})
+    </insert>
+
+    <select id="countTodayCalls" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM ai_mcp_tool_audit_log
+        WHERE create_time &gt;= CURDATE()
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="selectTodayAverageCostMillis" resultType="java.lang.Long">
+        SELECT COALESCE(ROUND(AVG(cost_millis)), 0)
+        FROM ai_mcp_tool_audit_log
+        WHERE create_time &gt;= CURDATE()
+          AND cost_millis IS NOT NULL
+    </select>
+</mapper>
