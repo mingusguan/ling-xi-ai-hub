@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.lingxi.common.core.domain.R;
@@ -19,6 +20,7 @@ import com.lingxi.system.api.domain.SysFile;
  * @author cloud
  */
 @RestController
+@RequestMapping("/file")
 public class SysFileController
 {
     private static final Logger log = LoggerFactory.getLogger(SysFileController.class);
@@ -56,7 +58,8 @@ public class SysFileController
     {
         try
         {
-            if (!FileUtils.validateFilePath(fileUrl))
+            String checkedFileUrl = StringUtils.substringBefore(fileUrl, "?");
+            if (!FileUtils.validateFilePath(checkedFileUrl))
             {
                 throw new Exception(StringUtils.format("资源文件({})非法，不允许删除。 ", fileUrl));
             }

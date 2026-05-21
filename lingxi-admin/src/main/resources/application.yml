@@ -1,28 +1,19 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
     name: lingxi-admin
   profiles:
-    active: prod
+    active: ${SPRING_PROFILES_ACTIVE:prod}
   main:
     allow-bean-definition-overriding: true
-  datasource:
-    dynamic:
-      primary: master
-      datasource:
-        master:
-          url: jdbc:mysql://127.0.0.1:3306/lingxi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
-          username: root
-          password: 123456
-          driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    redis:
-      host: 127.0.0.1
-      port: 6379
-      database: 0
-      timeout: 10s
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
+  servlet:
+    multipart:
+      max-file-size: 50MB      # 单个文件最大大小
+      max-request-size: 100MB  # 总请求最大大小
   ai:
     mcp:
       client:
@@ -50,18 +41,6 @@ flowable:
 
 file:
   prefix: /profile
-  domain: http://127.0.0.1:${server.port}
-  path: ./uploadPath
-
-referer:
-  enabled: false
-  allowed-domains: 127.0.0.1,localhost
-
-minio:
-  url: http://127.0.0.1:9000
-  access-key: minioadmin
-  secret-key: minioadmin
-  bucket-name: lingxi
 
 gen:
   author: lingxi
@@ -71,24 +50,16 @@ gen:
   allowOverwrite: false
 
 dashscope:
-  api-key: ${DASHSCOPE_API_KEY:}
   model: qwen-plus
   embedding-model: text-embedding-v3
 
 seniverse:
   weather:
-    enabled: true
-    api-key: ${SENIVERSE_WEATHER_API_KEY:}
     base-url: https://api.seniverse.com
     language: zh-Hans
     unit: c
     forecast-days: 3
     request-timeout: 8s
-
-milvus:
-  host: localhost
-  port: 19530
-  collection-name: kb_embedding
 
 lingxi:
   oa:
@@ -98,6 +69,16 @@ lingxi:
     enabled: true
     default-timeout: 20s
 
+knowledge:
+  vector-store: ${KNOWLEDGE_VECTOR_STORE:cos-vector}
+
+security:
+  captcha:
+    enabled: ${CAPTCHA_ENABLED:true}
+    type: ${CAPTCHA_TYPE:math}
+
 logging:
+  file:
+    path: ${LOG_PATH:./logs/lingxi-admin}
   level:
     com.lingxi: info

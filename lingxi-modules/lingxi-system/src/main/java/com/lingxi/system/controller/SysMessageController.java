@@ -20,7 +20,7 @@ import java.util.Map;
  * @author lingxi
  */
 @RestController
-@RequestMapping("/message")
+@RequestMapping("/system/message")
 public class SysMessageController extends BaseController {
 
     @Autowired

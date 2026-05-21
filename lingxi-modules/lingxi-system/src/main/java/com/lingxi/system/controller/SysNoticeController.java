@@ -27,7 +27,7 @@ import com.lingxi.system.service.ISysNoticeService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/notice")
+@RequestMapping("/system/notice")
 public class SysNoticeController extends BaseController
 {
     @Autowired

@@ -95,6 +95,17 @@
 		</if>
 		order by m.parent_id, m.order_num
 	</select>
+
+	<select id="selectMenusByIds" resultMap="SysMenuResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.route_name, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame, m.is_cache, m.menu_type, m.icon, m.order_num, m.sys_code, m.create_time
+		from sys_menu m
+		where m.menu_type in ('M', 'C') and m.status = 0
+		  and m.menu_id in
+		<foreach collection="menuIds" item="menuId" open="(" separator="," close=")">
+			#{menuId}
+		</foreach>
+		order by m.parent_id, m.order_num
+	</select>
 	
 	<select id="selectMenuListByRoleId" resultType="Long">
 		select m.menu_id

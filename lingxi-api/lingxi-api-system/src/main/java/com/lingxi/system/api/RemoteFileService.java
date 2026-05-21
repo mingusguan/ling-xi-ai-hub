@@ -1,23 +1,19 @@
 package com.lingxi.system.api;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import com.lingxi.common.core.constant.ServiceNameConstants;
 import com.lingxi.common.core.domain.R;
 import com.lingxi.system.api.domain.SysFile;
-import com.lingxi.system.api.factory.RemoteFileFallbackFactory;
 
 /**
  * 文件服务
  * 
  * @author cloud
  */
-@FeignClient(contextId = "remoteFileService", value = ServiceNameConstants.FILE_SERVICE, fallbackFactory = RemoteFileFallbackFactory.class)
 public interface RemoteFileService
 {
     /**

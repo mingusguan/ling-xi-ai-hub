@@ -14,7 +14,8 @@ public class KbDocumentChunk {
     private String chunkContent; // 分块内容
     private Integer chunkIndex;  // 分块序号
     private Integer embedStatus; // 0未向量化 1已向量化
-    private String milvusId;     // Milvus向量ID
+    @TableField("milvus_id")
+    private String vectorId;     // 向量存储ID
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

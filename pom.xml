@@ -10,18 +10,16 @@
 
     <name>LingXi-AI-Hub</name>
     <url>http://www.lingxi-ai-hub.com</url>
-    <description>灵犀AI智能中心</description>
+    <description>LingXi AI Hub</description>
 
     <properties>
         <cloud.version>3.6.7</cloud.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
+        <lombok.version>1.18.38</lombok.version>
         <spring-boot.version>3.5.11</spring-boot.version>
         <spring-ai.version>1.0.6</spring-ai.version>
-        <spring-cloud.version>2025.0.1</spring-cloud.version>
-        <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
-        <nacos-client.version>3.0.2</nacos-client.version>
         <spring-boot-admin.version>3.5.8</spring-boot-admin.version>
         <mybatis-spring.version>3.0.5</mybatis-spring.version>
         <kaptcha.version>2.3.3</kaptcha.version>
@@ -33,42 +31,15 @@
         <fastjson.version>2.0.61</fastjson.version>
         <jjwt.version>0.9.1</jjwt.version>
         <minio.version>8.2.2</minio.version>
+        <tencent.cos.version>5.6.269</tencent.cos.version>
         <poi.version>4.1.2</poi.version>
         <springdoc.version>2.8.16</springdoc.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
         <langChain4j.version>0.34.0</langChain4j.version>
     </properties>
 
-    <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
-
-            <!-- SpringCloud 微服务 -->
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- SpringCloud Alibaba 微服务 -->
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${spring-cloud-alibaba.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- 显式覆盖 Nacos 客户端版本，修复关闭时的空指针异常 -->
-            <dependency>
-                <groupId>com.alibaba.nacos</groupId>
-                <artifactId>nacos-client</artifactId>
-                <version>${nacos-client.version}</version>
-            </dependency>
-
-            <!-- SpringBoot 依赖配置 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -85,21 +56,18 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- Springdoc webmvc 依赖配置 -->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc.version}</version>
             </dependency>
 
-            <!-- 验证码 -->
             <dependency>
                 <groupId>pro.fessional</groupId>
                 <artifactId>kaptcha</artifactId>
                 <version>${kaptcha.version}</version>
             </dependency>
 
-            <!-- pagehelper 分页插件 -->
             <dependency>
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper-spring-boot-starter</artifactId>
@@ -118,141 +86,120 @@
                 <version>${mybatis-spring.version}</version>
             </dependency>
 
-            <!-- io常用工具类 -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
             </dependency>
 
-            <!-- excel工具 -->
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
             </dependency>
 
-            <!-- Hutool -->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>5.8.32</version>
             </dependency>
 
-            <!-- 代码生成使用模板 -->
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>${velocity.version}</version>
             </dependency>
 
-            <!-- JSON 解析器和生成器 -->
             <dependency>
                 <groupId>com.alibaba.fastjson2</groupId>
                 <artifactId>fastjson2</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
 
-            <!-- JWT -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
             </dependency>
 
-            <!-- 线程传递值 -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
                 <version>${transmittable-thread-local.version}</version>
             </dependency>
 
-            <!-- 核心模块 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-core</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 接口模块 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-swagger</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 安全模块 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-security</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 数据脱敏 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-sensitive</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 权限范围 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-datascope</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 多数据源 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-datasource</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 分布式事务 -->
-            <dependency>
-                <groupId>com.lingxi</groupId>
-                <artifactId>lingxi-common-seata</artifactId>
-                <version>${cloud.version}</version>
-            </dependency>
-
-            <!-- 日志记录 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-log</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 缓存服务 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-common-redis</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 系统接口 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-api-system</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-api-knowledge</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
-             <dependency>
+
+            <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-api-ai</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-api-oa</artifactId>
                 <version>${cloud.version}</version>
             </dependency>
 
-            <!-- 文件服务 -->
             <dependency>
                 <groupId>com.lingxi</groupId>
                 <artifactId>lingxi-modules-file</artifactId>
@@ -262,23 +209,14 @@
     </dependencyManagement>
 
     <modules>
-        <module>lingxi-auth</module>
-        <module>lingxi-gateway</module>
-        <module>lingxi-visual</module>
-        <module>lingxi-modules</module>
-        <module>lingxi-api</module>
         <module>lingxi-common</module>
+        <module>lingxi-api</module>
+        <module>lingxi-auth</module>
+        <module>lingxi-modules</module>
         <module>lingxi-ai</module>
+        <module>lingxi-admin</module>
     </modules>
     <packaging>pom</packaging>
-
-    <dependencies>
-        <!-- bootstrap 启动器 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -291,6 +229,13 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
@@ -300,13 +245,6 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot.version}</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>repackage</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

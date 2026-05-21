@@ -2,6 +2,7 @@ package com.lingxi.system.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -157,6 +158,7 @@ public class SysMenuServiceImpl implements ISysMenuService
         {
             menus = menuMapper.selectMenuTreeByUserId(userId, sysCode);
         }
+        menus = appendMissingParentMenus(menus);
         return getChildPerms(menus, MENU_ROOT_ID);
     }
 
@@ -174,8 +176,70 @@ public class SysMenuServiceImpl implements ISysMenuService
     }
 
     /**
+     * 补齐授权菜单的父级目录，避免只有子菜单命中子系统或角色权限时被根节点过滤掉
+     *
+     * @param menus 已按用户权限和子系统过滤出来的菜单
+     * @return 补齐父级目录后的菜单列表
+     */
+    private List<SysMenu> appendMissingParentMenus(List<SysMenu> menus)
+    {
+        if (StringUtils.isEmpty(menus))
+        {
+            return menus;
+        }
+        List<SysMenu> allMenus = new ArrayList<SysMenu>(menus);
+        Set<Long> existMenuIds = allMenus.stream().map(SysMenu::getMenuId).collect(Collectors.toSet());
+        Set<Long> missingParentIds = findMissingParentIds(allMenus, existMenuIds);
+        while (StringUtils.isNotEmpty(missingParentIds))
+        {
+            List<SysMenu> parentMenus = menuMapper.selectMenusByIds(new ArrayList<Long>(missingParentIds));
+            if (StringUtils.isEmpty(parentMenus))
+            {
+                break;
+            }
+            List<SysMenu> newParentMenus = parentMenus.stream()
+                    .filter(menu -> !existMenuIds.contains(menu.getMenuId()))
+                    .collect(Collectors.toList());
+            if (StringUtils.isEmpty(newParentMenus))
+            {
+                break;
+            }
+            allMenus.addAll(newParentMenus);
+            for (SysMenu parentMenu : newParentMenus)
+            {
+                existMenuIds.add(parentMenu.getMenuId());
+            }
+            missingParentIds = findMissingParentIds(newParentMenus, existMenuIds);
+        }
+        allMenus.sort(Comparator.comparing(SysMenu::getParentId, Comparator.nullsLast(Comparator.naturalOrder()))
+                .thenComparing(SysMenu::getOrderNum, Comparator.nullsLast(Comparator.naturalOrder())));
+        return allMenus;
+    }
+
+    /**
+     * 找出当前列表中缺失的父级菜单ID
+     *
+     * @param menus 当前菜单列表
+     * @param existMenuIds 已经存在的菜单ID
+     * @return 需要补齐的父级菜单ID集合
+     */
+    private Set<Long> findMissingParentIds(List<SysMenu> menus, Set<Long> existMenuIds)
+    {
+        Set<Long> missingParentIds = new HashSet<Long>();
+        for (SysMenu menu : menus)
+        {
+            Long parentId = menu.getParentId();
+            if (parentId != null && parentId.longValue() != MENU_ROOT_ID && !existMenuIds.contains(parentId))
+            {
+                missingParentIds.add(parentId);
+            }
+        }
+        return missingParentIds;
+    }
+
+    /**
      * 构建前端路由所需要的菜单
-     * 
+     *
      * @param menus 菜单列表
      * @return 路由列表
      */

@@ -29,7 +29,7 @@ import com.lingxi.system.service.ISysDictTypeService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/dict/type")
+@RequestMapping("/system/dict/type")
 public class SysDictTypeController extends BaseController
 {
     @Autowired

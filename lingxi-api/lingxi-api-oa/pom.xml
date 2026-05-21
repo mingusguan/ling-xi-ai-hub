@@ -23,10 +23,6 @@
         </dependency>
         
         <!-- Feign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.lingxi</groupId>

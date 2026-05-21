@@ -34,7 +34,7 @@ import com.lingxi.job.util.ScheduleUtils;
  * @author cloud
  */
 @RestController
-@RequestMapping("/job")
+@RequestMapping("/schedule/job")
 public class SysJobController extends BaseController
 {
     @Autowired

@@ -1,10 +1,7 @@
 package com.lingxi.system.api;
 
 import com.lingxi.common.core.constant.SecurityConstants;
-import com.lingxi.common.core.constant.ServiceNameConstants;
 import com.lingxi.common.core.domain.R;
-import com.lingxi.system.api.factory.RemoteMessageFallbackFactory;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +14,6 @@ import java.util.Map;
  *
  * @author lingxi
  */
-@FeignClient(contextId = "remoteMessageService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = RemoteMessageFallbackFactory.class)
 public interface RemoteMessageService {
     
     /**

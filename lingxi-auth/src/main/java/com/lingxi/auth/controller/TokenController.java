@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.lingxi.auth.form.LoginBody;
 import com.lingxi.auth.form.RegisterBody;
 import com.lingxi.auth.service.SysLoginService;
+import com.lingxi.auth.service.ValidateCodeService;
 import com.lingxi.common.core.domain.R;
 import com.lingxi.common.core.utils.JwtUtils;
 import com.lingxi.common.core.utils.StringUtils;
@@ -23,6 +25,7 @@ import com.lingxi.system.api.model.LoginUser;
  * @author cloud
  */
 @RestController
+@RequestMapping("/auth")
 public class TokenController
 {
     @Autowired
@@ -31,9 +34,13 @@ public class TokenController
     @Autowired
     private SysLoginService sysLoginService;
 
+    @Autowired
+    private ValidateCodeService validateCodeService;
+
     @PostMapping("login")
     public R<?> login(@RequestBody LoginBody form)
     {
+        validateCodeService.checkCaptcha(form.getCode(), form.getUuid());
         // 用户登录
         LoginUser userInfo = sysLoginService.login(form.getUsername(), form.getPassword());
         // 获取登录token
@@ -71,6 +78,7 @@ public class TokenController
     @PostMapping("register")
     public R<?> register(@RequestBody RegisterBody registerBody)
     {
+        validateCodeService.checkCaptcha(registerBody.getCode(), registerBody.getUuid());
         // 用户注册
         sysLoginService.register(registerBody.getUsername(), registerBody.getPassword());
         return R.ok();

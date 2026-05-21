@@ -21,11 +21,5 @@
             <groupId>com.lingxi</groupId>
             <artifactId>lingxi-common-core</artifactId>
         </dependency>
-
-        <!-- OpenFeign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
     </dependencies>
 </project>

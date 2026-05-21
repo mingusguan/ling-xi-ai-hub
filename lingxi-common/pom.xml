@@ -12,7 +12,6 @@
         <module>lingxi-common-log</module>
         <module>lingxi-common-core</module>
         <module>lingxi-common-redis</module>
-        <module>lingxi-common-seata</module>
         <module>lingxi-common-swagger</module>
         <module>lingxi-common-security</module>
         <module>lingxi-common-sensitive</module>

@@ -29,7 +29,7 @@ import com.lingxi.system.service.ISysLogininforService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/logininfor")
+@RequestMapping("/system/logininfor")
 public class SysLogininforController extends BaseController
 {
     @Autowired

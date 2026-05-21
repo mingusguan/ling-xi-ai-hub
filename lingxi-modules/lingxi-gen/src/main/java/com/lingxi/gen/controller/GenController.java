@@ -34,7 +34,7 @@ import com.lingxi.gen.service.IGenTableService;
  * 
  * @author cloud
  */
-@RequestMapping("/gen")
+@RequestMapping("/code/gen")
 @RestController
 public class GenController extends BaseController
 {

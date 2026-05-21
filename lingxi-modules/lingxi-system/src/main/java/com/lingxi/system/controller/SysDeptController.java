@@ -29,7 +29,7 @@ import com.lingxi.system.service.ISysDeptService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/dept")
+@RequestMapping("/system/dept")
 public class SysDeptController extends BaseController
 {
     @Autowired

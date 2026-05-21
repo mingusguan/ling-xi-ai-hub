@@ -1,10 +1,7 @@
 package com.lingxi.oa.api;
 
 import com.lingxi.common.core.constant.SecurityConstants;
-import com.lingxi.common.core.constant.ServiceNameConstants;
 import com.lingxi.common.core.domain.R;
-import com.lingxi.oa.api.factory.RemoteOaFallbackFactory;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -17,7 +14,6 @@ import java.util.Map;
  *
  * @author lingxi
  */
-@FeignClient(contextId = "remoteOaService", value = ServiceNameConstants.OA_SERVICE, fallbackFactory = RemoteOaFallbackFactory.class)
 public interface RemoteOaService {
 
     /**

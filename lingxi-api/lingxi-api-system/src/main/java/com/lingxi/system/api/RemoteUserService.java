@@ -1,6 +1,5 @@
 package com.lingxi.system.api;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,10 +7,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import com.lingxi.common.core.constant.SecurityConstants;
-import com.lingxi.common.core.constant.ServiceNameConstants;
 import com.lingxi.common.core.domain.R;
 import com.lingxi.system.api.domain.SysUser;
-import com.lingxi.system.api.factory.RemoteUserFallbackFactory;
 import com.lingxi.system.api.model.LoginUser;
 
 import java.util.List;
@@ -21,7 +18,6 @@ import java.util.List;
  * 
  * @author cloud
  */
-@FeignClient(contextId = "remoteUserService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = RemoteUserFallbackFactory.class)
 public interface RemoteUserService
 {
     /**

@@ -29,7 +29,7 @@ import com.lingxi.system.service.ISysUserOnlineService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/online")
+@RequestMapping("/system/online")
 public class SysUserOnlineController extends BaseController
 {
     @Autowired

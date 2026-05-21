@@ -83,6 +83,14 @@ public interface SysMenuMapper
     public List<SysMenu> selectMenuTreeByUserId(@Param("userId") Long userId, @Param("sysCode") String sysCode);
 
     /**
+     * 根据菜单ID集合查询正常菜单
+     *
+     * @param menuIds 菜单ID集合
+     * @return 菜单列表
+     */
+    public List<SysMenu> selectMenusByIds(@Param("menuIds") List<Long> menuIds);
+
+    /**
      * 根据角色ID查询菜单树信息
      * 
      * @param roleId 角色ID

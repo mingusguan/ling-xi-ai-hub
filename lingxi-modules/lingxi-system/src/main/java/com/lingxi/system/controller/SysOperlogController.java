@@ -27,7 +27,7 @@ import com.lingxi.system.service.ISysOperLogService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/operlog")
+@RequestMapping("/system/operlog")
 public class SysOperlogController extends BaseController
 {
     @Autowired

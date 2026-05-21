@@ -48,3 +48,8 @@ docker/
 !*/build/*.xml
 .preferences
 /docker/
+
+# Production deployment secrets
+deploy/.env
+deploy/.env.*
+!deploy/.env.example

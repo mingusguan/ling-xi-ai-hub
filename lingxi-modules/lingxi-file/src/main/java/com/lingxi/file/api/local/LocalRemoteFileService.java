@@ -37,7 +37,8 @@ public class LocalRemoteFileService implements RemoteFileService {
     @Override
     public R<Boolean> delete(String fileUrl) {
         try {
-            if (!FileUtils.validateFilePath(fileUrl)) {
+            String checkedFileUrl = StringUtils.substringBefore(fileUrl, "?");
+            if (!FileUtils.validateFilePath(checkedFileUrl)) {
                 return R.fail(StringUtils.format("资源文件({})非法，不允许删除。", fileUrl));
             }
             sysFileService.deleteFile(fileUrl);

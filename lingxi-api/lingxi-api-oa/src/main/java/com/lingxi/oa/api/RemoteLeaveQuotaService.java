@@ -3,7 +3,6 @@ package com.lingxi.oa.api;
 import com.lingxi.common.core.constant.SecurityConstants;
 import com.lingxi.common.core.domain.R;
 import com.lingxi.system.api.domain.SysUser;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * 假期额度远程服务接口(供其他模块调用)
  */
-@FeignClient(contextId = "remoteLeaveQuotaService", value = "lingxi-oa")
 public interface RemoteLeaveQuotaService
 {
     /**

@@ -1,10 +1,7 @@
 package com.lingxi.ai.api;
 
-import com.lingxi.ai.api.factory.RemoteAiModelFallbackFactory;
 import com.lingxi.common.core.constant.SecurityConstants;
-import com.lingxi.common.core.constant.ServiceNameConstants;
 import com.lingxi.common.core.domain.R;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,8 +13,6 @@ import java.util.Map;
  *
  * @author lingxi
  */
-@FeignClient(contextId = "remoteAiModelService", value = ServiceNameConstants.AI_SERVICE,
-             fallbackFactory = RemoteAiModelFallbackFactory.class)
 public interface RemoteAiModelService {
 
     /**

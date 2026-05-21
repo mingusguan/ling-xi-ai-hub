@@ -1,10 +1,11 @@
 package com.lingxi.file.service;
 
 import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.alibaba.nacos.common.utils.IoUtils;
 import com.lingxi.common.core.utils.StringUtils;
 import com.lingxi.file.config.MinioConfig;
 import com.lingxi.file.utils.FileUploadUtils;
@@ -18,6 +19,7 @@ import io.minio.RemoveObjectArgs;
  * @author cloud
  */
 @Service
+@ConditionalOnProperty(prefix = "file", name = "storage", havingValue = "minio")
 public class MinioSysFileServiceImpl implements ISysFileService
 {
     @Autowired
@@ -56,7 +58,7 @@ public class MinioSysFileServiceImpl implements ISysFileService
         }
         finally
         {
-            IoUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(inputStream);
         }
     }
 

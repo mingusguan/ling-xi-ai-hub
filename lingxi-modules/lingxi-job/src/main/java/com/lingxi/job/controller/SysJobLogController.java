@@ -25,7 +25,7 @@ import com.lingxi.job.service.ISysJobLogService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/job/log")
+@RequestMapping("/schedule/job/log")
 public class SysJobLogController extends BaseController
 {
     @Autowired

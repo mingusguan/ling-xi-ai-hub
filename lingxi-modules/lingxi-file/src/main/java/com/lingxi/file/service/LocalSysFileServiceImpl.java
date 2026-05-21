@@ -1,6 +1,7 @@
 package com.lingxi.file.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import com.lingxi.file.utils.FileUploadUtils;
  */
 @Primary
 @Service
+@ConditionalOnProperty(prefix = "file", name = "storage", havingValue = "local", matchIfMissing = true)
 public class LocalSysFileServiceImpl implements ISysFileService
 {
     /**

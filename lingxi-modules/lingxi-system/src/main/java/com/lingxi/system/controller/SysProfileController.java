@@ -34,7 +34,7 @@ import com.lingxi.system.service.ISysUserService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/user/profile")
+@RequestMapping("/system/user/profile")
 public class SysProfileController extends BaseController
 {
     @Autowired

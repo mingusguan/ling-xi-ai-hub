@@ -1,22 +1,18 @@
 package com.lingxi.system.api;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import com.lingxi.common.core.constant.SecurityConstants;
-import com.lingxi.common.core.constant.ServiceNameConstants;
 import com.lingxi.common.core.domain.R;
 import com.lingxi.system.api.domain.SysLogininfor;
 import com.lingxi.system.api.domain.SysOperLog;
-import com.lingxi.system.api.factory.RemoteLogFallbackFactory;
 
 /**
  * 日志服务
  * 
  * @author cloud
  */
-@FeignClient(contextId = "remoteLogService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = RemoteLogFallbackFactory.class)
 public interface RemoteLogService
 {
     /**

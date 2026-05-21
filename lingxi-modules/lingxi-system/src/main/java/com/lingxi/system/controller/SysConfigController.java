@@ -29,7 +29,7 @@ import com.lingxi.system.service.ISysConfigService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/config")
+@RequestMapping("/system/config")
 public class SysConfigController extends BaseController
 {
     @Autowired

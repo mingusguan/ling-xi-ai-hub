@@ -109,6 +109,11 @@ public final class SpringUtils implements BeanFactoryPostProcessor
     @SuppressWarnings("unchecked")
     public static <T> T getAopProxy(T invoker)
     {
-        return (T) AopContext.currentProxy();
+        try {
+            return (T) AopContext.currentProxy();
+        } catch (IllegalStateException e) {
+            // 如果无法获取AOP代理，返回原对象
+            return invoker;
+        }
     }
 }

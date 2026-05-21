@@ -4,14 +4,14 @@ spring:
       primary: master
       datasource:
         master:
-          url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:lingxi}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+          url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:13306}/${MYSQL_DATABASE:lingxi}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
           username: ${MYSQL_USERNAME:root}
           password: ${MYSQL_PASSWORD:123456}
           driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
       host: ${REDIS_HOST:127.0.0.1}
-      port: ${REDIS_PORT:6379}
+      port: ${REDIS_PORT:16379}
       database: ${REDIS_DATABASE:0}
       timeout: 10s
       password: ${REDIS_PASSWORD:}

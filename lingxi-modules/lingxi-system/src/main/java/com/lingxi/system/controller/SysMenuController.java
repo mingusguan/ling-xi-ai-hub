@@ -28,7 +28,7 @@ import com.lingxi.system.service.ISysMenuService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/menu")
+@RequestMapping("/system/menu")
 public class SysMenuController extends BaseController
 {
     @Autowired

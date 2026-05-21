@@ -25,7 +25,7 @@ import com.lingxi.system.service.ISysSubsystemService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/subsystem")
+@RequestMapping("/system/subsystem")
 public class SysSubsystemController extends BaseController
 {
     @Autowired

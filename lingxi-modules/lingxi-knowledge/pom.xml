@@ -12,7 +12,6 @@
     <artifactId>lingxi-modules-knowledge</artifactId>
 
     <properties>
-        <milvus.version>2.4.1</milvus.version>
         <langchain4j.version>0.32.0</langchain4j.version>
     </properties>
 
@@ -46,6 +45,10 @@
         </dependency>
         <dependency>
             <groupId>com.lingxi</groupId>
+            <artifactId>lingxi-api-knowledge</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.lingxi</groupId>
             <artifactId>lingxi-common-redis</artifactId>
         </dependency>
         <dependency>
@@ -66,30 +69,6 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
-        </dependency>
-
-        <!-- Nacos Config -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
-
-        <!-- Nacos Discovery -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-
-        <!-- Sentinel -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
-        </dependency>
-
-        <!-- OpenFeign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
         <!-- MyBatis Plus -->
@@ -166,19 +145,6 @@
             <artifactId>langchain4j-dashscope</artifactId>
             <version>${langchain4j.version}</version>
         </dependency>
-        <!-- Milvus 向量库 SDK -->
-        <dependency>
-            <groupId>io.milvus</groupId>
-            <artifactId>milvus-sdk-java</artifactId>
-            <version>${milvus.version}</version>
-        </dependency>
-        <!-- LangChain4j Milvus 集成（支持 Filter 元数据过滤） -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-milvus</artifactId>
-            <version>${langchain4j.version}</version>
-        </dependency>
-
         <!-- PDF 文档解析 -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
@@ -215,22 +181,13 @@
             <artifactId>jsonschema-module-jackson</artifactId>
             <version>4.37.0</version>
         </dependency>
-    </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+        <!-- Tencent Cloud COS Vector Bucket HTTP signatures -->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>${tencent.cos.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

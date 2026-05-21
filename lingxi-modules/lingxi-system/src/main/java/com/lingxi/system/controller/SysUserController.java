@@ -53,7 +53,7 @@ import com.lingxi.oa.api.RemoteLeaveQuotaService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/system/user")
 public class SysUserController extends BaseController
 {
     @Autowired

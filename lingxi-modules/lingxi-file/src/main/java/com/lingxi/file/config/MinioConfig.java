@@ -1,6 +1,7 @@
 package com.lingxi.file.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import io.minio.MinioClient;
@@ -75,6 +76,7 @@ public class MinioConfig
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "file", name = "storage", havingValue = "minio")
     public MinioClient getMinioClient()
     {
         return MinioClient.builder().endpoint(url).credentials(accessKey, secretKey).build();

@@ -31,7 +31,7 @@ public interface IAiChatService {
     /**
      * 获取会话消息历史
      */
-    List<AiChatMessage> getSessionMessages(Long sessionId);
+    List<AiChatMessage> getSessionMessages(Long sessionId, Long userId);
 
     /**
      * 发送消息到AI助手

@@ -29,7 +29,7 @@ import com.lingxi.system.service.ISysPostService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/system/post")
 public class SysPostController extends BaseController
 {
     @Autowired

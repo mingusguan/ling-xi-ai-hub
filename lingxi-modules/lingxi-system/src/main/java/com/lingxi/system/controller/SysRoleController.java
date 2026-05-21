@@ -34,7 +34,7 @@ import com.lingxi.system.service.ISysUserService;
  * @author cloud
  */
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/system/role")
 public class SysRoleController extends BaseController
 {
     @Autowired
