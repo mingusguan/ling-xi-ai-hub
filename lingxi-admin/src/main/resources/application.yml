@@ -1,0 +1,103 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: lingxi-admin
+  profiles:
+    active: prod
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://127.0.0.1:3306/lingxi?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+          username: root
+          password: 123456
+          driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      timeout: 10s
+  ai:
+    mcp:
+      client:
+        enabled: false
+      server:
+        enabled: false
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml,classpath*:mapper/*.xml
+  type-aliases-package: com.lingxi.system.api.domain,com.lingxi.system.domain,com.lingxi.job.domain,com.lingxi.gen.domain,com.lingxi.oa.domain,com.lingxi.knowledge.domain,com.lingxi.ai.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+
+flowable:
+  database-schema-update: true
+  db-history-used: true
+  history-level: full
+  check-process-definitions: false
+  process-definition-location-prefix: classpath*:/processes/
+
+file:
+  prefix: /profile
+  domain: http://127.0.0.1:${server.port}
+  path: ./uploadPath
+
+referer:
+  enabled: false
+  allowed-domains: 127.0.0.1,localhost
+
+minio:
+  url: http://127.0.0.1:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: lingxi
+
+gen:
+  author: lingxi
+  packageName: com.lingxi
+  autoRemovePre: false
+  tablePrefix: sys_
+  allowOverwrite: false
+
+dashscope:
+  api-key: ${DASHSCOPE_API_KEY:}
+  model: qwen-plus
+  embedding-model: text-embedding-v3
+
+seniverse:
+  weather:
+    enabled: true
+    api-key: ${SENIVERSE_WEATHER_API_KEY:}
+    base-url: https://api.seniverse.com
+    language: zh-Hans
+    unit: c
+    forecast-days: 3
+    request-timeout: 8s
+
+milvus:
+  host: localhost
+  port: 19530
+  collection-name: kb_embedding
+
+lingxi:
+  oa:
+    workflow:
+      enabled: true
+  mcp:
+    enabled: true
+    default-timeout: 20s
+
+logging:
+  level:
+    com.lingxi: info
