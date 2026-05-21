@@ -16,7 +16,8 @@ Edit `.github/workflows/build-image.yml` before enabling the pipeline:
 
 - `IMAGE_REGISTRY`: default `registry.cn-hangzhou.aliyuncs.com`
 - `IMAGE_NAMESPACE`: for example `your-namespace`
-- `IMAGE_NAME`: default `lingxi-ai-hub`
+- `BACKEND_IMAGE_NAME`: default `lingxi-ai-hub`
+- `FRONTEND_IMAGE_NAME`: default `lingxi-ui`
 - `DOCKER_USERNAME` and `DOCKER_PASSWORD`: configure them as GitHub Actions repository secrets, do not commit real secrets
 
 The generated image tag is:
@@ -24,6 +25,8 @@ The generated image tag is:
 ```text
 registry.cn-hangzhou.aliyuncs.com/your-namespace/lingxi-ai-hub:${GITHUB_SHA}
 registry.cn-hangzhou.aliyuncs.com/your-namespace/lingxi-ai-hub:${GITHUB_SHA::7}
+registry.cn-hangzhou.aliyuncs.com/your-namespace/lingxi-ui:${GITHUB_SHA}
+registry.cn-hangzhou.aliyuncs.com/your-namespace/lingxi-ui:${GITHUB_SHA::7}
 ```
 
 When a `v*` Git tag triggers the workflow, the image is also pushed with that Git tag.
@@ -48,6 +51,21 @@ cp .env.example .env
 vi .env
 ```
 
+Create the shared Docker network once:
+
+```bash
+docker network create mingus-net
+```
+
+Make sure the MySQL and Redis compose projects also join the same external network:
+
+```yaml
+networks:
+  default:
+    external: true
+    name: mingus-net
+```
+
 Prepare writable directories for logs and uploads:
 
 ```bash
@@ -61,6 +79,9 @@ Login to the image registry once:
 docker login registry.cn-hangzhou.aliyuncs.com
 ```
 
+The default `.env.example` assumes the shared network service names are `mysql` and `redis`.
+If your compose service names differ, update `MYSQL_URL` and `REDIS_HOST` to match.
+
 ## Release
 
 Deploy a specific image tag:
@@ -73,6 +94,7 @@ Or edit `.env` manually:
 
 ```text
 IMAGE_TAG=abc1234
+UI_IMAGE_TAG=abc1234
 ```
 
 Then run:

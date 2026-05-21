@@ -2,6 +2,7 @@
 set -eu
 
 APP_SERVICE=lingxi-admin
+APP_SERVICES="lingxi-admin lingxi-ui"
 COMPOSE_FILE=docker-compose.prod.yml
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -53,10 +54,13 @@ fi
 
 if [ "${1:-}" != "" ]; then
   update_env_value IMAGE_TAG "$1"
+  update_env_value UI_IMAGE_TAG "$1"
 fi
 
 IMAGE_REPOSITORY=$(get_env_value IMAGE_REPOSITORY || true)
 IMAGE_TAG=$(get_env_value IMAGE_TAG || true)
+UI_IMAGE_REPOSITORY=$(get_env_value UI_IMAGE_REPOSITORY || true)
+UI_IMAGE_TAG=$(get_env_value UI_IMAGE_TAG || true)
 
 if [ "$IMAGE_REPOSITORY" = "" ] || [ "$IMAGE_TAG" = "" ] || [ "$IMAGE_TAG" = "replace-with-github-sha" ]; then
   usage
@@ -64,14 +68,21 @@ if [ "$IMAGE_REPOSITORY" = "" ] || [ "$IMAGE_TAG" = "" ] || [ "$IMAGE_TAG" = "re
   exit 1
 fi
 
+if [ "$UI_IMAGE_REPOSITORY" = "" ] || [ "$UI_IMAGE_TAG" = "" ] || [ "$UI_IMAGE_TAG" = "replace-with-github-sha" ]; then
+  usage
+  echo "UI_IMAGE_REPOSITORY and UI_IMAGE_TAG must be configured."
+  exit 1
+fi
+
 echo "Deploying ${IMAGE_REPOSITORY}:${IMAGE_TAG}"
+echo "Deploying ${UI_IMAGE_REPOSITORY}:${UI_IMAGE_TAG}"
 
 mkdir -p logs uploadPath
 chown -R 10001:10001 logs uploadPath 2>/dev/null || chmod 777 logs uploadPath 2>/dev/null || true
 
-compose pull "$APP_SERVICE"
-compose up -d "$APP_SERVICE"
-compose ps "$APP_SERVICE"
+compose pull $APP_SERVICES
+compose up -d $APP_SERVICES
+compose ps $APP_SERVICES
 
 HEALTH_URL=$(get_env_value HEALTH_URL || true)
 HEALTH_RETRY=$(get_env_value HEALTH_RETRY || true)

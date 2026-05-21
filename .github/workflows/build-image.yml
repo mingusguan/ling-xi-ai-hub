@@ -12,7 +12,8 @@ on:
 env:
   IMAGE_REGISTRY: registry.cn-hangzhou.aliyuncs.com
   IMAGE_NAMESPACE: mingus
-  IMAGE_NAME: lingxi-ai-hub
+  BACKEND_IMAGE_NAME: lingxi-ai-hub
+  FRONTEND_IMAGE_NAME: lingxi-ui
 
 jobs:
   docker-build:
@@ -39,22 +40,38 @@ jobs:
         id: image
         shell: bash
         run: |
-          image_repository="${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${IMAGE_NAME}"
+          backend_repository="${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${BACKEND_IMAGE_NAME}"
+          frontend_repository="${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${FRONTEND_IMAGE_NAME}"
           short_sha="${GITHUB_SHA::7}"
           {
-            echo 'tags<<EOF'
-            echo "${image_repository}:${GITHUB_SHA}"
-            echo "${image_repository}:${short_sha}"
+            echo 'backend_tags<<EOF'
+            echo "${backend_repository}:${GITHUB_SHA}"
+            echo "${backend_repository}:${short_sha}"
             if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
-              echo "${image_repository}:${GITHUB_REF_NAME}"
+              echo "${backend_repository}:${GITHUB_REF_NAME}"
+            fi
+            echo 'EOF'
+            echo 'frontend_tags<<EOF'
+            echo "${frontend_repository}:${GITHUB_SHA}"
+            echo "${frontend_repository}:${short_sha}"
+            if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+              echo "${frontend_repository}:${GITHUB_REF_NAME}"
             fi
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
-      - name: Build and push image
+      - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.image.outputs.tags }}
+          tags: ${{ steps.image.outputs.backend_tags }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./lingxi-ui/Dockerfile
+          push: true
+          tags: ${{ steps.image.outputs.frontend_tags }}
