@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.AiAgentStepMapper">
+
+    <resultMap type="com.lingxi.ai.agent.domain.AiAgentStep" id="AiAgentStepResult">
+        <id property="stepId" column="step_id"/>
+        <result property="agentCode" column="agent_code"/>
+        <result property="stepOrder" column="step_order"/>
+        <result property="stepName" column="step_name"/>
+        <result property="stepType" column="step_type"/>
+        <result property="toolName" column="tool_name"/>
+        <result property="instruction" column="instruction"/>
+        <result property="configJson" column="config_json"/>
+        <result property="failurePolicy" column="failure_policy"/>
+        <result property="enabled" column="enabled"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectStepsByAgentCode" resultMap="AiAgentStepResult">
+        SELECT step_id, agent_code, step_order, step_name, step_type, tool_name, instruction, config_json,
+               failure_policy, enabled, create_by, create_time, update_by, update_time
+        FROM ai_agent_step
+        WHERE agent_code = #{agentCode}
+        ORDER BY step_order ASC, step_id ASC
+    </select>
+
+    <select id="selectStepById" resultMap="AiAgentStepResult">
+        SELECT step_id, agent_code, step_order, step_name, step_type, tool_name, instruction, config_json,
+               failure_policy, enabled, create_by, create_time, update_by, update_time
+        FROM ai_agent_step
+        WHERE step_id = #{stepId}
+    </select>
+
+    <insert id="insertStep" parameterType="com.lingxi.ai.agent.domain.AiAgentStep"
+            useGeneratedKeys="true" keyProperty="stepId">
+        INSERT INTO ai_agent_step
+        (agent_code, step_order, step_name, step_type, tool_name, instruction, config_json, failure_policy,
+         enabled, create_by, create_time, update_by, update_time)
+        VALUES
+        (#{agentCode}, #{stepOrder}, #{stepName}, #{stepType}, #{toolName}, #{instruction}, #{configJson},
+         #{failurePolicy}, #{enabled}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime})
+    </insert>
+
+    <update id="updateStep" parameterType="com.lingxi.ai.agent.domain.AiAgentStep">
+        UPDATE ai_agent_step
+        <set>
+            <if test="agentCode != null and agentCode != ''">agent_code = #{agentCode},</if>
+            <if test="stepOrder != null">step_order = #{stepOrder},</if>
+            <if test="stepName != null and stepName != ''">step_name = #{stepName},</if>
+            <if test="stepType != null and stepType != ''">step_type = #{stepType},</if>
+            <if test="toolName != null">tool_name = #{toolName},</if>
+            <if test="instruction != null">instruction = #{instruction},</if>
+            <if test="configJson != null">config_json = #{configJson},</if>
+            <if test="failurePolicy != null and failurePolicy != ''">failure_policy = #{failurePolicy},</if>
+            <if test="enabled != null and enabled != ''">enabled = #{enabled},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime}
+        </set>
+        WHERE step_id = #{stepId}
+    </update>
+
+    <delete id="deleteStepById">
+        DELETE FROM ai_agent_step WHERE step_id = #{stepId}
+    </delete>
+</mapper>

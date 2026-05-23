@@ -45,3 +45,11 @@ export function getSessionConversations(sessionId) {
     method: 'get'
   })
 }
+
+export function feedbackQa(data) {
+  return request({
+    url: '/knowledge/qa/feedback',
+    method: 'post',
+    data
+  })
+}

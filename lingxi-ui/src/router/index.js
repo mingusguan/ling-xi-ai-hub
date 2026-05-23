@@ -45,7 +45,9 @@ export const knowledgeRoutes = [
     hidden: true,
     children: [
       { path: 'category', component: () => import('@/views/knowledge/category/index'), name: 'KnowledgeCategory', meta: { title: '分类管理', icon: 'tree' }, permissions: ['knowledge:category:list'] },
-      { path: 'document', component: () => import('@/views/knowledge/document/index'), name: 'KnowledgeDocument', meta: { title: '文档管理', icon: 'documentation' }, permissions: ['knowledge:document:list'] }
+      { path: 'document', component: () => import('@/views/knowledge/document/index'), name: 'KnowledgeDocument', meta: { title: '文档管理', icon: 'documentation' }, permissions: ['knowledge:document:list'] },
+      { path: 'qa', component: () => import('@/views/knowledge/qa/index'), name: 'KnowledgeQa', meta: { title: '知识问答', icon: 'message' }, permissions: ['knowledge:qa:chat', 'knowledge:document:list'] },
+      { path: 'operation', component: () => import('@/views/knowledge/operation/index'), name: 'KnowledgeOperation', meta: { title: '知识运营中心', icon: 'chart' }, permissions: ['knowledge:operation:view'] }
     ]
   }
 ]
@@ -81,7 +83,9 @@ export const aiRoutes = [
     children: [
       { path: 'document', component: () => import('@/views/ai/document/index'), name: 'AiDocument', meta: { title: 'AI公文助手', icon: 'documentation', sysCode: 'ai_tool' }, permissions: ['ai:document:view'] },
       { path: 'report', component: () => import('@/views/ai/report/index'), name: 'AiReport', meta: { title: 'AI报表解读', icon: 'chart', sysCode: 'ai_tool' }, permissions: ['ai:report:view'] },
-      { path: 'mcp-market', component: () => import('@/views/ai/mcp-market/index'), name: 'AiMcpMarket', meta: { title: 'MCP工具市场', icon: 'list', sysCode: 'ai_tool' }, permissions: ['ai:mcp:market:list'] }
+      { path: 'mcp-market', component: () => import('@/views/ai/mcp-market/index'), name: 'AiMcpMarket', meta: { title: 'MCP工具市场', icon: 'list', sysCode: 'ai_tool' }, permissions: ['ai:mcp:market:list'] },
+      { path: 'agent', component: () => import('@/views/ai/agent/index'), name: 'AiAgent', meta: { title: 'Agent编排中心', icon: 'tree', sysCode: 'ai_tool' }, permissions: ['ai:agent:list'] },
+      { path: 'governance', component: () => import('@/views/ai/governance/index'), name: 'AiGovernance', meta: { title: 'AI治理审计', icon: 'monitor', sysCode: 'ai_tool' }, permissions: ['ai:governance:view'] }
     ]
   },
   { path: '/ai', redirect: '/ai/document', hidden: true }

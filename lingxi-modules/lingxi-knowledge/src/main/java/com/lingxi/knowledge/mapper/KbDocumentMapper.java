@@ -15,4 +15,9 @@ public interface KbDocumentMapper extends BaseMapper<KbDocument> {
      * SQL 在 XML 中定义
      */
     List<KbDocument> selectListByDeptWithChildren(@Param("deptId") Long deptId, @Param("categoryId") Long categoryId);
+
+    /**
+     * 按入库状态统计文档数量。
+     */
+    Long countDocumentsByStatus(@Param("status") Integer status);
 }

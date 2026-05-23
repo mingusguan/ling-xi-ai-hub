@@ -3,6 +3,7 @@ package com.lingxi.ai.service.impl;
 import com.lingxi.ai.agent.XiaolingAgent;
 import com.lingxi.ai.domain.AiChatMessage;
 import com.lingxi.ai.domain.AiChatSession;
+import com.lingxi.ai.governance.service.IAiGovernanceService;
 import com.lingxi.ai.mapper.AiChatMessageMapper;
 import com.lingxi.ai.mapper.AiChatSessionMapper;
 import com.lingxi.ai.service.IAiChatService;
@@ -36,6 +37,9 @@ public class AiChatServiceImpl implements IAiChatService
 
     @Autowired
     private XiaolingAgent xiaolingAgent;
+
+    @Autowired
+    private IAiGovernanceService governanceService;
 
     @Override
     public List<AiChatSession> getUserSessions(Long userId)
@@ -87,7 +91,16 @@ public class AiChatServiceImpl implements IAiChatService
 
         SysUser user = SecurityUtils.getLoginUser().getSysUser();
         Long deptId = user.getDeptId();
-        String aiResponse = xiaolingAgent.chat(message, deptId, userId);
+        long startTime = System.currentTimeMillis();
+        String aiResponse;
+        try {
+            aiResponse = xiaolingAgent.chat(message, deptId, userId);
+            governanceService.recordSuccess("CHAT", "xiaolinger", message, aiResponse,
+                    System.currentTimeMillis() - startTime);
+        } catch (Exception e) {
+            governanceService.recordFailure("CHAT", "xiaolinger", message, System.currentTimeMillis() - startTime, e);
+            throw e;
+        }
 
         AiChatMessage aiMessage = new AiChatMessage();
         aiMessage.setSessionId(sessionId);

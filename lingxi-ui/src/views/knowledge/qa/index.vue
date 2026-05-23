@@ -85,6 +85,26 @@
                 </div>
               </div>
             </div>
+            <div v-if="msg.role === 'assistant' && msg.conversationId" class="message-feedback">
+              <el-tooltip content="有帮助" placement="top">
+                <el-button
+                  size="mini"
+                  circle
+                  icon="el-icon-thumb"
+                  :type="msg.feedback === 'HELPFUL' ? 'primary' : 'default'"
+                  @click="submitFeedback(msg, 'HELPFUL')"
+                />
+              </el-tooltip>
+              <el-tooltip content="需要改进" placement="top">
+                <el-button
+                  size="mini"
+                  circle
+                  icon="el-icon-warning-outline"
+                  :type="msg.feedback === 'UNHELPFUL' ? 'danger' : 'default'"
+                  @click="submitFeedback(msg, 'UNHELPFUL')"
+                />
+              </el-tooltip>
+            </div>
           </div>
         </div>
 
@@ -126,7 +146,7 @@
 </template>
 
 <script>
-import { sendChat, listSessions, deleteSession, getSessionConversations } from '@/api/knowledge/qa'
+import { sendChat, listSessions, deleteSession, getSessionConversations, feedbackQa } from '@/api/knowledge/qa'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -169,7 +189,9 @@ export default {
             role: 'assistant',
             content: conv.answer,
             sources: this.parseSources(conv.sourceChunks),
-            showSources: false
+            showSources: false,
+            conversationId: conv.conversationId,
+            feedback: conv.feedback
           })
         })
         this.scrollBottom()
@@ -219,7 +241,9 @@ export default {
           role: 'assistant',
           content: data.answer || '暂无答案',
           sources: this.parseSources(data.source),
-          showSources: false
+          showSources: false,
+          conversationId: data.conversationId,
+          feedback: null
         })
         this.scrollBottom()
         this.loadSessions()
@@ -237,6 +261,16 @@ export default {
     },
     toggleSources(idx) {
       this.$set(this.messages[idx], 'showSources', !this.messages[idx].showSources)
+    },
+    submitFeedback(message, feedback) {
+      if (!message.conversationId) return
+      feedbackQa({
+        conversationId: message.conversationId,
+        feedback
+      }).then(() => {
+        this.$set(message, 'feedback', feedback)
+        this.$message.success('反馈已记录')
+      })
     },
     scrollBottom() {
       this.$nextTick(() => {
@@ -521,6 +555,12 @@ export default {
 
 .message-sources {
   margin-top: 12px;
+}
+
+.message-feedback {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .source-header {

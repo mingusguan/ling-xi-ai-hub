@@ -9,6 +9,7 @@ import com.lingxi.ai.domain.dto.DocumentWritingRequest;
 import com.lingxi.ai.domain.dto.ReportInterpretRequest;
 import com.lingxi.ai.domain.vo.DocumentWritingResult;
 import com.lingxi.ai.domain.vo.ReportInterpretResult;
+import com.lingxi.ai.governance.service.IAiGovernanceService;
 import com.lingxi.ai.service.IAiToolService;
 import com.lingxi.ai.util.ExcelTableParser;
 import com.lingxi.common.core.exception.ServiceException;
@@ -64,23 +65,55 @@ public class AiToolServiceImpl implements IAiToolService
 
     private final ReportAnalysisAgent reportAnalysisAgent;
 
+    private final IAiGovernanceService governanceService;
+
     public AiToolServiceImpl(DocumentWritingAgent documentWritingAgent,
-            ReportAnalysisAgent reportAnalysisAgent)
+            ReportAnalysisAgent reportAnalysisAgent,
+            IAiGovernanceService governanceService)
     {
         this.documentWritingAgent = documentWritingAgent;
         this.reportAnalysisAgent = reportAnalysisAgent;
+        this.governanceService = governanceService;
     }
 
     @Override
     public DocumentWritingResult writeDocument(DocumentWritingRequest request)
     {
-        return executeAiTool(DOCUMENT_FAILURE_MESSAGE, () -> doWriteDocument(request));
+        long startTime = System.currentTimeMillis();
+        try
+        {
+            DocumentWritingResult result = executeAiTool(DOCUMENT_FAILURE_MESSAGE, () -> doWriteDocument(request));
+            governanceService.recordSuccess("AI_TOOL", "document_write", request == null ? null : request.getTopic(),
+                    result == null ? null : result.getSummary(), System.currentTimeMillis() - startTime);
+            return result;
+        }
+        catch (Exception e)
+        {
+            governanceService.recordFailure("AI_TOOL", "document_write", request == null ? null : request.getTopic(),
+                    System.currentTimeMillis() - startTime, e);
+            throw e;
+        }
     }
 
     @Override
     public ReportInterpretResult interpretReport(ReportInterpretRequest request, MultipartFile file)
     {
-        return executeAiTool(REPORT_FAILURE_MESSAGE, () -> doInterpretReport(request, file));
+        long startTime = System.currentTimeMillis();
+        try
+        {
+            ReportInterpretResult result = executeAiTool(REPORT_FAILURE_MESSAGE, () -> doInterpretReport(request, file));
+            governanceService.recordSuccess("AI_TOOL", "report_interpret",
+                    request == null ? null : request.getReportTitle(),
+                    result == null ? null : result.getSummary(), System.currentTimeMillis() - startTime);
+            return result;
+        }
+        catch (Exception e)
+        {
+            governanceService.recordFailure("AI_TOOL", "report_interpret",
+                    request == null ? null : request.getReportTitle(),
+                    System.currentTimeMillis() - startTime, e);
+            throw e;
+        }
     }
 
     private DocumentWritingResult doWriteDocument(DocumentWritingRequest request)

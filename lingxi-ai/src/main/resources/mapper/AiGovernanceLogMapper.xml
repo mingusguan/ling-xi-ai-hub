@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.AiGovernanceLogMapper">
+
+    <resultMap type="com.lingxi.ai.governance.domain.AiGovernanceLog" id="AiGovernanceLogResult">
+        <id property="logId" column="log_id"/>
+        <result property="sceneType" column="scene_type"/>
+        <result property="sceneName" column="scene_name"/>
+        <result property="requestSummary" column="request_summary"/>
+        <result property="responseSummary" column="response_summary"/>
+        <result property="status" column="status"/>
+        <result property="costMillis" column="cost_millis"/>
+        <result property="tokenCount" column="token_count"/>
+        <result property="riskLevel" column="risk_level"/>
+        <result property="sensitiveHit" column="sensitive_hit"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectGovernanceLogList" resultMap="AiGovernanceLogResult">
+        SELECT log_id, scene_type, scene_name, request_summary, response_summary, status, cost_millis,
+               token_count, risk_level, sensitive_hit, error_message, user_id, username, dept_id, tenant_id,
+               create_time
+        FROM ai_governance_log
+        <where>
+            <if test="sceneType != null and sceneType != ''">
+                AND scene_type = #{sceneType}
+            </if>
+            <if test="sceneName != null and sceneName != ''">
+                AND scene_name LIKE CONCAT('%', #{sceneName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="riskLevel != null and riskLevel != ''">
+                AND risk_level = #{riskLevel}
+            </if>
+            <if test="sensitiveHit != null and sensitiveHit != ''">
+                AND sensitive_hit = #{sensitiveHit}
+            </if>
+        </where>
+        ORDER BY create_time DESC, log_id DESC
+    </select>
+
+    <insert id="insertGovernanceLog" parameterType="com.lingxi.ai.governance.domain.AiGovernanceLog"
+            useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO ai_governance_log
+        (scene_type, scene_name, request_summary, response_summary, status, cost_millis, token_count, risk_level,
+         sensitive_hit, error_message, user_id, username, dept_id, tenant_id, create_time)
+        VALUES
+        (#{sceneType}, #{sceneName}, #{requestSummary}, #{responseSummary}, #{status}, #{costMillis}, #{tokenCount},
+         #{riskLevel}, #{sensitiveHit}, #{errorMessage}, #{userId}, #{username}, #{deptId}, #{tenantId}, #{createTime})
+    </insert>
+
+    <select id="countTodayCalls" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM ai_governance_log
+        WHERE create_time &gt;= CURDATE()
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="countTodaySensitiveHits" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM ai_governance_log
+        WHERE create_time &gt;= CURDATE()
+          AND sensitive_hit = '1'
+    </select>
+
+    <select id="countTodayHighRisks" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM ai_governance_log
+        WHERE create_time &gt;= CURDATE()
+          AND risk_level = 'HIGH'
+    </select>
+
+    <select id="selectTodayAverageCostMillis" resultType="java.lang.Long">
+        SELECT COALESCE(ROUND(AVG(cost_millis)), 0)
+        FROM ai_governance_log
+        WHERE create_time &gt;= CURDATE()
+          AND cost_millis IS NOT NULL
+    </select>
+
+    <select id="countTotalCalls" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM ai_governance_log
+    </select>
+</mapper>

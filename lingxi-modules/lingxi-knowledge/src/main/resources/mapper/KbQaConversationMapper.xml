@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.knowledge.mapper.KbQaConversationMapper">
+
+    <resultMap type="com.lingxi.knowledge.domain.KbQaConversation" id="KbQaConversationResult">
+        <id property="conversationId" column="conversation_id"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="question" column="question"/>
+        <result property="answer" column="answer"/>
+        <result property="sourceChunks" column="source_chunks"/>
+        <result property="topScore" column="top_score"/>
+        <result property="confidenceLevel" column="confidence_level"/>
+        <result property="noAnswer" column="no_answer"/>
+        <result property="feedback" column="feedback"/>
+        <result property="feedbackRemark" column="feedback_remark"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectBySessionId" resultMap="KbQaConversationResult">
+        SELECT conversation_id, session_id, user_id, dept_id, question, answer, source_chunks, top_score,
+               confidence_level, no_answer, feedback, feedback_remark, create_time
+        FROM kb_qa_conversation
+        WHERE session_id = #{sessionId}
+        ORDER BY create_time ASC, conversation_id ASC
+    </select>
+
+    <select id="selectOperationList" resultMap="KbQaConversationResult">
+        SELECT conversation_id, session_id, user_id, dept_id, question, answer, source_chunks, top_score,
+               confidence_level, no_answer, feedback, feedback_remark, create_time
+        FROM kb_qa_conversation
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (question LIKE CONCAT('%', #{keyword}, '%') OR answer LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="noAnswer != null and noAnswer != ''">
+                AND no_answer = #{noAnswer}
+            </if>
+            <if test="feedback != null and feedback != ''">
+                AND feedback = #{feedback}
+            </if>
+            <if test="confidenceLevel != null and confidenceLevel != ''">
+                AND confidence_level = #{confidenceLevel}
+            </if>
+        </where>
+        ORDER BY create_time DESC, conversation_id DESC
+    </select>
+
+    <insert id="insertConversation" parameterType="com.lingxi.knowledge.domain.KbQaConversation"
+            useGeneratedKeys="true" keyProperty="conversationId">
+        INSERT INTO kb_qa_conversation
+        (session_id, user_id, dept_id, question, answer, source_chunks, top_score, confidence_level, no_answer,
+         feedback, feedback_remark, create_time)
+        VALUES
+        (#{sessionId}, #{userId}, #{deptId}, #{question}, #{answer}, #{sourceChunks}, #{topScore}, #{confidenceLevel},
+         #{noAnswer}, #{feedback}, #{feedbackRemark}, #{createTime})
+    </insert>
+
+    <delete id="deleteBySessionId">
+        DELETE FROM kb_qa_conversation WHERE session_id = #{sessionId}
+    </delete>
+
+    <update id="updateFeedback" parameterType="com.lingxi.knowledge.domain.KbQaConversation">
+        UPDATE kb_qa_conversation
+        SET feedback = #{feedback},
+            feedback_remark = #{feedbackRemark}
+        WHERE conversation_id = #{conversationId}
+    </update>
+
+    <select id="countTodayQuestions" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM kb_qa_conversation
+        WHERE create_time &gt;= CURDATE()
+    </select>
+
+    <select id="countTodayNoAnswer" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM kb_qa_conversation
+        WHERE create_time &gt;= CURDATE()
+          AND no_answer = '1'
+    </select>
+
+    <select id="countTodayNegativeFeedback" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM kb_qa_conversation
+        WHERE create_time &gt;= CURDATE()
+          AND feedback = 'UNHELPFUL'
+    </select>
+
+    <select id="selectAverageScore" resultType="java.lang.Double">
+        SELECT COALESCE(ROUND(AVG(top_score), 4), 0)
+        FROM kb_qa_conversation
+        WHERE top_score IS NOT NULL
+    </select>
+</mapper>

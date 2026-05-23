@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.knowledge.mapper.KbQaSessionMapper">
+
+    <resultMap type="com.lingxi.knowledge.domain.KbQaSession" id="KbQaSessionResult">
+        <id property="sessionId" column="session_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="title" column="title"/>
+        <result property="messageCount" column="message_count"/>
+        <result property="lastMessageTime" column="last_message_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="selectSessionsByUserId" resultMap="KbQaSessionResult">
+        SELECT session_id, user_id, dept_id, title, message_count, last_message_time, create_time
+        FROM kb_qa_session
+        WHERE user_id = #{userId}
+        ORDER BY last_message_time DESC, session_id DESC
+    </select>
+
+    <select id="selectSessionById" resultMap="KbQaSessionResult">
+        SELECT session_id, user_id, dept_id, title, message_count, last_message_time, create_time
+        FROM kb_qa_session
+        WHERE session_id = #{sessionId}
+    </select>
+
+    <insert id="insertSession" parameterType="com.lingxi.knowledge.domain.KbQaSession"
+            useGeneratedKeys="true" keyProperty="sessionId">
+        INSERT INTO kb_qa_session
+        (user_id, dept_id, title, message_count, last_message_time, create_time)
+        VALUES
+        (#{userId}, #{deptId}, #{title}, #{messageCount}, #{lastMessageTime}, #{createTime})
+    </insert>
+
+    <update id="updateSessionSummary" parameterType="com.lingxi.knowledge.domain.KbQaSession">
+        UPDATE kb_qa_session
+        SET title = #{title},
+            message_count = #{messageCount},
+            last_message_time = #{lastMessageTime}
+        WHERE session_id = #{sessionId}
+    </update>
+
+    <delete id="deleteSessionById">
+        DELETE FROM kb_qa_session
+        WHERE session_id = #{sessionId}
+          AND user_id = #{userId}
+    </delete>
+</mapper>

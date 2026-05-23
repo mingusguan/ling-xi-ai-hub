@@ -274,7 +274,9 @@ export default {
     showKnowledgeSystem() {
       return this.isAdmin || auth.hasPermiOr([
         'knowledge:category:list',
-        'knowledge:document:list'
+        'knowledge:document:list',
+        'knowledge:qa:chat',
+        'knowledge:operation:view'
       ])
     },
     showOaSystem() {
@@ -284,7 +286,9 @@ export default {
       return this.isAdmin || auth.hasPermiOr([
         'ai:document:view',
         'ai:report:view',
-        'ai:chat:view'
+        'ai:chat:view',
+        'ai:agent:list',
+        'ai:governance:view'
       ])
     },
     showMcpMarketSystem() {

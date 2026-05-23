@@ -21,6 +21,12 @@
             <groupId>com.lingxi</groupId>
             <artifactId>lingxi-common-core</artifactId>
         </dependency>
+
+        <!-- Spring Web annotations for local/remote service contracts -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
         
         <!-- Feign -->
     </dependencies>

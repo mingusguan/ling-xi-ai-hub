@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.ai.mapper.AiAgentDefinitionMapper">
+
+    <resultMap type="com.lingxi.ai.agent.domain.AiAgentDefinition" id="AiAgentDefinitionResult">
+        <id property="agentId" column="agent_id"/>
+        <result property="agentCode" column="agent_code"/>
+        <result property="agentName" column="agent_name"/>
+        <result property="businessScene" column="business_scene"/>
+        <result property="description" column="description"/>
+        <result property="systemPrompt" column="system_prompt"/>
+        <result property="guardrails" column="guardrails"/>
+        <result property="status" column="status"/>
+        <result property="ownerTeam" column="owner_team"/>
+        <result property="auditEnabled" column="audit_enabled"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectAgentList" resultMap="AiAgentDefinitionResult">
+        SELECT agent_id, agent_code, agent_name, business_scene, description, system_prompt, guardrails, status,
+               owner_team, audit_enabled, create_by, create_time, update_by, update_time
+        FROM ai_agent_definition
+        <where>
+            <if test="agentCode != null and agentCode != ''">
+                AND agent_code LIKE CONCAT('%', #{agentCode}, '%')
+            </if>
+            <if test="agentName != null and agentName != ''">
+                AND agent_name LIKE CONCAT('%', #{agentName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY update_time DESC, agent_id DESC
+    </select>
+
+    <select id="selectAgentById" resultMap="AiAgentDefinitionResult">
+        SELECT agent_id, agent_code, agent_name, business_scene, description, system_prompt, guardrails, status,
+               owner_team, audit_enabled, create_by, create_time, update_by, update_time
+        FROM ai_agent_definition
+        WHERE agent_id = #{agentId}
+    </select>
+
+    <select id="selectAgentByCode" resultMap="AiAgentDefinitionResult">
+        SELECT agent_id, agent_code, agent_name, business_scene, description, system_prompt, guardrails, status,
+               owner_team, audit_enabled, create_by, create_time, update_by, update_time
+        FROM ai_agent_definition
+        WHERE agent_code = #{agentCode}
+    </select>
+
+    <insert id="insertAgent" parameterType="com.lingxi.ai.agent.domain.AiAgentDefinition"
+            useGeneratedKeys="true" keyProperty="agentId">
+        INSERT INTO ai_agent_definition
+        (agent_code, agent_name, business_scene, description, system_prompt, guardrails, status, owner_team,
+         audit_enabled, create_by, create_time, update_by, update_time)
+        VALUES
+        (#{agentCode}, #{agentName}, #{businessScene}, #{description}, #{systemPrompt}, #{guardrails}, #{status},
+         #{ownerTeam}, #{auditEnabled}, #{createBy}, #{createTime}, #{updateBy}, #{updateTime})
+    </insert>
+
+    <update id="updateAgent" parameterType="com.lingxi.ai.agent.domain.AiAgentDefinition">
+        UPDATE ai_agent_definition
+        <set>
+            <if test="agentCode != null and agentCode != ''">agent_code = #{agentCode},</if>
+            <if test="agentName != null and agentName != ''">agent_name = #{agentName},</if>
+            <if test="businessScene != null">business_scene = #{businessScene},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="systemPrompt != null">system_prompt = #{systemPrompt},</if>
+            <if test="guardrails != null">guardrails = #{guardrails},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="ownerTeam != null">owner_team = #{ownerTeam},</if>
+            <if test="auditEnabled != null and auditEnabled != ''">audit_enabled = #{auditEnabled},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = #{updateTime}
+        </set>
+        WHERE agent_id = #{agentId}
+    </update>
+
+    <update id="updateAgentStatus">
+        UPDATE ai_agent_definition
+        SET status = #{status},
+            update_by = #{updateBy},
+            update_time = NOW()
+        WHERE agent_id = #{agentId}
+    </update>
+</mapper>
