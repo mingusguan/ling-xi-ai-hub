@@ -57,6 +57,7 @@ import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
 import ProfileDialog from '@/components/ProfileDialog'
 import { getUnreadMessageCount } from '@/api/system/message'
+import { withPublicPath } from '@/utils/appPath'
 
 export default {
   emits: ['setLayout'],
@@ -144,7 +145,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
-          location.href = '/index'
+          location.href = withPublicPath('/index')
         })
       }).catch(() => {})
     }

@@ -22,6 +22,7 @@ import com.lingxi.common.security.annotation.RequiresPermissions;
 import com.lingxi.common.security.utils.SecurityUtils;
 import com.lingxi.system.api.domain.SysDept;
 import com.lingxi.system.service.ISysDeptService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 部门信息
@@ -34,6 +35,9 @@ public class SysDeptController extends BaseController
 {
     @Autowired
     private ISysDeptService deptService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     /**
      * 获取部门列表
@@ -77,6 +81,7 @@ public class SysDeptController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysDept dept)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增部门");
         if (!deptService.checkDeptNameUnique(dept))
         {
             return error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
@@ -93,6 +98,7 @@ public class SysDeptController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysDept dept)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改部门");
         Long deptId = dept.getDeptId();
         deptService.checkDeptDataScope(deptId);
         if (!deptService.checkDeptNameUnique(dept))
@@ -119,6 +125,7 @@ public class SysDeptController extends BaseController
     @DeleteMapping("/{deptId}")
     public AjaxResult remove(@PathVariable Long deptId)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除部门");
         if (deptService.hasChildByDeptId(deptId))
         {
             return warn("存在下级部门,不允许删除");

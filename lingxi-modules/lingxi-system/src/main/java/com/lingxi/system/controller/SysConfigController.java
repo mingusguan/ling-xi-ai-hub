@@ -22,6 +22,7 @@ import com.lingxi.common.security.annotation.RequiresPermissions;
 import com.lingxi.common.security.utils.SecurityUtils;
 import com.lingxi.system.domain.SysConfig;
 import com.lingxi.system.service.ISysConfigService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 参数配置 信息操作处理
@@ -34,6 +35,9 @@ public class SysConfigController extends BaseController
 {
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     /**
      * 获取参数配置列表
@@ -83,6 +87,7 @@ public class SysConfigController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysConfig config)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增参数");
         if (!configService.checkConfigKeyUnique(config))
         {
             return error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
@@ -99,6 +104,8 @@ public class SysConfigController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysConfig config)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改参数");
+        systemProtectionService.checkProtectedConfig(config, "修改");
         if (!configService.checkConfigKeyUnique(config))
         {
             return error("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
@@ -115,6 +122,8 @@ public class SysConfigController extends BaseController
     @DeleteMapping("/{configIds}")
     public AjaxResult remove(@PathVariable Long[] configIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除参数");
+        systemProtectionService.checkProtectedConfigs(configIds, "删除");
         configService.deleteConfigByIds(configIds);
         return success();
     }
@@ -127,6 +136,7 @@ public class SysConfigController extends BaseController
     @DeleteMapping("/refreshCache")
     public AjaxResult refreshCache()
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("刷新参数缓存");
         configService.resetConfigCache();
         return success();
     }

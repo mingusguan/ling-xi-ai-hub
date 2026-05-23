@@ -24,6 +24,7 @@ import com.lingxi.oa.service.IOaWorkflowService;
 import com.lingxi.oa.service.IOaApprovalRecordService;
 import com.lingxi.oa.service.IOaLeaveQuotaService;
 import com.lingxi.oa.util.HolidayUtil;
+import com.lingxi.system.api.RemoteFileService;
 import com.lingxi.system.api.RemoteUserService;
 import com.lingxi.system.api.domain.SysUser;
 import com.lingxi.system.api.model.LoginUser;
@@ -71,6 +72,9 @@ import java.util.stream.Collectors;
     protected final ObjectProvider<RuntimeService> runtimeServiceProvider; // RuntimeService
     private final RemoteUserService remoteUserService; // 远程用户服务
     
+    @Resource
+    private RemoteFileService remoteFileService;
+
     @Resource
     private HolidayUtil holidayUtil; // 休息日工具类
 
@@ -618,6 +622,7 @@ import java.util.stream.Collectors;
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long saveExpense(OaExpense expense) {
+        expense.setInvoiceUrl(normalizeFileUrl(expense.getInvoiceUrl()));
         LoginUser loginUser = SecurityUtils.getLoginUser();
         fillApplicantInfo(loginUser, expense);
         if (StringUtils.isBlank(expense.getExpenseNo())) {
@@ -1925,5 +1930,16 @@ import java.util.stream.Collectors;
             log.error("取消报销申请失败: expenseId={}", expenseId, e);
             throw new RuntimeException("取消申请失败: " + e.getMessage());
         }
+    }
+
+    private String normalizeFileUrl(String fileUrl) {
+        if (StringUtils.isBlank(fileUrl)) {
+            return fileUrl;
+        }
+        R<String> result = remoteFileService.normalize(fileUrl);
+        if (R.isError(result)) {
+            throw new RuntimeException(StringUtils.defaultString(result.getMsg(), "文件地址规范化失败"));
+        }
+        return result.getData();
     }
 }

@@ -11,10 +11,6 @@
 
     <artifactId>lingxi-modules-knowledge</artifactId>
 
-    <properties>
-        <langchain4j.version>0.32.0</langchain4j.version>
-    </properties>
-
     <description>
         灵犀智能知识库服务
     </description>
@@ -127,23 +123,16 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- LangChain4j Spring Boot Starter (包含 AiServices) -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-spring-boot-starter</artifactId>
-            <version>${langchain4j.version}</version>
-        </dependency>
-
         <!-- LangChain4j 核心 + 通义千问 + 向量模型 -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-core</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langChain4j.version}</version>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-dashscope</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langChain4j.version}</version>
         </dependency>
         <!-- PDF 文档解析 -->
         <dependency>

@@ -12,8 +12,7 @@ on:
 env:
   IMAGE_REGISTRY: registry.cn-hangzhou.aliyuncs.com
   IMAGE_NAMESPACE: mingus
-  BACKEND_IMAGE_NAME: lingxi-ai-hub
-  FRONTEND_IMAGE_NAME: lingxi-ui
+  BACKEND_IMAGE_NAME: lingxi-ai-hubz
 
 jobs:
   docker-build:
@@ -41,7 +40,6 @@ jobs:
         shell: bash
         run: |
           backend_repository="${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${BACKEND_IMAGE_NAME}"
-          frontend_repository="${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${FRONTEND_IMAGE_NAME}"
           short_sha="${GITHUB_SHA::7}"
           {
             echo 'backend_tags<<EOF'
@@ -49,13 +47,6 @@ jobs:
             echo "${backend_repository}:${short_sha}"
             if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
               echo "${backend_repository}:${GITHUB_REF_NAME}"
-            fi
-            echo 'EOF'
-            echo 'frontend_tags<<EOF'
-            echo "${frontend_repository}:${GITHUB_SHA}"
-            echo "${frontend_repository}:${short_sha}"
-            if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
-              echo "${frontend_repository}:${GITHUB_REF_NAME}"
             fi
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
@@ -67,11 +58,3 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ steps.image.outputs.backend_tags }}
-
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./lingxi-ui/Dockerfile
-          push: true
-          tags: ${{ steps.image.outputs.frontend_tags }}

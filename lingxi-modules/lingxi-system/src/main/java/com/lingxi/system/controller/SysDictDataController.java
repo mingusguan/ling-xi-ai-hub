@@ -26,6 +26,7 @@ import com.lingxi.common.security.utils.SecurityUtils;
 import com.lingxi.system.api.domain.SysDictData;
 import com.lingxi.system.service.ISysDictDataService;
 import com.lingxi.system.service.ISysDictTypeService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 数据字典信息
@@ -41,6 +42,9 @@ public class SysDictDataController extends BaseController
     
     @Autowired
     private ISysDictTypeService dictTypeService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     @RequiresPermissions("system:dict:list")
     @GetMapping("/list")
@@ -108,6 +112,8 @@ public class SysDictDataController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysDictData dict)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增字典数据");
+        systemProtectionService.checkProtectedDictData(dict, "新增");
         dict.setCreateBy(SecurityUtils.getUsername());
         return toAjax(dictDataService.insertDictData(dict));
     }
@@ -120,6 +126,8 @@ public class SysDictDataController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysDictData dict)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改字典数据");
+        systemProtectionService.checkProtectedDictData(dict, "修改");
         dict.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(dictDataService.updateDictData(dict));
     }
@@ -132,6 +140,8 @@ public class SysDictDataController extends BaseController
     @DeleteMapping("/{dictCodes}")
     public AjaxResult remove(@PathVariable Long[] dictCodes)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除字典数据");
+        systemProtectionService.checkProtectedDictDataList(dictCodes, "删除");
         dictDataService.deleteDictDataByIds(dictCodes);
         return success();
     }

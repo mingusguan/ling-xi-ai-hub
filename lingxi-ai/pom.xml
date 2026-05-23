@@ -70,7 +70,7 @@
             <groupId>com.lingxi</groupId>
             <artifactId>lingxi-api-ai</artifactId>
         </dependency>
-        
+
         <!-- LangChain4j -->
         <dependency>
             <groupId>dev.langchain4j</groupId>

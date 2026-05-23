@@ -169,7 +169,7 @@
       <div 
         v-if="showOaSystem" 
         class="subsystem-card" 
-        @click="goToSystem('/oa/dashboard', 'oa')"
+        @click="goToOaSystem"
       >
         <div class="card-icon oa-icon">
           <svg-icon icon-class="dashboard" />
@@ -224,6 +224,20 @@ import { mapGetters } from 'vuex'
 import auth from '@/plugins/auth'
 import ProfileDialog from '@/components/ProfileDialog'
 import { getUnreadMessageCount } from '@/api/system/message'
+import { withPublicPath } from '@/utils/appPath'
+
+const oaEntryRoutes = [
+  { path: '/oa/dashboard', permissions: ['oa:dashboard:view'] },
+  { path: '/oa/process', permissions: ['oa:process:list'] },
+  { path: '/oa/leave', permissions: ['oa:leave:list'] },
+  { path: '/oa/balance', permissions: ['oa:leave:balance'] },
+  { path: '/oa/rule', permissions: ['oa:leave:rule:list'] },
+  { path: '/oa/manage', permissions: ['oa:leave:quota:list'] },
+  { path: '/oa/adjustment', permissions: ['oa:leave:adjustment:list'] },
+  { path: '/oa/expense', permissions: ['oa:expense:list'] },
+  { path: '/oa/reminder', permissions: ['oa:reminder:list'] },
+  { path: '/oa/holiday', permissions: ['oa:holiday:list'] }
+]
 
 export default {
   name: 'Subsystem',
@@ -264,17 +278,7 @@ export default {
       ])
     },
     showOaSystem() {
-      return this.isAdmin || auth.hasPermiOr([
-        'oa:dashboard:view',
-        'oa:process:list',
-        'oa:leave:list',
-        'oa:leave:balance',
-        'oa:leave:rule:list',
-        'oa:leave:quota:list',
-        'oa:leave:adjustment:list',
-        'oa:expense:list',
-        'oa:reminder:list'
-      ])
+      return this.isAdmin || this.hasAnyEntryPermission(oaEntryRoutes)
     },
     showAiSystem() {
       return this.isAdmin || auth.hasPermiOr([
@@ -321,6 +325,19 @@ export default {
         })
       })
     },
+    goToOaSystem() {
+      this.goToSystem(this.resolveFirstPermittedPath(oaEntryRoutes, '/oa/dashboard'), 'oa')
+    },
+    hasAnyEntryPermission(routes) {
+      return routes.some(route => auth.hasPermiOr(route.permissions))
+    },
+    resolveFirstPermittedPath(routes, fallbackPath) {
+      if (this.isAdmin) {
+        return fallbackPath
+      }
+      const matched = routes.find(route => auth.hasPermiOr(route.permissions))
+      return matched ? matched.path : fallbackPath
+    },
     logout() {
       this.$confirm('确定注销并退出系统吗？', '提示', {
         confirmButtonText: '确定',
@@ -328,7 +345,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
-          location.href = '/index'
+          location.href = withPublicPath('/index')
         })
       }).catch(() => {})
     },

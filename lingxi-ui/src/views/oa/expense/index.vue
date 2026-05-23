@@ -319,6 +319,7 @@
 import { mapGetters } from 'vuex'
 import { listExpense, listMyApprovedExpenses, saveExpense, approveExpense, getWorkflowHistory, listApprovalRecords, getActiveTemplate, listTodoTasks, cancelExpense } from '@/api/oa/workflow'
 import ApprovalDialogWithAi from '@/components/ApprovalDialogWithAi'
+import { filePreviewUrl } from '@/utils/appPath'
 
 const defaultForm = () => ({ expenseType: 'travel', amount: 0, expenseDate: '', expenseReason: '', invoiceUrl: '', params: { dynamicForm: {} } })
 
@@ -621,7 +622,6 @@ export default {
     },
     handleUploadSuccess(response, file, fileList) {
       if (response.code === 200) {
-        const url = response.data.url || response.fileName
         // 将多个发票 URL 用逗号分隔存储
         this.form.invoiceUrl = fileList.map(f => {
           if (f.response && f.response.data) {
@@ -639,12 +639,12 @@ export default {
     },
     parseInvoiceUrls(urlStr) {
       if (!urlStr) return []
-      return urlStr.split(',').filter(u => u && !u.endsWith('.pdf'))
+      return urlStr.split(',').filter(u => u && !u.endsWith('.pdf')).map(filePreviewUrl)
     },
     getFirstInvoiceUrl(urlStr) {
       if (!urlStr) return ''
       const urls = urlStr.split(',')
-      return urls.find(u => u.endsWith('.pdf')) || urls[0]
+      return filePreviewUrl(urls.find(u => u.endsWith('.pdf')) || urls[0])
     },
     isPdf(urlStr) {
       if (!urlStr) return false

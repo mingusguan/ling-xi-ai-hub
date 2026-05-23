@@ -41,11 +41,24 @@
             <artifactId>cos_api</artifactId>
             <version>${tencent.cos.version}</version>
         </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
         
         <!-- LingXi Api System -->
         <dependency>
             <groupId>com.lingxi</groupId>
             <artifactId>lingxi-api-system</artifactId>
+        </dependency>
+
+        <!-- LingXi Common Security -->
+        <dependency>
+            <groupId>com.lingxi</groupId>
+            <artifactId>lingxi-common-security</artifactId>
         </dependency>
         
     </dependencies>

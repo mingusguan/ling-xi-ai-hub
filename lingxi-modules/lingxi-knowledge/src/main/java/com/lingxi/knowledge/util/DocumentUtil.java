@@ -1,14 +1,21 @@
 package com.lingxi.knowledge.util;
 
 import com.lingxi.common.core.exception.ServiceException;
+import com.lingxi.common.core.constant.SecurityConstants;
+import com.lingxi.common.core.constant.TokenConstants;
+import com.lingxi.common.core.utils.ServletUtils;
+import com.lingxi.common.core.utils.SpringUtils;
 import com.lingxi.common.core.utils.StringUtils;
+import com.lingxi.common.core.utils.file.FileUrlUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.springframework.core.env.Environment;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.net.URLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +27,8 @@ public class DocumentUtil
             "http://127.0.0.1",
             "http://localhost",
             "https://127.0.0.1",
-            "https://localhost"
+            "https://localhost",
+            "/file/preview/"
     );
 
     private DocumentUtil()
@@ -47,11 +55,14 @@ public class DocumentUtil
      */
     public static String extractTextFromUrl(String fileUrl) throws Exception
     {
-        validateReEmbedUrl(fileUrl);
-        URL url = URI.create(fileUrl).toURL();
+        String accessUrl = buildReEmbedAccessUrl(fileUrl);
+        validateReEmbedUrl(accessUrl);
+        URL url = URI.create(accessUrl).toURL();
         String lowerUrl = fileUrl.toLowerCase();
-        try (InputStream is = url.openStream()) {
-            String contentType = url.openConnection().getContentType();
+        URLConnection connection = url.openConnection();
+        appendCurrentToken(connection);
+        try (InputStream is = connection.getInputStream()) {
+            String contentType = connection.getContentType();
             return extractFromStream(is, contentType, lowerUrl);
         }
     }
@@ -62,8 +73,49 @@ public class DocumentUtil
             throw new ServiceException("文件地址不能为空");
         }
         boolean allowed = ALLOWED_REEMBED_PREFIXES.stream().anyMatch(fileUrl::startsWith);
+        Environment environment = SpringUtils.getBean(Environment.class);
+        String fileDomain = environment.getProperty("file.domain");
+        allowed = allowed || (StringUtils.isNotEmpty(fileDomain) && fileUrl.startsWith(fileDomain));
         if (!allowed) {
             throw new ServiceException("文件地址不在允许的回源范围内");
+        }
+    }
+
+    private static String buildReEmbedAccessUrl(String fileUrl)
+    {
+        if (StringUtils.isBlank(fileUrl)) {
+            return fileUrl;
+        }
+        if (StringUtils.startsWith(fileUrl, "http://") || StringUtils.startsWith(fileUrl, "https://")) {
+            return fileUrl;
+        }
+        Environment environment = SpringUtils.getBean(Environment.class);
+        String port = environment.getProperty("server.port", "8080");
+        return "http://127.0.0.1:" + port + FileUrlUtils.toPreviewPath(fileUrl);
+    }
+
+    /**
+     * 重新向量化从私有文件预览地址回读时，需要复用当前请求登录态。
+     */
+    private static void appendCurrentToken(URLConnection connection)
+    {
+        try {
+            String token = ServletUtils.getRequest().getHeader(SecurityConstants.AUTHORIZATION_HEADER);
+            if (StringUtils.isNotEmpty(token)) {
+                connection.setRequestProperty(SecurityConstants.AUTHORIZATION_HEADER, token);
+                return;
+            }
+            String cookie = ServletUtils.getRequest().getHeader("Cookie");
+            if (StringUtils.isNotEmpty(cookie)) {
+                connection.setRequestProperty("Cookie", cookie);
+                return;
+            }
+            String rawToken = com.lingxi.common.security.utils.SecurityUtils.getToken();
+            if (StringUtils.isNotEmpty(rawToken)) {
+                connection.setRequestProperty(SecurityConstants.AUTHORIZATION_HEADER, TokenConstants.PREFIX + rawToken);
+            }
+        } catch (Exception ignored) {
+            // 非请求线程触发重新向量化时不强制附加登录态，交给目标地址自身权限处理。
         }
     }
 

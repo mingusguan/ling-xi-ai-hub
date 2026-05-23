@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.lingxi.common.core.utils.StringUtils;
+import com.lingxi.common.core.utils.file.FileUrlUtils;
 import com.lingxi.file.config.MinioConfig;
 import com.lingxi.file.utils.FileUploadUtils;
 import io.minio.MinioClient;
@@ -62,6 +63,25 @@ public class MinioSysFileServiceImpl implements ISysFileService
         }
     }
 
+    @Override
+    public String getAccessibleUrl(String fileUrl)
+    {
+        return fileUrl;
+    }
+
+    @Override
+    public String parseFileKey(String fileUrl)
+    {
+        String objectKey = StringUtils.substringAfter(fileUrl, minioConfig.getBucketName());
+        return trimStartSlash(objectKey);
+    }
+
+    @Override
+    public String normalizeFileUrl(String fileUrl)
+    {
+        return FileUrlUtils.normalizeForStorage(fileUrl);
+    }
+
     /**
      * Minio文件删除接口
      * 
@@ -73,12 +93,25 @@ public class MinioSysFileServiceImpl implements ISysFileService
     {
         try
         {
-            String minioFile = StringUtils.substringAfter(fileUrl, minioConfig.getBucketName());
+            String minioFile = parseFileKey(fileUrl);
             client.removeObject(RemoveObjectArgs.builder().bucket(minioConfig.getBucketName()).object(minioFile).build());
         }
         catch (Exception e)
         {
             throw new RuntimeException("Minio Failed to delete file", e);
         }
+    }
+
+    private String trimStartSlash(String value)
+    {
+        if (StringUtils.isEmpty(value))
+        {
+            return value;
+        }
+        while (value.startsWith("/"))
+        {
+            value = value.substring(1);
+        }
+        return value;
     }
 }

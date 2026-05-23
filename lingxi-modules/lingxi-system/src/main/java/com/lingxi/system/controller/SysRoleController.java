@@ -27,6 +27,7 @@ import com.lingxi.system.domain.SysUserRole;
 import com.lingxi.system.service.ISysDeptService;
 import com.lingxi.system.service.ISysRoleService;
 import com.lingxi.system.service.ISysUserService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 角色信息
@@ -45,6 +46,9 @@ public class SysRoleController extends BaseController
 
     @Autowired
     private ISysDeptService deptService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     @GetMapping("/list")
     public TableDataInfo list(SysRole role)
@@ -83,6 +87,7 @@ public class SysRoleController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysRole role)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增角色");
         if (!roleService.checkRoleNameUnique(role))
         {
             return error("新增角色'" + role.getRoleName() + "'失败，角色名称已存在");
@@ -104,6 +109,7 @@ public class SysRoleController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysRole role)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改角色");
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
         if (!roleService.checkRoleNameUnique(role))
@@ -126,6 +132,7 @@ public class SysRoleController extends BaseController
     @PutMapping("/dataScope")
     public AjaxResult dataScope(@RequestBody SysRole role)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改角色数据权限");
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
         return toAjax(roleService.authDataScope(role));
@@ -139,6 +146,7 @@ public class SysRoleController extends BaseController
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysRole role)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改角色状态");
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
         role.setUpdateBy(SecurityUtils.getUsername());
@@ -153,6 +161,7 @@ public class SysRoleController extends BaseController
     @DeleteMapping("/{roleIds}")
     public AjaxResult remove(@PathVariable Long[] roleIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除角色");
         return toAjax(roleService.deleteRoleByIds(roleIds));
     }
 
@@ -197,6 +206,9 @@ public class SysRoleController extends BaseController
     @PutMapping("/authUser/cancel")
     public AjaxResult cancelAuthUser(@RequestBody SysUserRole userRole)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("取消用户授权");
+        systemProtectionService.checkProtectedRole(userRole.getRoleId(), "取消授权");
+        systemProtectionService.checkProtectedUser(userRole.getUserId(), "取消授权");
         return toAjax(roleService.deleteAuthUser(userRole));
     }
 
@@ -208,6 +220,9 @@ public class SysRoleController extends BaseController
     @PutMapping("/authUser/cancelAll")
     public AjaxResult cancelAuthUserAll(Long roleId, Long[] userIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("批量取消用户授权");
+        systemProtectionService.checkProtectedRole(roleId, "取消授权");
+        systemProtectionService.checkProtectedUsers(userIds, "取消授权");
         return toAjax(roleService.deleteAuthUsers(roleId, userIds));
     }
 
@@ -219,6 +234,9 @@ public class SysRoleController extends BaseController
     @PutMapping("/authUser/selectAll")
     public AjaxResult selectAuthUserAll(Long roleId, Long[] userIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("批量选择用户授权");
+        systemProtectionService.checkProtectedRole(roleId, "新增授权");
+        systemProtectionService.checkProtectedUsers(userIds, "新增授权");
         roleService.checkRoleDataScope(roleId);
         return toAjax(roleService.insertAuthUsers(roleId, userIds));
     }

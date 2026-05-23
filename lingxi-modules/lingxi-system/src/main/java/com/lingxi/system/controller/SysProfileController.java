@@ -27,6 +27,7 @@ import com.lingxi.system.api.domain.SysFile;
 import com.lingxi.system.api.domain.SysUser;
 import com.lingxi.system.api.model.LoginUser;
 import com.lingxi.system.service.ISysUserService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 个人信息 业务处理
@@ -45,6 +46,9 @@ public class SysProfileController extends BaseController
     
     @Autowired
     private RemoteFileService remoteFileService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     /**
      * 个人信息
@@ -97,6 +101,7 @@ public class SysProfileController extends BaseController
     @PutMapping("/updatePwd")
     public AjaxResult updatePwd(@RequestBody Map<String, String> params)
     {
+        systemProtectionService.checkDemoUserPasswordChange();
         String oldPassword = params.get("oldPassword");
         String newPassword = params.get("newPassword");
         LoginUser loginUser = SecurityUtils.getLoginUser();
@@ -143,7 +148,8 @@ public class SysProfileController extends BaseController
                 return error("文件服务异常，请联系管理员");
             }
             String url = fileResult.getData().getUrl();
-            if (userService.updateUserAvatar(loginUser.getUserid(), url))
+            String saveUrl = StringUtils.nvl(fileResult.getData().getPath(), url);
+            if (userService.updateUserAvatar(loginUser.getUserid(), saveUrl))
             {
                 String oldAvatarUrl = loginUser.getSysUser().getAvatar();
                 if (StringUtils.isNotEmpty(oldAvatarUrl))
@@ -153,7 +159,7 @@ public class SysProfileController extends BaseController
                 AjaxResult ajax = AjaxResult.success();
                 ajax.put("imgUrl", url);
                 // 更新缓存用户头像
-                loginUser.getSysUser().setAvatar(url);
+                loginUser.getSysUser().setAvatar(saveUrl);
                 tokenService.setLoginUser(loginUser);
                 return ajax;
             }

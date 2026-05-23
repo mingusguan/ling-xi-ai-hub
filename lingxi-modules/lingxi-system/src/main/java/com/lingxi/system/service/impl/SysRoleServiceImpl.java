@@ -23,6 +23,7 @@ import com.lingxi.system.mapper.SysRoleMapper;
 import com.lingxi.system.mapper.SysRoleMenuMapper;
 import com.lingxi.system.mapper.SysUserRoleMapper;
 import com.lingxi.system.service.ISysRoleService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 角色 业务层处理
@@ -43,6 +44,9 @@ public class SysRoleServiceImpl implements ISysRoleService
 
     @Autowired
     private SysRoleDeptMapper roleDeptMapper;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     /**
      * 根据条件分页查询角色数据
@@ -182,6 +186,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public void checkRoleAllowed(SysRole role)
     {
+        systemProtectionService.checkProtectedRole(role, "操作");
         if (StringUtils.isNotNull(role.getRoleId()) && role.isAdmin())
         {
             throw new ServiceException("不允许操作超级管理员角色");
@@ -264,6 +269,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public int updateRoleStatus(SysRole role)
     {
+        systemProtectionService.checkProtectedRole(role, "修改状态");
         return roleMapper.updateRole(role);
     }
 
@@ -277,6 +283,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Transactional(rollbackFor = Exception.class)
     public int authDataScope(SysRole role)
     {
+        systemProtectionService.checkProtectedRole(role, "修改数据权限");
         // 修改角色信息
         roleMapper.updateRole(role);
         // 删除角色与部门关联
@@ -386,6 +393,8 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public int deleteAuthUser(SysUserRole userRole)
     {
+        systemProtectionService.checkProtectedRole(userRole.getRoleId(), "取消授权");
+        systemProtectionService.checkProtectedUser(userRole.getUserId(), "取消授权");
         return userRoleMapper.deleteUserRoleInfo(userRole);
     }
 
@@ -399,6 +408,8 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public int deleteAuthUsers(Long roleId, Long[] userIds)
     {
+        systemProtectionService.checkProtectedRole(roleId, "取消授权");
+        systemProtectionService.checkProtectedUsers(userIds, "取消授权");
         return userRoleMapper.deleteUserRoleInfos(roleId, userIds);
     }
 
@@ -412,6 +423,8 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public int insertAuthUsers(Long roleId, Long[] userIds)
     {
+        systemProtectionService.checkProtectedRole(roleId, "新增授权");
+        systemProtectionService.checkProtectedUsers(userIds, "新增授权");
         // 新增用户与角色管理
         List<SysUserRole> list = new ArrayList<SysUserRole>();
         for (Long userId : userIds)

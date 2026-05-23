@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="false" debug="false">
     <springProperty scope="context" name="logPath" source="logging.file.path" defaultValue="./logs/lingxi-admin"/>
+    <springProperty scope="context" name="rootLogLevel" source="logging.level.root" defaultValue="INFO"/>
     <springProperty scope="context" name="lingxiLogLevel" source="logging.level.com.lingxi" defaultValue="INFO"/>
     <springProperty scope="context" name="springLogLevel" source="logging.level.org.springframework" defaultValue="WARN"/>
 
@@ -10,10 +11,27 @@
     <property name="total.size.cap" value="5GB"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
         <encoder>
             <pattern>${log.pattern}</pattern>
             <charset>UTF-8</charset>
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="console_error" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
     </appender>
 
     <appender name="file_all" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -50,8 +68,9 @@
     <logger name="com.lingxi" level="${lingxiLogLevel}"/>
     <logger name="org.springframework" level="${springLogLevel}"/>
 
-    <root level="INFO">
+    <root level="${rootLogLevel}">
         <appender-ref ref="console"/>
+        <appender-ref ref="console_error"/>
         <appender-ref ref="file_all"/>
         <appender-ref ref="file_error"/>
     </root>

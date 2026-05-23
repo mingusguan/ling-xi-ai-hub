@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { filePreviewUrl } from '@/utils/appPath'
+
 export default {
   name: "ImagePreview",
   props: {
@@ -34,7 +36,7 @@ export default {
         return
       }
       let real_src = this.src.split(",")[0]
-      return real_src
+      return filePreviewUrl(real_src)
     },
     realSrcList() {
       if (!this.src) {
@@ -43,7 +45,7 @@ export default {
       let real_src_list = this.src.split(",")
       let srcList = []
       real_src_list.forEach(item => {
-        return srcList.push(item)
+        return srcList.push(filePreviewUrl(item))
       })
       return srcList
     },

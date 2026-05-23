@@ -2,6 +2,7 @@ package com.lingxi.knowledge.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lingxi.common.core.domain.R;
 import com.lingxi.common.core.exception.ServiceException;
 import com.lingxi.common.security.utils.SecurityUtils;
 import com.lingxi.knowledge.domain.KbDocument;
@@ -12,6 +13,8 @@ import com.lingxi.knowledge.mapper.KbDocumentChunkMapper;
 import com.lingxi.knowledge.mapper.KbDocumentMapper;
 import com.lingxi.knowledge.service.IKbDocumentService;
 import com.lingxi.knowledge.util.DocumentUtil;
+import com.lingxi.common.core.utils.file.FileUrlUtils;
+import com.lingxi.system.api.RemoteFileService;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -24,6 +27,7 @@ import dev.langchain4j.store.embedding.EmbeddingStore;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,6 +63,9 @@ public class KbDocumentServiceImpl extends ServiceImpl<KbDocumentMapper, KbDocum
     @Resource
     private ChatLanguageModel chatLanguageModel;
 
+    @Resource
+    private RemoteFileService remoteFileService;
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Long uploadDocument(MultipartFile file, String fileUrl, List<Long> visibleDeptIds, Long categoryId) throws Exception
@@ -70,7 +77,7 @@ public class KbDocumentServiceImpl extends ServiceImpl<KbDocumentMapper, KbDocum
         KbDocument document = new KbDocument();
         document.setDocName(originalFilename);
         document.setDocType(extension);
-        document.setFileUrl(fileUrl);
+        document.setFileUrl(normalizeFileUrl(fileUrl));
         document.setFileSize(file.getSize());
         document.setVisibleDeptIds(joinDeptIds(visibleDeptIds));
         document.setCategoryId(categoryId);
@@ -98,14 +105,14 @@ public class KbDocumentServiceImpl extends ServiceImpl<KbDocumentMapper, KbDocum
                 .eq(KbDocumentChunk::getDocId, docId));
 
         if (!chunks.isEmpty()) {
-            List<String> vectorIds = chunks.stream()
-                    .map(KbDocumentChunk::getVectorId)
+            List<String> milvusIds = chunks.stream()
+                    .map(KbDocumentChunk::getMilvusId)
                     .filter(id -> id != null && !id.isEmpty())
                     .toList();
-            if (!vectorIds.isEmpty()) {
+            if (!milvusIds.isEmpty()) {
                 try {
-                    embeddingStore.removeAll(vectorIds);
-                    log.info("[知识库] 删除向量完成, docId={}, count={}", docId, vectorIds.size());
+                    embeddingStore.removeAll(milvusIds);
+                    log.info("[知识库] 删除向量完成, docId={}, count={}", docId, milvusIds.size());
                 } catch (Exception e) {
                     log.error("[知识库] 删除向量失败, docId={}", docId, e);
                 }
@@ -175,6 +182,25 @@ public class KbDocumentServiceImpl extends ServiceImpl<KbDocumentMapper, KbDocum
             return null;
         }
         return visibleDeptIds.stream().map(String::valueOf).reduce((left, right) -> left + "," + right).orElse(null);
+    }
+
+    private String normalizeFileUrl(String fileUrl)
+    {
+        if (StringUtils.isBlank(fileUrl)) {
+            throw new ServiceException("文件地址不能为空");
+        }
+        R<String> result = remoteFileService.normalize(fileUrl);
+        if (R.isError(result)) {
+            throw new ServiceException(StringUtils.defaultString(result.getMsg(), "文件地址规范化失败"));
+        }
+        String normalized = FileUrlUtils.normalizeForStorage(result.getData());
+        if (StringUtils.isBlank(normalized)) {
+            throw new ServiceException("文件地址规范化失败");
+        }
+        if (StringUtils.contains(normalized, "://") || StringUtils.contains(normalized, "?")) {
+            throw new ServiceException("文件地址不能保存域名或临时签名参数");
+        }
+        return normalized;
     }
 
     private int normalizeLimit(Integer maxResults)
@@ -288,11 +314,11 @@ public class KbDocumentServiceImpl extends ServiceImpl<KbDocumentMapper, KbDocum
             embeddings.add(Embedding.from(embeddingModel.embed(chunk.getChunkContent()).content().vector()));
         }
 
-        List<String> vectorIds = embeddingStore.addAll(embeddings, segments);
+        List<String> milvusIds = embeddingStore.addAll(embeddings, segments);
         for (int i = 0; i < chunks.size(); i++) {
             KbDocumentChunk chunk = chunks.get(i);
             chunk.setEmbedStatus(1);
-            chunk.setVectorId(vectorIds.get(i));
+            chunk.setMilvusId(milvusIds.get(i));
             chunkMapper.updateById(chunk);
         }
 

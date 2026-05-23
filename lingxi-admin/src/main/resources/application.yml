@@ -19,7 +19,11 @@ spring:
       client:
         enabled: false
       server:
-        enabled: false
+        enabled: true
+        name: lingxi-admin-mcp-server
+        type: sync
+        sse-endpoint: /mcp/sse
+        sse-message-endpoint: /mcp/message
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml,classpath*:mapper/*.xml
@@ -62,6 +66,15 @@ seniverse:
     request-timeout: 8s
 
 lingxi:
+  system:
+    protection:
+      enabled: ${SYSTEM_PROTECTION_ENABLED:true}
+      demo-user-names: ${SYSTEM_PROTECTION_DEMO_USERS:demo}
+      protected-user-names: ${SYSTEM_PROTECTION_USERS:mingus,demo}
+      protected-role-ids: ${SYSTEM_PROTECTION_ROLE_IDS:1}
+      protected-role-keys: ${SYSTEM_PROTECTION_ROLE_KEYS:mingus,demo}
+      protected-config-keys: ${SYSTEM_PROTECTION_CONFIG_KEYS:sys.account.registerUser,sys.user.initPassword,sys.account.initPasswordModify,sys.account.passwordValidateDays}
+      protected-dict-types: ${SYSTEM_PROTECTION_DICT_TYPES:sys_normal_disable,sys_user_sex,sys_show_hide,sys_notice_type,sys_notice_status,sys_oper_type,sys_common_status,sys_job_group,sys_job_status,sys_yes_no,sys_job_level}
   oa:
     workflow:
       enabled: true

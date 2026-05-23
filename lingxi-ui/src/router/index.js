@@ -115,6 +115,7 @@ Router.prototype.replace = function replace(location) { return routerReplace.cal
 
 export default new Router({
   mode: 'history',
+  base: process.env.VUE_APP_PUBLIC_PATH || '/',
   scrollBehavior: () => ({ y: 0 }),
   routes: [...constantRoutes, ...knowledgeRoutes, ...oaRoutes, ...aiRoutes, ...mcpMarketRoutes]
 })

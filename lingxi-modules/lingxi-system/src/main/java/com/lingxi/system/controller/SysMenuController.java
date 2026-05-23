@@ -21,6 +21,7 @@ import com.lingxi.common.security.annotation.RequiresPermissions;
 import com.lingxi.common.security.utils.SecurityUtils;
 import com.lingxi.system.domain.SysMenu;
 import com.lingxi.system.service.ISysMenuService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 菜单信息
@@ -33,6 +34,9 @@ public class SysMenuController extends BaseController
 {
     @Autowired
     private ISysMenuService menuService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     /**
      * 获取菜单列表
@@ -89,6 +93,7 @@ public class SysMenuController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysMenu menu)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增菜单");
         if (!menuService.checkMenuNameUnique(menu))
         {
             return error("新增菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
@@ -113,6 +118,7 @@ public class SysMenuController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysMenu menu)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改菜单");
         if (!menuService.checkMenuNameUnique(menu))
         {
             return error("修改菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
@@ -141,6 +147,7 @@ public class SysMenuController extends BaseController
     @DeleteMapping("/{menuId}")
     public AjaxResult remove(@PathVariable("menuId") Long menuId)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除菜单");
         if (menuService.hasChildByMenuId(menuId))
         {
             return warn("存在子菜单,不允许删除");

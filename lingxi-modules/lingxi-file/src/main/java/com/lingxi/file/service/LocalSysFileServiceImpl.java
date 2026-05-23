@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.lingxi.common.core.utils.StringUtils;
 import com.lingxi.common.core.utils.file.FileUtils;
+import com.lingxi.common.core.utils.file.FileUrlUtils;
 import com.lingxi.file.utils.FileUploadUtils;
 
 /**
@@ -52,6 +53,24 @@ public class LocalSysFileServiceImpl implements ISysFileService
         return url;
     }
 
+    @Override
+    public String getAccessibleUrl(String fileUrl)
+    {
+        return fileUrl;
+    }
+
+    @Override
+    public String parseFileKey(String fileUrl)
+    {
+        return StringUtils.substringAfter(fileUrl, localFilePrefix);
+    }
+
+    @Override
+    public String normalizeFileUrl(String fileUrl)
+    {
+        return FileUrlUtils.normalizeForStorage(fileUrl);
+    }
+
     /**
      * 本地文件删除接口
      * 
@@ -61,7 +80,8 @@ public class LocalSysFileServiceImpl implements ISysFileService
     @Override
     public void deleteFile(String fileUrl) throws Exception
     {
-        String localFile = StringUtils.substringAfter(fileUrl, localFilePrefix);
+        String localFile = parseFileKey(fileUrl);
         FileUtils.deleteFile(localFilePath + localFile);
     }
+
 }

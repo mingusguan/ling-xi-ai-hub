@@ -106,7 +106,7 @@ public class OaWorkflowController extends OaBaseController
         return R.ok(result);
     }
 
-    @RequiresPermissions("oa:leave:list")
+    @RequiresPermissions("oa:expense:list")
     @GetMapping("/expense/list")
     public TableDataInfo expenseList(@RequestParam(required = false) String approvalStatus,
                                      @RequestParam(required = false) Integer pageNum,
@@ -115,7 +115,7 @@ public class OaWorkflowController extends OaBaseController
         return buildPage(workflowBizService.listExpenses(approvalStatus), pageNum, pageSize);
     }
 
-    @RequiresPermissions("oa:leave:list")
+    @RequiresPermissions("oa:expense:list")
     @GetMapping("/expense/my-approved")
     public TableDataInfo myApprovedExpenses(@RequestParam(required = false) Integer pageNum,
                                             @RequestParam(required = false) Integer pageSize)
@@ -123,14 +123,14 @@ public class OaWorkflowController extends OaBaseController
         return buildPage(workflowBizService.listProcessedExpenses(), pageNum, pageSize);
     }
 
-    @RequiresPermissions(value = {"oa:leave:add", "oa:leave:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"oa:expense:add", "oa:expense:edit"}, logical = Logical.OR)
     @PostMapping("/expense")
     public R<?> saveExpense(@RequestBody OaExpense expense)
     {
         return R.ok(workflowBizService.saveExpense(expense));
     }
 
-    @RequiresPermissions("oa:leave:edit")
+    @RequiresPermissions("oa:expense:edit")
     @PostMapping("/expense/approve")
     public R<?> approveExpense(@RequestBody OaApprovalAction action)
     {
@@ -145,7 +145,7 @@ public class OaWorkflowController extends OaBaseController
         return R.ok("取消成功");
     }
 
-    @RequiresPermissions("oa:leave:edit")
+    @RequiresPermissions("oa:expense:edit")
     @PostMapping("/expense/cancel")
     public R<?> cancelExpense(@Valid OaCancelRequest request)
     {
@@ -153,14 +153,14 @@ public class OaWorkflowController extends OaBaseController
         return R.ok("取消成功");
     }
 
-    @RequiresPermissions("oa:leave:list")
+    @RequiresPermissions("oa:expense:list")
     @GetMapping("/expense/{expenseId}")
     public R<?> getExpenseDetail(@PathVariable Long expenseId)
     {
         return R.ok(workflowBizService.getExpenseById(expenseId));
     }
 
-    @RequiresPermissions("oa:leave:rule:list")
+    @RequiresPermissions(value = {"oa:process:list", "oa:leave:rule:list"}, logical = Logical.OR)
     @GetMapping("/template/list")
     public TableDataInfo templateList(@RequestParam(required = false) String businessType,
                                       @RequestParam(required = false) Integer pageNum,
@@ -169,35 +169,35 @@ public class OaWorkflowController extends OaBaseController
         return buildPage(workflowBizService.listTemplates(businessType), pageNum, pageSize);
     }
 
-    @RequiresPermissions("oa:leave:rule:list")
+    @RequiresPermissions(value = {"oa:process:list", "oa:leave:rule:list"}, logical = Logical.OR)
     @GetMapping("/template/{templateId}")
     public R<?> templateDetail(@PathVariable Long templateId)
     {
         return R.ok(workflowBizService.getTemplateById(templateId));
     }
 
-    @RequiresPermissions(value = {"oa:leave:add", "oa:leave:edit"}, logical = Logical.OR)
+    @RequiresPermissions(value = {"oa:process:list", "oa:leave:add", "oa:leave:edit"}, logical = Logical.OR)
     @PostMapping("/template")
     public R<?> saveTemplate(@RequestBody OaProcessTemplate template)
     {
         return R.ok(workflowBizService.saveTemplate(template));
     }
 
-    @RequiresPermissions("oa:leave:rule:list")
+    @RequiresPermissions(value = {"oa:process:list", "oa:leave:rule:list", "oa:leave:list", "oa:expense:list"}, logical = Logical.OR)
     @GetMapping("/template/active")
     public R<?> activeTemplate(@RequestParam String businessType)
     {
         return R.ok(workflowBizService.getActiveTemplateMeta(businessType));
     }
 
-    @RequiresPermissions("oa:leave:edit")
+    @RequiresPermissions(value = {"oa:process:list", "oa:leave:edit"}, logical = Logical.OR)
     @PostMapping("/template/{templateId}/deploy")
     public R<?> deployTemplate(@PathVariable Long templateId)
     {
         return R.ok(workflowService.deployTemplate(templateId));
     }
 
-    @RequiresPermissions("oa:leave:remove")
+    @RequiresPermissions(value = {"oa:process:list", "oa:leave:remove"}, logical = Logical.OR)
     @DeleteMapping("/process/cleanup")
     public R<?> cleanupProcessDefinitions(@RequestParam String processDefinitionKey)
     {
@@ -205,7 +205,7 @@ public class OaWorkflowController extends OaBaseController
         return R.ok();
     }
 
-    @RequiresPermissions("oa:leave:list")
+    @RequiresPermissions(value = {"oa:dashboard:view", "oa:leave:list", "oa:expense:list"}, logical = Logical.OR)
     @GetMapping("/task/todo")
     public R<?> todoTasks(@RequestParam(required = false) String assignee)
     {
@@ -213,14 +213,14 @@ public class OaWorkflowController extends OaBaseController
         return R.ok(workflowService.listTodoTasks(actualAssignee));
     }
 
-    @RequiresPermissions("oa:leave:list")
+    @RequiresPermissions(value = {"oa:leave:list", "oa:expense:list"}, logical = Logical.OR)
     @GetMapping("/history")
     public R<?> history(@RequestParam String processInstanceId)
     {
         return R.ok(workflowService.listHistory(processInstanceId));
     }
 
-    @RequiresPermissions("oa:leave:list")
+    @RequiresPermissions(value = {"oa:leave:list", "oa:expense:list"}, logical = Logical.OR)
     @GetMapping("/record/list")
     public R<?> recordList(@RequestParam(required = false) String businessKey,
                            @RequestParam(required = false) String processInstanceId)
@@ -256,7 +256,7 @@ public class OaWorkflowController extends OaBaseController
         return R.ok(workflowBizService.queryTimeoutWarning(userId));
     }
 
-    @RequiresPermissions("oa:leave:list")
+    @RequiresPermissions(value = {"oa:dashboard:view", "oa:leave:list", "oa:expense:list"}, logical = Logical.OR)
     @GetMapping("/timeout/warning/current")
     public R<List<Map<String, Object>>> getCurrentUserTimeoutWarning()
     {

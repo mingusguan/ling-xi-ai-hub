@@ -44,6 +44,7 @@ import com.lingxi.system.service.ISysPermissionService;
 import com.lingxi.system.service.ISysPostService;
 import com.lingxi.system.service.ISysRoleService;
 import com.lingxi.system.service.ISysUserService;
+import com.lingxi.system.service.SystemProtectionService;
 import com.lingxi.common.core.constant.SecurityConstants;
 import com.lingxi.oa.api.RemoteLeaveQuotaService;
 
@@ -80,6 +81,9 @@ public class SysUserController extends BaseController
     @Autowired
     private RemoteLeaveQuotaService remoteLeaveQuotaService;
 
+    @Autowired
+    private SystemProtectionService systemProtectionService;
+
     /**
      * 获取用户列表
      */
@@ -107,6 +111,7 @@ public class SysUserController extends BaseController
     @PostMapping("/importData")
     public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("导入用户");
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
         List<SysUser> userList = util.importExcel(file.getInputStream());
         String operName = SecurityUtils.getUsername();
@@ -322,6 +327,7 @@ public class SysUserController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysUser user)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增用户");
         deptService.checkDeptDataScope(user.getDeptId());
         roleService.checkRoleDataScope(user.getRoleIds());
         if (!userService.checkUserNameUnique(user))
@@ -359,6 +365,7 @@ public class SysUserController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysUser user)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改用户");
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
         deptService.checkDeptDataScope(user.getDeptId());
@@ -432,6 +439,7 @@ public class SysUserController extends BaseController
     @DeleteMapping("/{userIds}")
     public AjaxResult remove(@PathVariable Long[] userIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除用户");
         if (ArrayUtils.contains(userIds, SecurityUtils.getUserId()))
         {
             return error("当前用户不能删除");
@@ -447,6 +455,7 @@ public class SysUserController extends BaseController
     @PutMapping("/resetPwd")
     public AjaxResult resetPwd(@RequestBody SysUser user)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("重置用户密码");
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
@@ -462,6 +471,7 @@ public class SysUserController extends BaseController
     @PutMapping("/changeStatus")
     public AjaxResult changeStatus(@RequestBody SysUser user)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改用户状态");
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
         user.setUpdateBy(SecurityUtils.getUsername());
@@ -491,6 +501,8 @@ public class SysUserController extends BaseController
     @PutMapping("/authRole")
     public AjaxResult insertAuthRole(Long userId, Long[] roleIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改用户授权");
+        systemProtectionService.checkProtectedUser(userId, "修改授权");
         userService.checkUserDataScope(userId);
         roleService.checkRoleDataScope(roleIds);
         userService.insertUserAuth(userId, roleIds);

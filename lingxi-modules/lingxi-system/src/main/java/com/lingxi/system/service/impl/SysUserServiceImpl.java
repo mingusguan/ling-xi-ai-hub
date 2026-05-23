@@ -30,6 +30,7 @@ import com.lingxi.system.mapper.SysUserRoleMapper;
 import com.lingxi.system.service.ISysConfigService;
 import com.lingxi.system.service.ISysDeptService;
 import com.lingxi.system.service.ISysUserService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 用户 业务层处理
@@ -61,6 +62,9 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     private ISysDeptService deptService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     @Autowired
     protected Validator validator;
@@ -239,6 +243,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public void checkUserAllowed(SysUser user)
     {
+        systemProtectionService.checkProtectedUser(user, "操作");
         if (StringUtils.isNotNull(user.getUserId()) && user.isAdmin() && !SecurityUtils.isAdmin())
         {
             throw new ServiceException("不允许操作超级管理员用户");
@@ -306,6 +311,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Transactional(rollbackFor = Exception.class)
     public int updateUser(SysUser user)
     {
+        systemProtectionService.checkProtectedUser(user, "修改");
         Long userId = user.getUserId();
         // 删除用户与角色关联
         userRoleMapper.deleteUserRoleByUserId(userId);
@@ -328,6 +334,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Transactional(rollbackFor = Exception.class)
     public void insertUserAuth(Long userId, Long[] roleIds)
     {
+        systemProtectionService.checkProtectedUser(userId, "修改授权");
         userRoleMapper.deleteUserRoleByUserId(userId);
         insertUserRole(userId, roleIds);
     }
@@ -341,6 +348,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public int updateUserStatus(SysUser user)
     {
+        systemProtectionService.checkProtectedUser(user, "修改状态");
         return userMapper.updateUserStatus(user.getUserId(), user.getStatus());
     }
 
@@ -389,6 +397,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public int resetPwd(SysUser user)
     {
+        systemProtectionService.checkProtectedUser(user, "重置密码");
         return userMapper.resetUserPwd(user.getUserId(), user.getPassword());
     }
 
@@ -471,6 +480,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Transactional(rollbackFor = Exception.class)
     public int deleteUserById(Long userId)
     {
+        systemProtectionService.checkProtectedUser(userId, "删除");
         // 删除用户与角色关联
         userRoleMapper.deleteUserRoleByUserId(userId);
         // 删除用户与岗位表
@@ -540,6 +550,7 @@ public class SysUserServiceImpl implements ISysUserService
                 {
                     BeanValidators.validateWithException(validator, user);
                     checkUserAllowed(u);
+                    systemProtectionService.checkProtectedUser(u, "导入更新");
                     checkUserDataScope(u.getUserId());
                     deptService.checkDeptDataScope(user.getDeptId());
                     user.setUserId(u.getUserId());

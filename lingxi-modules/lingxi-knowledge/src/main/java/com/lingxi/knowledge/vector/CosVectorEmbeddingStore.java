@@ -9,8 +9,7 @@ import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.auth.COSSessionCredentials;
-import com.qcloud.cos.auth.COSSigner;
-import com.qcloud.cos.http.HttpMethodName;
+import com.qcloud.cos.utils.UrlEncoderUtils;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
@@ -28,13 +27,24 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * 基于腾讯云 COS 向量桶的 LangChain4j 向量存储适配器。
@@ -42,18 +52,21 @@ import java.util.Map;
 @Slf4j
 public class CosVectorEmbeddingStore implements EmbeddingStore<TextSegment> {
 
-    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.get("application/json");
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String VECTOR_PATH_PUT = "/PutVectors";
     private static final String VECTOR_PATH_QUERY = "/QueryVectors";
     private static final String VECTOR_PATH_DELETE = "/DeleteVectors";
+    private static final Pattern INDEX_NAME_PATTERN = Pattern.compile("^[a-z0-9]([a-z0-9\\-.]{1,61}[a-z0-9])?$");
 
     private final CosVectorConfig config;
+    private final String indexName;
     private final OkHttpClient httpClient;
     private final COSCredentials credentials;
 
     public CosVectorEmbeddingStore(CosVectorConfig config) {
         this.config = config;
+        this.indexName = normalizeIndexName(config.getIndexName());
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .readTimeout(Duration.ofSeconds(30))
@@ -106,7 +119,7 @@ public class CosVectorEmbeddingStore implements EmbeddingStore<TextSegment> {
             return;
         }
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("indexName", config.getIndexName());
+        body.put("indexName", indexName);
         body.put("vectorBucketName", config.getBucketName());
         body.put("keys", new ArrayList<>(ids));
         post(VECTOR_PATH_DELETE, body);
@@ -125,7 +138,7 @@ public class CosVectorEmbeddingStore implements EmbeddingStore<TextSegment> {
     @Override
     public EmbeddingSearchResult<TextSegment> search(EmbeddingSearchRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("indexName", config.getIndexName());
+        body.put("indexName", indexName);
         body.put("vectorBucketName", config.getBucketName());
         body.put("queryVector", Map.of("float32", request.queryEmbedding().vectorAsList()));
         body.put("topK", request.maxResults());
@@ -159,10 +172,23 @@ public class CosVectorEmbeddingStore implements EmbeddingStore<TextSegment> {
         }
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("indexName", config.getIndexName());
+        body.put("indexName", indexName);
         body.put("vectorBucketName", config.getBucketName());
         body.put("vectors", vectors);
         post(VECTOR_PATH_PUT, body);
+    }
+
+    private String normalizeIndexName(String configuredIndexName) {
+        if (StringUtils.isEmpty(configuredIndexName)) {
+            throw new IllegalStateException("COS Vector indexName must not be empty");
+        }
+        // COS Vector 索引名只允许小写字母、数字、短横线和点号，兼容历史配置里的下划线。
+        String normalized = configuredIndexName.trim().toLowerCase().replace('_', '-');
+        if (!INDEX_NAME_PATTERN.matcher(normalized).matches()) {
+            throw new IllegalStateException("COS Vector indexName invalid: " + configuredIndexName
+                    + ", expected pattern ^[a-z0-9]([a-z0-9\\-.]{1,61}[a-z0-9])?$");
+        }
+        return normalized;
     }
 
     private Map<String, Object> toMetadata(TextSegment segment) {
@@ -253,13 +279,19 @@ public class CosVectorEmbeddingStore implements EmbeddingStore<TextSegment> {
     private JsonNode post(String path, Map<String, Object> body) {
         try {
             String json = OBJECT_MAPPER.writeValueAsString(body);
+            byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
             String host = domain();
+            String date = DateTimeFormatter.RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneOffset.UTC));
+            String contentLength = String.valueOf(jsonBytes.length);
             Request.Builder builder = new Request.Builder()
                     .url(endpoint(host, path))
-                    .post(RequestBody.create(json, JSON))
+                    .post(RequestBody.create(jsonBytes, JSON))
                     .header("Host", host)
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", authorization(path, host));
+                    .header("Date", date)
+                    .header("Content-Type", JSON.toString())
+                    .header("Content-Length", contentLength)
+                    .header("Content-MD5", contentMd5(jsonBytes))
+                    .header("Authorization", authorization(path, host, date, contentLength));
             appendSessionToken(builder);
             try (Response response = httpClient.newCall(builder.build()).execute()) {
                 ResponseBody responseBody = response.body();
@@ -277,16 +309,79 @@ public class CosVectorEmbeddingStore implements EmbeddingStore<TextSegment> {
         }
     }
 
-    private String authorization(String path, String host) {
-        Date expiredTime = new Date(System.currentTimeMillis() + Duration.ofMinutes(10).toMillis());
-        return new COSSigner().buildAuthorizationStr(HttpMethodName.POST, path, signedHeaders(host), Map.of(), credentials, expiredTime);
+    private String authorization(String path, String host, String date, String contentLength) {
+        long startTime = System.currentTimeMillis() / 1000;
+        long endTime = startTime + Duration.ofMinutes(10).toSeconds();
+        String keyTime = startTime + ";" + endTime;
+
+        Map<String, String> headers = signedHeaders(host, date, contentLength);
+        String headerList = String.join(";", headers.keySet());
+        String httpHeaders = formatMapToSign(headers);
+        String httpString = "post\n" + path + "\n\n" + httpHeaders + "\n";
+        String stringToSign = "sha1\n" + keyTime + "\n" + sha1Hex(httpString) + "\n";
+        String signKey = hmacSha1Hex(credentials.getCOSSecretKey(), keyTime);
+        String signature = hmacSha1Hex(signKey, stringToSign);
+
+        return "q-sign-algorithm=sha1"
+                + "&q-ak=" + credentials.getCOSAccessKeyId()
+                + "&q-sign-time=" + keyTime
+                + "&q-key-time=" + keyTime
+                + "&q-header-list=" + headerList
+                + "&q-url-param-list="
+                + "&q-signature=" + signature;
     }
 
-    private Map<String, String> signedHeaders(String host) {
-        Map<String, String> headers = new LinkedHashMap<>();
+    private Map<String, String> signedHeaders(String host, String date, String contentLength) {
+        Map<String, String> headers = new TreeMap<>();
+        headers.put("content-length", contentLength);
+        headers.put("date", date);
         headers.put("host", host);
-        headers.put("content-type", "application/json");
         return headers;
+    }
+
+    private String formatMapToSign(Map<String, String> values) {
+        StringJoiner joiner = new StringJoiner("&");
+        values.forEach((key, value) -> joiner.add(UrlEncoderUtils.encode(key.toLowerCase()) + "="
+                + UrlEncoderUtils.encode(value == null ? "" : value)));
+        return joiner.toString();
+    }
+
+    private String sha1Hex(String value) {
+        return digestHex("SHA-1", value.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String contentMd5(byte[] body) {
+        try {
+            return Base64.getEncoder().encodeToString(MessageDigest.getInstance("MD5").digest(body));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("MD5 algorithm is not available", e);
+        }
+    }
+
+    private String hmacSha1Hex(String key, String value) {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA1"));
+            return hex(mac.doFinal(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            throw new IllegalStateException("HmacSHA1 algorithm is not available", e);
+        }
+    }
+
+    private String digestHex(String algorithm, byte[] value) {
+        try {
+            return hex(MessageDigest.getInstance(algorithm).digest(value));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(algorithm + " algorithm is not available", e);
+        }
+    }
+
+    private String hex(byte[] value) {
+        StringBuilder builder = new StringBuilder(value.length * 2);
+        for (byte item : value) {
+            builder.append(String.format("%02x", item & 0xff));
+        }
+        return builder.toString();
     }
 
     private void appendSessionToken(Request.Builder builder) {

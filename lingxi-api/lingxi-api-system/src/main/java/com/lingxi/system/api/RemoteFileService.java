@@ -2,6 +2,7 @@ package com.lingxi.system.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -33,4 +34,13 @@ public interface RemoteFileService
      */
     @DeleteMapping(value = "/delete", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public R<Boolean> delete(@RequestParam("fileUrl") String fileUrl);
+
+    /**
+     * 规范化文件地址，去掉域名和临时签名参数
+     *
+     * @param fileUrl 文件地址
+     * @return 稳定保存地址
+     */
+    @GetMapping(value = "/normalize")
+    public R<String> normalize(@RequestParam("fileUrl") String fileUrl);
 }

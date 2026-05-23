@@ -8,6 +8,7 @@ import com.lingxi.common.core.context.SecurityContextHolder;
 import com.lingxi.common.core.utils.ServletUtils;
 import com.lingxi.common.core.utils.StringUtils;
 import com.lingxi.system.api.model.LoginUser;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -17,6 +18,11 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public class SecurityUtils
 {
+    /**
+     * 前端保存登录令牌的 Cookie 名称。
+     */
+    private static final String TOKEN_COOKIE_NAME = "Admin-Token";
+
     /**
      * 获取用户ID
      */
@@ -64,7 +70,31 @@ public class SecurityUtils
     {
         // 从header获取token标识
         String token = request.getHeader(SecurityConstants.AUTHORIZATION_HEADER);
+        if (StringUtils.isEmpty(token))
+        {
+            token = getTokenFromCookie(request);
+        }
         return replaceTokenPrefix(token);
+    }
+
+    /**
+     * 图片、文件等浏览器原生请求无法设置 Authorization 头，允许从 Cookie 中读取登录令牌。
+     */
+    private static String getTokenFromCookie(HttpServletRequest request)
+    {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null)
+        {
+            return null;
+        }
+        for (Cookie cookie : cookies)
+        {
+            if (TOKEN_COOKIE_NAME.equals(cookie.getName()))
+            {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
     /**

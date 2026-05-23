@@ -46,6 +46,7 @@
 
 <script>
 import { getToken } from "@/utils/auth"
+import { filePreviewUrl } from '@/utils/appPath'
 import Sortable from 'sortablejs'
 
 export default {
@@ -128,7 +129,10 @@ export default {
           // 然后将数组转为对象数组
           this.fileList = list.map(item => {
             if (typeof item === "string") {
-              item = { name: item, url: item }
+              item = { name: item, url: filePreviewUrl(item), storageUrl: item }
+            } else {
+              item.storageUrl = item.storageUrl || item.url
+              item.url = filePreviewUrl(item.url)
             }
             return item
           })
@@ -190,7 +194,8 @@ export default {
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
-        this.uploadList.push({ name: res.data.url, url: res.data.url })
+        const storageUrl = res.data.path || res.data.url
+        this.uploadList.push({ name: storageUrl, url: filePreviewUrl(storageUrl), storageUrl })
         this.uploadedSuccessfully()
       } else {
         this.number--
@@ -225,7 +230,7 @@ export default {
     },
     // 预览
     handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url
+      this.dialogImageUrl = filePreviewUrl(file.storageUrl || file.url)
       this.dialogVisible = true
     },
     // 对象转成指定字符串分隔
@@ -234,7 +239,7 @@ export default {
       separator = separator || ","
       for (let i in list) {
         if (list[i].url) {
-          strs += list[i].url.replace(this.baseUrl, "") + separator
+          strs += (list[i].storageUrl || list[i].url) + separator
         }
       }
       return strs != '' ? strs.substr(0, strs.length - 1) : ''

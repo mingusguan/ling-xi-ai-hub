@@ -22,6 +22,7 @@ import com.lingxi.common.security.annotation.RequiresPermissions;
 import com.lingxi.common.security.utils.SecurityUtils;
 import com.lingxi.system.api.domain.SysDictType;
 import com.lingxi.system.service.ISysDictTypeService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 数据字典信息
@@ -34,6 +35,9 @@ public class SysDictTypeController extends BaseController
 {
     @Autowired
     private ISysDictTypeService dictTypeService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     @RequiresPermissions("system:dict:list")
     @GetMapping("/list")
@@ -72,6 +76,7 @@ public class SysDictTypeController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysDictType dict)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增字典");
         if (!dictTypeService.checkDictTypeUnique(dict))
         {
             return error("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
@@ -88,6 +93,8 @@ public class SysDictTypeController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysDictType dict)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改字典");
+        systemProtectionService.checkProtectedDictType(dict, "修改");
         if (!dictTypeService.checkDictTypeUnique(dict))
         {
             return error("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
@@ -104,6 +111,8 @@ public class SysDictTypeController extends BaseController
     @DeleteMapping("/{dictIds}")
     public AjaxResult remove(@PathVariable Long[] dictIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除字典");
+        systemProtectionService.checkProtectedDictTypes(dictIds, "删除");
         dictTypeService.deleteDictTypeByIds(dictIds);
         return success();
     }
@@ -116,6 +125,7 @@ public class SysDictTypeController extends BaseController
     @DeleteMapping("/refreshCache")
     public AjaxResult refreshCache()
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("刷新字典缓存");
         dictTypeService.resetDictCache();
         return success();
     }

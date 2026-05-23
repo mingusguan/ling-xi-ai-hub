@@ -3,6 +3,7 @@ import { MessageBox, } from 'element-ui'
 import { login, logout, getInfo, refreshToken } from '@/api/login'
 import { getToken, setToken, setExpiresIn, removeToken } from '@/utils/auth'
 import { isEmpty } from "@/utils/validate"
+import { filePreviewUrl } from '@/utils/appPath'
 import defAva from '@/assets/images/profile.jpg'
 import cache from '@/plugins/cache'
 
@@ -83,7 +84,7 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
-          const avatar = (isEmpty(user.avatar)) ? defAva : user.avatar
+          const avatar = (isEmpty(user.avatar)) ? defAva : filePreviewUrl(user.avatar)
           if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', res.roles)
             commit('SET_PERMISSIONS', res.permissions)

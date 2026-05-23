@@ -25,9 +25,11 @@ public class LocalRemoteFileService implements RemoteFileService {
     public R<SysFile> upload(MultipartFile file) {
         try {
             String url = sysFileService.uploadFile(file);
+            String path = sysFileService.normalizeFileUrl(url);
             SysFile sysFile = new SysFile();
-            sysFile.setName(FileUtils.getName(url));
+            sysFile.setName(FileUtils.getName(path));
             sysFile.setUrl(url);
+            sysFile.setPath(path);
             return R.ok(sysFile);
         } catch (Exception e) {
             return R.fail(e.getMessage());
@@ -43,6 +45,15 @@ public class LocalRemoteFileService implements RemoteFileService {
             }
             sysFileService.deleteFile(fileUrl);
             return R.ok(true);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+    }
+
+    @Override
+    public R<String> normalize(String fileUrl) {
+        try {
+            return R.ok(sysFileService.normalizeFileUrl(fileUrl));
         } catch (Exception e) {
             return R.fail(e.getMessage());
         }

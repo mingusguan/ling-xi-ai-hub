@@ -22,6 +22,7 @@ import com.lingxi.common.security.annotation.RequiresPermissions;
 import com.lingxi.common.security.utils.SecurityUtils;
 import com.lingxi.system.domain.SysPost;
 import com.lingxi.system.service.ISysPostService;
+import com.lingxi.system.service.SystemProtectionService;
 
 /**
  * 岗位信息操作处理
@@ -34,6 +35,9 @@ public class SysPostController extends BaseController
 {
     @Autowired
     private ISysPostService postService;
+
+    @Autowired
+    private SystemProtectionService systemProtectionService;
 
     /**
      * 获取岗位列表
@@ -75,6 +79,7 @@ public class SysPostController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysPost post)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("新增岗位");
         if (!postService.checkPostNameUnique(post))
         {
             return error("新增岗位'" + post.getPostName() + "'失败，岗位名称已存在");
@@ -95,6 +100,7 @@ public class SysPostController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysPost post)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("修改岗位");
         if (!postService.checkPostNameUnique(post))
         {
             return error("修改岗位'" + post.getPostName() + "'失败，岗位名称已存在");
@@ -115,6 +121,7 @@ public class SysPostController extends BaseController
     @DeleteMapping("/{postIds}")
     public AjaxResult remove(@PathVariable Long[] postIds)
     {
+        systemProtectionService.checkCurrentUserSystemWriteAllowed("删除岗位");
         return toAjax(postService.deletePostByIds(postIds));
     }
 

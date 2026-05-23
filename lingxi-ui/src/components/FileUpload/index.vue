@@ -30,7 +30,7 @@
     <!-- 文件列表 -->
     <transition-group ref="uploadFileList" class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
       <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
-        <el-link :href="file.url" :underline="false" target="_blank">
+        <el-link :href="getFileUrl(file.url)" :underline="false" target="_blank">
           <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
@@ -43,6 +43,7 @@
 
 <script>
 import { getToken } from "@/utils/auth"
+import { filePreviewUrl } from '@/utils/appPath'
 import Sortable from 'sortablejs'
 
 export default {
@@ -98,6 +99,7 @@ export default {
       headers: {
         Authorization: "Bearer " + getToken(),
       },
+      fileNameMap: {},
       fileList: []
     }
   },
@@ -126,7 +128,10 @@ export default {
           // 然后将数组转为对象数组
           this.fileList = list.map(item => {
             if (typeof item === "string") {
-              item = { name: item, url: item }
+              item = { name: this.fileNameMap[item] || this.getFileName(item), url: item }
+            } else if (item && item.url) {
+              item.name = item.name || this.fileNameMap[item.url] || this.getFileName(item.url)
+              this.fileNameMap[item.url] = item.name
             }
             item.uid = item.uid || new Date().getTime() + temp++
             return item
@@ -188,7 +193,12 @@ export default {
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
-        this.uploadList.push({ name: res.data.url, url: res.data.url })
+        const fileUrl = res.data.url
+        const fileName = res.data.name || this.getFileName(res.data.path || fileUrl || file.name)
+        const uploadFile = { name: fileName, url: fileUrl, raw: file.raw }
+        this.fileNameMap[fileUrl] = fileName
+        this.uploadList.push(uploadFile)
+        this.$emit("upload-success", uploadFile)
         this.uploadedSuccessfully()
       } else {
         this.number--
@@ -215,14 +225,19 @@ export default {
     },
     // 获取文件名称
     getFileName(name) {
-      // 如果是url那么取最后的名字 如果不是直接返回
-      if (name.lastIndexOf("/") > -1) {
-        return name.slice(name.lastIndexOf("/") + 1)
-      } else {
-        return name
+      const value = String(name || '')
+      const cleanName = value.split('?')[0]
+      const fileName = cleanName.lastIndexOf("/") > -1 ? cleanName.slice(cleanName.lastIndexOf("/") + 1) : cleanName
+      try {
+        return decodeURIComponent(fileName)
+      } catch (e) {
+        return fileName
       }
     },
     // 对象转成指定字符串分隔
+    getFileUrl(url) {
+      return filePreviewUrl(url)
+    },
     listToString(list, separator) {
       let strs = ""
       separator = separator || ","

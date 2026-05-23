@@ -98,6 +98,7 @@
             :limit="1"
             :fileSize="50"
             :fileType="['pdf', 'docx', 'txt', 'doc']"
+            @upload-success="handleFileUploadSuccess"
           />
         </el-form-item>
       </el-form>
@@ -107,8 +108,8 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="文档详情" :visible.sync="detailVisible" width="500px" append-to-body>
-      <el-descriptions :column="1" border>
+    <el-dialog title="文档详情" :visible.sync="detailVisible" width="500px" append-to-body custom-class="knowledge-detail-dialog">
+      <el-descriptions class="knowledge-detail-descriptions" :column="1" border>
         <el-descriptions-item label="文档ID">{{ detail.docId }}</el-descriptions-item>
         <el-descriptions-item label="文档名称">{{ detail.docName }}</el-descriptions-item>
         <el-descriptions-item label="文档类型">{{ detail.docType }}</el-descriptions-item>
@@ -120,7 +121,9 @@
         <el-descriptions-item label="分类">{{ detail.categoryName || detail.categoryId }}</el-descriptions-item>
         <el-descriptions-item label="状态">{{ statusLabel(detail.status) }}</el-descriptions-item>
         <el-descriptions-item label="存储地址">
-          <el-link :href="detail.fileUrl" target="_blank" type="primary">{{ detail.fileUrl }}</el-link>
+          <el-link :href="detailFileUrl" target="_blank" type="primary" icon="el-icon-download">
+            {{ detail.docName || getFileName(detail.fileUrl) }}
+          </el-link>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ parseTime(detail.createTime) }}</el-descriptions-item>
       </el-descriptions>
@@ -139,6 +142,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import FileUpload from '@/components/FileUpload'
 import Pagination from '@/components/Pagination'
+import { filePreviewUrl } from '@/utils/appPath'
 
 export default {
   name: 'KnowledgeDocument',
@@ -160,6 +164,7 @@ export default {
       uploadVisible: false,
       uploading: false,
       uploadForm: { docType: 'public', visibleDeptIds: [], categoryId: undefined, fileUrl: '' },
+      uploadFile: null,
       uploadRules: {
         visibleDeptIds: [
           { 
@@ -194,7 +199,13 @@ export default {
       this.filterCategoryTree(newVal)
     }
   },
+  computed: {
+    detailFileUrl() {
+      return this.filePreviewUrl(this.detail.fileUrl)
+    }
+  },
   methods: {
+    filePreviewUrl,
     loadDeptTree() {
       deptTreeSelect().then(res => {
         this.deptOptions = res.data || []
@@ -293,6 +304,7 @@ export default {
         categoryId: undefined, 
         fileUrl: '' 
       }
+      this.uploadFile = null
       this.filterCategoryTree(this.queryParams.deptId)
       this.uploadVisible = true
     },
@@ -316,6 +328,20 @@ export default {
     },
     resetUpload() {
       this.$refs.uploadForm && this.$refs.uploadForm.resetFields()
+      this.uploadFile = null
+    },
+    handleFileUploadSuccess(file) {
+      this.uploadFile = file && file.raw
+    },
+    getFileName(fileUrl) {
+      const value = String(fileUrl || '')
+      const cleanName = value.split('?')[0]
+      const fileName = cleanName.lastIndexOf('/') > -1 ? cleanName.slice(cleanName.lastIndexOf('/') + 1) : cleanName
+      try {
+        return decodeURIComponent(fileName)
+      } catch (e) {
+        return fileName
+      }
     },
     submitUpload() {
       this.$refs.uploadForm.validate(valid => {
@@ -331,25 +357,21 @@ export default {
         }
         this.uploading = true
         const fileUrl = this.uploadForm.fileUrl
-        const fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1)
-        fetch(fileUrl)
-          .then(res => res.blob())
-          .then(blob => {
-            const file = new File([blob], fileName, { type: blob.type })
-            const fd = new FormData()
-            fd.append('file', file)
-            fd.append('fileUrl', fileUrl)
-            // 只有部门文档才传 deptId 和 visibleDeptIds
-            if (this.uploadForm.docType === 'dept') {
-              // 使用第一个可见部门作为 deptId
-              fd.append('deptId', this.uploadForm.visibleDeptIds[0])
-              this.uploadForm.visibleDeptIds.forEach(id => {
-                fd.append('visibleDeptIds', id)
-              })
-            }
-            fd.append('categoryId', this.uploadForm.categoryId)
-            return uploadDocument(fd)
+        const fd = new FormData()
+        if (this.uploadFile) {
+          fd.append('file', this.uploadFile)
+        }
+        fd.append('fileUrl', fileUrl)
+        // 只有部门文档才传 deptId 和 visibleDeptIds
+        if (this.uploadForm.docType === 'dept') {
+          // 使用第一个可见部门作为 deptId
+          fd.append('deptId', this.uploadForm.visibleDeptIds[0])
+          this.uploadForm.visibleDeptIds.forEach(id => {
+            fd.append('visibleDeptIds', id)
           })
+        }
+        fd.append('categoryId', this.uploadForm.categoryId)
+        uploadDocument(fd)
           .then(() => {
             this.$message.success('上传成功，正在解析入库')
             this.uploadVisible = false
@@ -455,6 +477,40 @@ export default {
 </script>
 
 <style scoped>
+:deep(.knowledge-detail-dialog .el-dialog__body) {
+  background: rgba(15, 23, 42, 0.78) !important;
+}
+
+:deep(.knowledge-detail-descriptions) {
+  background: rgba(15, 23, 42, 0.55) !important;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.knowledge-detail-descriptions .el-descriptions__body) {
+  background: transparent !important;
+}
+
+:deep(.knowledge-detail-descriptions .el-descriptions-row) {
+  background: transparent !important;
+}
+
+:deep(.knowledge-detail-descriptions .el-descriptions-item__label),
+:deep(.knowledge-detail-descriptions .el-descriptions-item__content) {
+  background: rgba(15, 23, 42, 0.58) !important;
+  border-color: rgba(59, 130, 246, 0.18) !important;
+  color: #e2e8f0 !important;
+}
+
+:deep(.knowledge-detail-descriptions .el-descriptions-item__label) {
+  color: #94a3b8 !important;
+  font-weight: 600;
+}
+
+:deep(.knowledge-detail-descriptions .el-link) {
+  word-break: break-all;
+}
+
 :deep(.vue-treeselect) {
   background: rgba(15, 23, 42, 0.8) !important;
 }
