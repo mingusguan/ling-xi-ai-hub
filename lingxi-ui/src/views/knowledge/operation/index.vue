@@ -39,41 +39,44 @@
         </el-form-item>
       </el-form>
 
-      <el-table v-loading="loading" :data="list" border>
-        <el-table-column prop="question" label="问题" min-width="220" show-overflow-tooltip />
-        <el-table-column prop="answer" label="答案摘要" min-width="260" show-overflow-tooltip />
-        <el-table-column prop="confidenceLevel" label="可信度" width="90">
-          <template slot-scope="scope">
-            <el-tag :type="confidenceType(scope.row.confidenceLevel)" size="mini">{{ formatConfidence(scope.row.confidenceLevel) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="topScore" label="最高分" width="90">
-          <template slot-scope="scope">{{ formatScore(scope.row.topScore) }}</template>
-        </el-table-column>
-        <el-table-column prop="noAnswer" label="无答案" width="80">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.noAnswer === '1' ? 'danger' : 'success'" size="mini">{{ scope.row.noAnswer === '1' ? '是' : '否' }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="feedback" label="反馈" width="100">
-          <template slot-scope="scope">{{ formatFeedback(scope.row.feedback) }}</template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="时间" width="170" />
-        <el-table-column label="操作" width="150" fixed="right">
-          <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="showDetail(scope.row)">详情</el-button>
-            <el-button type="text" size="mini" @click="openFeedback(scope.row)">反馈</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-      />
+      <div style="overflow-x: auto; max-height: calc(100vh - 220px);">
+        <el-table v-loading="loading" :data="list" border style="min-width: 100%;">
+          <el-table-column prop="question" label="问题" min-width="220" show-overflow-tooltip />
+          <el-table-column prop="answer" label="答案摘要" min-width="260" show-overflow-tooltip />
+          <el-table-column prop="confidenceLevel" label="可信度" width="90">
+            <template slot-scope="scope">
+              <el-tag :type="confidenceType(scope.row.confidenceLevel)" size="mini">{{ formatConfidence(scope.row.confidenceLevel) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="topScore" label="最高分" width="90">
+            <template slot-scope="scope">{{ formatScore(scope.row.topScore) }}</template>
+          </el-table-column>
+          <el-table-column prop="noAnswer" label="无答案" width="80">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.noAnswer === '1' ? 'danger' : 'success'" size="mini">{{ scope.row.noAnswer === '1' ? '是' : '否' }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="feedback" label="反馈" width="100">
+            <template slot-scope="scope">{{ formatFeedback(scope.row.feedback) }}</template>
+          </el-table-column>
+          <el-table-column prop="createTime" label="时间" width="170" />
+          <el-table-column label="操作" align="center" width="150">
+            <template slot-scope="scope">
+              <el-button type="text" size="mini" @click="showDetail(scope.row)">详情</el-button>
+              <el-button type="text" size="mini" @click="openFeedback(scope.row)">反馈</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div style="text-align: right; padding-right: 10px;">
+          <pagination
+            v-show="total > 0"
+            :total="total"
+            :page.sync="queryParams.pageNum"
+            :limit.sync="queryParams.pageSize"
+            @pagination="getList"
+          />
+        </div>
+      </div>
     </el-card>
 
     <el-dialog title="问答详情" :visible.sync="detailVisible" width="720px" append-to-body>
@@ -262,4 +265,5 @@ export default {
   line-height: 1.6;
   white-space: pre-wrap;
 }
+
 </style>

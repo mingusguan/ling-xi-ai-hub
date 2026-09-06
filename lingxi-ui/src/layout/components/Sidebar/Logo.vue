@@ -60,7 +60,7 @@
             </defs>
           </svg>
         </div>
-        <h1 class="sidebar-title">灵犀AIHub</h1>
+        <h1 class="sidebar-title">灵犀伴行后台</h1>
       </router-link>
     </transition>
   </div>

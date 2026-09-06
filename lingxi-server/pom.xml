@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.lingxi</groupId>
+        <artifactId>lingxi-ai-hub</artifactId>
+        <version>3.6.7</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>lingxi-server</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>LingXi Companion Server</name>
+
+    <properties>
+        <lingxi-server.version>1.0.0-SNAPSHOT</lingxi-server.version>
+        <spring-modulith.version>1.4.12</spring-modulith.version>
+        <mybatis-plus.version>3.5.8</mybatis-plus.version>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.modulith</groupId>
+                <artifactId>spring-modulith-bom</artifactId>
+                <version>${spring-modulith.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-kernel</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-identity</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-goal</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-companion</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-engagement</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-relationship</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-content</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-commerce</artifactId><version>${lingxi-server.version}</version></dependency>
+            <dependency><groupId>com.lingxi</groupId><artifactId>lingxi-module-operations</artifactId><version>${lingxi-server.version}</version></dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                    <configuration>
+                        <release>17</release>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>lingxi-kernel</module>
+        <module>lingxi-module-identity</module>
+        <module>lingxi-module-goal</module>
+        <module>lingxi-module-companion</module>
+        <module>lingxi-module-engagement</module>
+        <module>lingxi-module-relationship</module>
+        <module>lingxi-module-content</module>
+        <module>lingxi-module-commerce</module>
+        <module>lingxi-module-operations</module>
+        <module>lingxi-boot</module>
+    </modules>
+</project>

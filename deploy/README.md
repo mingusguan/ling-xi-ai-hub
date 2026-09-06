@@ -1,6 +1,35 @@
 # LingXi production release
 
-This deployment keeps production release manual:
+## Automated release (GitHub Actions)
+
+Since the v1 auto-deploy rollout, pushing to the default branch (`master` / `main`)
+triggers fully automated releases via two workflows:
+
+- `.github/workflows/build-image.yml` — backend (`lingxi-admin`)
+  Triggered only by backend paths (`lingxi-admin/**`, `lingxi-ai/**`, `lingxi-api/**`,
+  `lingxi-auth/**`, `lingxi-common/**`, `lingxi-modules/**`, `lingxi-server/**`,
+  `Dockerfile`, `pom.xml`, `deploy/**`). Builds the image, pushes to ACR
+  (`lingxi-ai-hub:<full-sha>`, `:<7-sha>`, `:latest`), then SSHes to the server,
+  uploads `deploy/docker-compose.prod.yml` + `deploy/deploy.sh`, and runs
+  `./deploy.sh <full-sha>` (pull + up + health check).
+
+- `.github/workflows/deploy-lingxi-ui.yml` — frontend (`lingxi-ui`)
+  Triggered by any `lingxi-ui/**` change. Builds with `npm ci` +
+  `vue-cli-service build` (Node 18, publicPath `/`), uploads `dist` to
+  `/data/mingus/nginx/html/lingxi`, then atomically swaps the `dist` directory
+  and reloads `mingus-nginx`.
+
+Required GitHub repository secrets:
+`SERVER_HOST` (`1.14.43.81`), `SERVER_USERNAME` (`mingus`), `SERVER_SSH_KEY`
+(private key matching the server user), `DOCKER_USERNAME`, `DOCKER_PASSWORD`.
+
+The frontend `dist` on the server is served by `lingxi.mingusone.com` with
+`root <nginx html>/lingxi/dist`; do not re-introduce a `/lingxi/` path prefix
+unless the nginx location changes back to an `alias`-style setup.
+
+## Manual release (fallback)
+
+Manual release remains possible and follows these steps:
 
 1. Push code to GitHub.
 2. GitHub Actions builds and pushes the backend Docker image.
@@ -12,27 +41,31 @@ This deployment keeps production release manual:
 
 ## GitHub Actions
 
-Edit `.github/workflows/build-image.yml` before enabling the pipeline:
+The workflows push to Aliyun ACR with these settings (edit only if you mirror the
+repository to another account):
 
-- `IMAGE_REGISTRY`: default `registry.cn-hangzhou.aliyuncs.com`
-- `IMAGE_NAMESPACE`: for example `your-namespace`
-- `BACKEND_IMAGE_NAME`: default `lingxi-ai-hub`
-- `DOCKER_USERNAME` and `DOCKER_PASSWORD`: configure them as GitHub Actions repository secrets, do not commit real secrets
+- `IMAGE_REGISTRY`: `registry.cn-hangzhou.aliyuncs.com`
+- `IMAGE_NAMESPACE`: `mingus`
+- `BACKEND_IMAGE_NAME`: `lingxi-ai-hub`
+- `DOCKER_USERNAME` and `DOCKER_PASSWORD`: GitHub Actions repository secrets, do not commit real secrets
 
 The generated backend image tag is:
 
 ```text
-registry.cn-hangzhou.aliyuncs.com/your-namespace/lingxi-ai-hub:${GITHUB_SHA}
-registry.cn-hangzhou.aliyuncs.com/your-namespace/lingxi-ai-hub:${GITHUB_SHA::7}
+registry.cn-hangzhou.aliyuncs.com/mingus/lingxi-ai-hub:${GITHUB_SHA}
+registry.cn-hangzhou.aliyuncs.com/mingus/lingxi-ai-hub:${GITHUB_SHA::7}
+registry.cn-hangzhou.aliyuncs.com/mingus/lingxi-ai-hub:latest
 ```
 
-When a `v*` Git tag triggers the workflow, the image is also pushed with that Git tag.
-
-You can also trigger the first build from GitHub Actions with `Run workflow`.
+Automatic deploy happens only on pushes to `master`/`main` (see "Automated
+release" above). `v*` tags no longer trigger builds. You can still trigger the
+first build from GitHub Actions with `Run workflow`.
 
 ## Server setup
 
-Copy these files to the production server, usually under `/data/lingxi`:
+Copy these files to the production server under `/data/mingus/lingxi/deploy`
+(on this server it is the directory where `docker compose ls` shows the `deploy`
+project; `deploy.sh`, `docker-compose.prod.yml` and `.env` live together there):
 
 ```text
 deploy/docker-compose.prod.yml
@@ -40,6 +73,11 @@ deploy/deploy.sh
 deploy/check.sh
 deploy/.env.example
 ```
+
+> Note: with the automated release the workflow re-uploads
+> `docker-compose.prod.yml` and `deploy.sh` to
+> `/data/mingus/lingxi/deploy` on every backend deploy, so the repository copies
+> are the source of truth. Keep `.env` server-side only (it is git-ignored).
 
 Create the real environment file:
 
@@ -80,7 +118,11 @@ The default `.env.example` assumes the shared network service names are `mysql` 
 If your compose service names differ, update `MYSQL_URL` and `REDIS_HOST` to match.
 
 The frontend is deployed as static files under the existing Nginx container, not as a Docker image.
-Build `lingxi-ui` and copy `dist` to `/data/mingus/nginx/html/lingxi/dist`, then reload `mingus-nginx`.
+With the automated release, a `lingxi-ui/**` push to `master`/`main` builds `dist`
+and atomically swaps `/data/mingus/nginx/html/lingxi/dist` (kept as
+`/usr/share/nginx/html/lingxi/dist` inside `mingus-nginx`), then reloads nginx.
+For a manual fallback: build `lingxi-ui` and copy `dist` to
+`/data/mingus/nginx/html/lingxi/dist`, then reload `mingus-nginx`.
 
 ## Domain binding
 

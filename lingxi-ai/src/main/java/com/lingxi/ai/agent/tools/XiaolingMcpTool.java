@@ -1,20 +1,24 @@
 package com.lingxi.ai.agent.tools;
 
+import com.lingxi.ai.service.IAiChatToolCallService;
 import dev.langchain4j.agent.tool.Tool;
-import org.springframework.stereotype.Component;
-
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 @Component
 public class XiaolingMcpTool {
 
     private static final int DEFAULT_MAX_RESULTS = 5;
+
     private static final double DEFAULT_MIN_SCORE = 0.7D;
 
     private final McpToolInvoker toolInvoker;
 
-    public XiaolingMcpTool(McpToolInvoker toolInvoker) {
+    private final IAiChatToolCallService toolCallService;
+
+    public XiaolingMcpTool(McpToolInvoker toolInvoker, IAiChatToolCallService toolCallService) {
         this.toolInvoker = toolInvoker;
+        this.toolCallService = toolCallService;
     }
 
     @Tool("通过知识库 MCP Server 检索企业知识库内容。适合回答制度、流程、文档资料等企业知识问题。")
@@ -27,7 +31,14 @@ public class XiaolingMcpTool {
         arguments.put("deptId", deptId);
         arguments.put("maxResults", DEFAULT_MAX_RESULTS);
         arguments.put("minScore", DEFAULT_MIN_SCORE);
-        return toolInvoker.call("search_knowledge", arguments, "知识库查询失败，请稍后重试。");
+        String failureMessage = "知识库查询失败，请稍后重试。";
+        long startTime = System.currentTimeMillis();
+        String result = toolInvoker.call("search_knowledge", arguments, failureMessage);
+        String status = failureMessage.equals(result) ? "FAILURE" : "SUCCESS";
+        // 小灵儿的知识库运营统计只记录知识库工具调用，不污染普通聊天消息。
+        toolCallService.recordKnowledgeCall(AiChatToolCallContext.get(), query, arguments, result,
+                System.currentTimeMillis() - startTime, status, "FAILURE".equals(status) ? result : null);
+        return result;
     }
 
     @Tool("通过 OA MCP Server 查询用户待审批任务列表。")

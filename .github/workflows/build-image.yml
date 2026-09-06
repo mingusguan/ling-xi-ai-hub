@@ -1,4 +1,4 @@
-name: LingXi Image Build
+name: LingXi Image Build & Deploy
 
 on:
   workflow_dispatch:
@@ -6,13 +6,27 @@ on:
     branches:
       - main
       - master
-    tags:
-      - 'v*'
+    paths:
+      - '.github/workflows/build-image.yml'
+      - 'Dockerfile'
+      - 'pom.xml'
+      - 'lingxi-admin/**'
+      - 'lingxi-ai/**'
+      - 'lingxi-api/**'
+      - 'lingxi-auth/**'
+      - 'lingxi-common/**'
+      - 'lingxi-modules/**'
+      - 'lingxi-server/**'
+      - 'deploy/**'
+
+concurrency:
+  group: lingxi-production
+  cancel-in-progress: false
 
 env:
   IMAGE_REGISTRY: registry.cn-hangzhou.aliyuncs.com
   IMAGE_NAMESPACE: mingus
-  BACKEND_IMAGE_NAME: lingxi-ai-hubz
+  BACKEND_IMAGE_NAME: lingxi-ai-hub
 
 jobs:
   docker-build:
@@ -45,8 +59,8 @@ jobs:
             echo 'backend_tags<<EOF'
             echo "${backend_repository}:${GITHUB_SHA}"
             echo "${backend_repository}:${short_sha}"
-            if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
-              echo "${backend_repository}:${GITHUB_REF_NAME}"
+            if [ "${GITHUB_REF_NAME}" = "main" ] || [ "${GITHUB_REF_NAME}" = "master" ]; then
+              echo "${backend_repository}:latest"
             fi
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
@@ -58,3 +72,57 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ steps.image.outputs.backend_tags }}
+          platforms: linux/amd64
+          provenance: false
+          sbom: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy To Production
+    needs: docker-build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    steps:
+      - name: Checkout deployment files
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        shell: bash
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SERVER_SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -T 10 -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload deployment files
+        shell: bash
+        run: |
+          ssh "$SERVER_USERNAME@$SERVER_HOST" \
+            "mkdir -p /data/mingus/lingxi/deploy"
+          scp deploy/docker-compose.prod.yml \
+            "$SERVER_USERNAME@$SERVER_HOST:/data/mingus/lingxi/deploy/docker-compose.prod.yml.uploading"
+          scp deploy/deploy.sh \
+            "$SERVER_USERNAME@$SERVER_HOST:/data/mingus/lingxi/deploy/deploy.sh.uploading"
+
+      - name: Pull image and deploy
+        shell: bash
+        run: |
+          printf '%s' "$DOCKER_PASSWORD" | ssh "$SERVER_USERNAME@$SERVER_HOST" \
+            "docker login registry.cn-hangzhou.aliyuncs.com --username '$DOCKER_USERNAME' --password-stdin"
+          ssh "$SERVER_USERNAME@$SERVER_HOST" \
+            "set -eu; \
+             cd /data/mingus/lingxi/deploy; \
+             mv docker-compose.prod.yml.uploading docker-compose.prod.yml; \
+             mv deploy.sh.uploading deploy.sh; \
+             chmod 755 deploy.sh; \
+             ./deploy.sh '${GITHUB_SHA}'"

@@ -215,6 +215,7 @@
         <module>lingxi-modules</module>
         <module>lingxi-ai</module>
         <module>lingxi-admin</module>
+        <module>lingxi-server</module>
     </modules>
     <packaging>pom</packaging>
 

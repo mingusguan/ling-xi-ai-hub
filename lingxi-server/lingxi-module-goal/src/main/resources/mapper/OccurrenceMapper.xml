@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.goal.infrastructure.persistence.OccurrenceMapper">
+    <insert id="insertIgnoreBatch">
+        INSERT IGNORE INTO goal_action_occurrence
+        (id,action_id,scheduled_at,local_date,timezone,status,created_at,updated_at) VALUES
+        <foreach collection="items" item="i" separator=",">
+            (#{i.id},#{i.actionId},#{i.scheduledAt},#{i.localDate},#{i.timezone},
+             #{i.status},#{i.createdAt},#{i.updatedAt})
+        </foreach>
+    </insert>
+</mapper>

@@ -198,7 +198,7 @@
           </svg>
         </div>
         <h3 class="title">{{title}}</h3>
-        <p class="subtitle">灵犀AIHub · 智能中枢</p>
+        <p class="subtitle">灵犀伴行 · 运营管理后台</p>
       </div>
 
       <el-form-item prop="username">
@@ -276,8 +276,8 @@ export default {
       footerContent: defaultSettings.footerContent,
       codeUrl: "",
       loginForm: {
-        username: "murphy",
-        password: "123456",
+        username: "",
+        password: "",
         rememberMe: false,
         code: "",
         uuid: ""
@@ -292,7 +292,7 @@ export default {
         code: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
       loading: false,
-      captchaEnabled: true,
+      captchaEnabled: false,
       register: false,
       redirect: undefined
     }
@@ -306,7 +306,6 @@ export default {
     }
   },
   created() {
-    this.getCode()
     this.getCookie()
   },
   methods: {
@@ -343,7 +342,7 @@ export default {
             Cookies.remove('rememberMe')
           }
           this.$store.dispatch("Login", this.loginForm).then(() => {
-            this.$router.push({ path: '/subsystem' }).catch(()=>{})
+            this.$router.push({ path: this.redirect || '/admin/dashboard' }).catch(()=>{})
           }).catch(() => {
             this.loading = false
             if (this.captchaEnabled) {
@@ -635,14 +634,14 @@ export default {
   background: rgb(96, 165, 250);
   border: 1px solid rgb(96, 165, 250);
   border-radius: 4px;
-  box-shadow: 
+  box-shadow:
     0 0 16px rgba(96, 165, 250, 0.5);
   transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
     background: rgba(96, 165, 250, 0.9);
-    box-shadow: 
+    box-shadow:
       0 0 24px rgba(96, 165, 250, 0.7);
     filter: brightness(1.1);
   }

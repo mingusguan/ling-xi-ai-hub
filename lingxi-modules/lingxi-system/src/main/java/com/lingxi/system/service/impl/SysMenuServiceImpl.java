@@ -260,7 +260,7 @@ public class SysMenuServiceImpl implements ISysMenuService
             if (StringUtils.isNotEmpty(cMenus) && UserConstants.TYPE_DIR.equals(menu.getMenuType()))
             {
                 router.setAlwaysShow(true);
-                router.setRedirect("noRedirect");
+                router.setRedirect(getDirectoryRedirect(router.getPath(), cMenus));
                 router.setChildren(buildMenus(cMenus));
             }
             else if (isMenuFrame(menu))
@@ -293,6 +293,56 @@ public class SysMenuServiceImpl implements ISysMenuService
             routers.add(router);
         }
         return routers;
+    }
+
+    private String getDirectoryRedirect(String parentPath, List<SysMenu> children)
+    {
+        if (StringUtils.isEmpty(children))
+        {
+            return "noRedirect";
+        }
+        // 目录菜单本身没有页面，取第一个可见子菜单作为落地页，避免点击父级进入 404。
+        for (SysMenu child : children)
+        {
+            if ("1".equals(child.getVisible()))
+            {
+                continue;
+            }
+            String childPath = joinRouterPath(parentPath, getRouterPath(child));
+            if (StringUtils.isNotEmpty(child.getChildren()) && UserConstants.TYPE_DIR.equals(child.getMenuType()))
+            {
+                String childRedirect = getDirectoryRedirect(childPath, child.getChildren());
+                if (!"noRedirect".equals(childRedirect))
+                {
+                    return childRedirect;
+                }
+            }
+            else if (UserConstants.TYPE_MENU.equals(child.getMenuType()))
+            {
+                return childPath;
+            }
+        }
+        return "noRedirect";
+    }
+
+    private String joinRouterPath(String parentPath, String childPath)
+    {
+        if (StringUtils.isEmpty(childPath))
+        {
+            return StringUtils.isEmpty(parentPath) ? "/" : parentPath;
+        }
+        if (StringUtils.ishttp(childPath) || childPath.startsWith("/"))
+        {
+            return childPath;
+        }
+        // 前端路由必须使用 URL 路径拼接，不能使用系统文件路径拼接。
+        String parent = StringUtils.isEmpty(parentPath) ? "" : parentPath.replaceAll("/+$", "");
+        String child = childPath.replaceAll("^/+", "");
+        if (StringUtils.isEmpty(parent) || "/".equals(parent))
+        {
+            return "/" + child;
+        }
+        return parent + "/" + child;
     }
 
     /**

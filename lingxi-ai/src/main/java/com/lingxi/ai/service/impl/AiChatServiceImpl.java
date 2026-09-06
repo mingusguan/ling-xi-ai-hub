@@ -1,12 +1,14 @@
 package com.lingxi.ai.service.impl;
 
 import com.lingxi.ai.agent.XiaolingAgent;
+import com.lingxi.ai.agent.tools.AiChatToolCallContext;
 import com.lingxi.ai.domain.AiChatMessage;
 import com.lingxi.ai.domain.AiChatSession;
 import com.lingxi.ai.governance.service.IAiGovernanceService;
 import com.lingxi.ai.mapper.AiChatMessageMapper;
 import com.lingxi.ai.mapper.AiChatSessionMapper;
 import com.lingxi.ai.service.IAiChatService;
+import com.lingxi.ai.service.IAiChatToolCallService;
 import com.lingxi.common.core.exception.ServiceException;
 import com.lingxi.common.core.web.domain.AjaxResult;
 import com.lingxi.common.security.utils.SecurityUtils;
@@ -40,6 +42,9 @@ public class AiChatServiceImpl implements IAiChatService
 
     @Autowired
     private IAiGovernanceService governanceService;
+
+    @Autowired
+    private IAiChatToolCallService toolCallService;
 
     @Override
     public List<AiChatSession> getUserSessions(Long userId)
@@ -94,12 +99,17 @@ public class AiChatServiceImpl implements IAiChatService
         long startTime = System.currentTimeMillis();
         String aiResponse;
         try {
+            // 工具方法由 LangChain4j 间接触发，这里用线程上下文传递当前会话和消息标识。
+            AiChatToolCallContext.set(new AiChatToolCallContext.Context(sessionId, userMessage.getMessageId(), userId,
+                    SecurityUtils.getUsername(), deptId, null, "xiaolinger"));
             aiResponse = xiaolingAgent.chat(message, deptId, userId);
             governanceService.recordSuccess("CHAT", "xiaolinger", message, aiResponse,
                     System.currentTimeMillis() - startTime);
         } catch (Exception e) {
             governanceService.recordFailure("CHAT", "xiaolinger", message, System.currentTimeMillis() - startTime, e);
             throw e;
+        } finally {
+            AiChatToolCallContext.clear();
         }
 
         AiChatMessage aiMessage = new AiChatMessage();
@@ -108,6 +118,8 @@ public class AiChatServiceImpl implements IAiChatService
         aiMessage.setContent(aiResponse);
         aiMessage.setCreateTime(new Date());
         messageMapper.insert(aiMessage);
+        toolCallService.updateAssistantAnswer(sessionId, userMessage.getMessageId(), aiMessage.getMessageId(),
+                aiResponse);
 
         if (DEFAULT_SESSION_TITLE.equals(session.getTitle())) {
             session.setTitle(message.length() > 20 ? message.substring(0, 20) + "..." : message);

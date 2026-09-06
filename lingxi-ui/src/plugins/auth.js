@@ -5,7 +5,7 @@ function authPermission(permission) {
   const permissions = store.getters && store.getters.permissions
   if (permission && permission.length > 0) {
     return permissions.some(v => {
-      return all_permission === v || v === permission
+      return all_permission === v || v === '*' || v === permission
     })
   } else {
     return false

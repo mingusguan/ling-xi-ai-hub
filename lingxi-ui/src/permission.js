@@ -1,4 +1,4 @@
-import router from './router'
+import router, { resetRouter } from './router'
 import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress'
@@ -22,8 +22,14 @@ const resolveSysCodeByPath = (path) => {
   if (path.startsWith('/knowledge')) {
     return 'knowledge'
   }
+  if (path.startsWith('/ai') || path.startsWith('/mcp-market')) {
+    return 'ai_tool'
+  }
   if (path.startsWith('/oa')) {
     return 'oa'
+  }
+  if (path.startsWith('/admin')) {
+    return 'companion_admin'
   }
   if (path.startsWith('/message') || path.startsWith('/system') || path.startsWith('/monitor') || path.startsWith('/tool') || path.startsWith('/index')) {
     return 'basic'
@@ -36,13 +42,17 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     if (to.path === '/login') {
-      next({ path: '/subsystem' })
+      next({ path: '/admin/dashboard' })
       NProgress.done()
     } else if (isWhiteList(to.path)) {
       next()
     } else {
-      if (!store.getters.sysCode) {
-        const resolvedSysCode = resolveSysCodeByPath(to.path)
+      const resolvedSysCode = resolveSysCodeByPath(to.path)
+      if (resolvedSysCode && resolvedSysCode !== store.getters.sysCode) {
+        resetRouter()
+        store.commit('SET_SYS_CODE', resolvedSysCode)
+        store.commit('SET_SIDEBAR_ROUTERS', [])
+      } else if (!store.getters.sysCode) {
         if (resolvedSysCode) {
           store.commit('SET_SYS_CODE', resolvedSysCode)
         }
@@ -57,7 +67,7 @@ router.beforeEach((to, from, next) => {
               next({ ...to, replace: true })
             })
           } else {
-            next({ path: '/subsystem' })
+            next({ path: '/admin/dashboard' })
           }
         }).catch(err => {
           store.dispatch('LogOut').then(() => {
@@ -70,8 +80,8 @@ router.beforeEach((to, from, next) => {
           router.addRoutes(accessRoutes)
           next({ ...to, replace: true })
         })
-      } else if (!store.getters.sysCode && to.path !== '/subsystem') {
-        next({ path: '/subsystem' })
+      } else if (!store.getters.sysCode && to.path !== '/admin/dashboard') {
+        next({ path: '/admin/dashboard' })
       } else {
         next()
       }

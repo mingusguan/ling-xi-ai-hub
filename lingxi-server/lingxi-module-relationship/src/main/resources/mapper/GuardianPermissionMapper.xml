@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.relationship.infrastructure.persistence.GuardianPermissionMapper">
+    <insert id="insertBatch">
+        INSERT INTO rel_guardian_permission
+            (id, relation_id, permission, scope, effective_at)
+        VALUES
+        <foreach collection="permissions" item="permission" separator=",">
+            (#{permission.id}, #{permission.relationId}, #{permission.permission},
+             #{permission.scope}, #{permission.effectiveAt})
+        </foreach>
+    </insert>
+</mapper>

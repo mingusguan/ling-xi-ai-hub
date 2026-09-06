@@ -155,7 +155,7 @@
       <div 
         v-if="showKnowledgeSystem" 
         class="subsystem-card" 
-        @click="goToSystem('/knowledge/document', 'knowledge')"
+        @click="goToKnowledgeSystem"
       >
         <div class="card-icon knowledge-icon">
           <svg-icon icon-class="education" />
@@ -183,7 +183,7 @@
       <div 
         v-if="showAiSystem" 
         class="subsystem-card" 
-        @click="goToSystem('/ai/document', 'ai_tool')"
+        @click="goToAiSystem"
       >
         <div class="card-icon ai-icon">
           <svg-icon icon-class="skill" />
@@ -194,23 +194,9 @@
         </div>
         <div class="card-arrow"><i class="el-icon-arrow-right"></i></div>
       </div>
-      <div
-        v-if="showMcpMarketSystem"
-        class="subsystem-card"
-        @click="goToSystem('/mcp-market/tools', 'mcp_market')"
-      >
-        <div class="card-icon mcp-icon">
-          <svg-icon icon-class="list" />
-        </div>
-        <div class="card-content">
-          <h3>MCP工具市场</h3>
-          <p>统一管理 MCP 工具发现、发布、申请审批、版本治理、审计监控和助手编排复用</p>
-        </div>
-        <div class="card-arrow"><i class="el-icon-arrow-right"></i></div>
-      </div>
     </div>
 
-    <div class="empty-tip" v-if="!showBasicSystem && !showKnowledgeSystem && !showOaSystem && !showAiSystem && !showMcpMarketSystem">
+    <div class="empty-tip" v-if="!showBasicSystem && !showKnowledgeSystem && !showOaSystem && !showAiSystem">
       <i class="el-icon-warning" style="font-size: 48px; color: #94A3B8;"></i>
       <p style="margin-top: 20px; color: #64748B;">暂无可用的子系统权限，请联系管理员分配权限</p>
     </div>
@@ -222,6 +208,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import auth from '@/plugins/auth'
+import { resetRouter } from '@/router'
 import ProfileDialog from '@/components/ProfileDialog'
 import { getUnreadMessageCount } from '@/api/system/message'
 import { withPublicPath } from '@/utils/appPath'
@@ -237,6 +224,20 @@ const oaEntryRoutes = [
   { path: '/oa/expense', permissions: ['oa:expense:list'] },
   { path: '/oa/reminder', permissions: ['oa:reminder:list'] },
   { path: '/oa/holiday', permissions: ['oa:holiday:list'] }
+]
+
+const knowledgeEntryRoutes = [
+  { path: '/knowledge/document', permissions: ['knowledge:document:list'] },
+  { path: '/knowledge/operation', permissions: ['knowledge:operation:view'] },
+  { path: '/knowledge/category', permissions: ['knowledge:category:list'] }
+]
+
+const aiEntryRoutes = [
+  { path: '/ai/document', permissions: ['ai:document:view'] },
+  { path: '/ai/agent', permissions: ['ai:agent:list'] },
+  { path: '/ai/governance', permissions: ['ai:governance:view'] },
+  { path: '/ai/report', permissions: ['ai:report:view'] },
+  { path: '/ai/mcp-market', permissions: ['ai:mcp:market:list'] }
 ]
 
 export default {
@@ -275,7 +276,6 @@ export default {
       return this.isAdmin || auth.hasPermiOr([
         'knowledge:category:list',
         'knowledge:document:list',
-        'knowledge:qa:chat',
         'knowledge:operation:view'
       ])
     },
@@ -287,18 +287,14 @@ export default {
         'ai:document:view',
         'ai:report:view',
         'ai:chat:view',
-        'ai:agent:list',
-        'ai:governance:view'
-      ])
-    },
-    showMcpMarketSystem() {
-      return this.isAdmin || auth.hasPermiOr([
         'ai:mcp:market:list',
         'ai:mcp:market:edit',
         'ai:mcp:market:apply',
         'ai:mcp:market:approve',
         'ai:mcp:market:audit',
-        'ai:mcp:market:bind'
+        'ai:mcp:market:bind',
+        'ai:agent:list',
+        'ai:governance:view'
       ])
     },
     isAdmin() {
@@ -322,15 +318,23 @@ export default {
       }
     },
     goToSystem(path, sysCode) {
+      resetRouter()
       this.$store.commit('SET_SYS_CODE', sysCode)
       this.$store.dispatch('tagsView/delAllViews').then(() => {
-        this.$store.dispatch('GenerateRoutes').then(() => {
+        this.$store.dispatch('GenerateRoutes').then(accessRoutes => {
+          this.$router.addRoutes(accessRoutes)
           this.$router.push(path)
         })
       })
     },
+    goToKnowledgeSystem() {
+      this.goToSystem(this.resolveFirstPermittedPath(knowledgeEntryRoutes, '/knowledge/document'), 'knowledge')
+    },
     goToOaSystem() {
       this.goToSystem(this.resolveFirstPermittedPath(oaEntryRoutes, '/oa/dashboard'), 'oa')
+    },
+    goToAiSystem() {
+      this.goToSystem(this.resolveFirstPermittedPath(aiEntryRoutes, '/ai/document'), 'ai_tool')
     },
     hasAnyEntryPermission(routes) {
       return routes.some(route => auth.hasPermiOr(route.permissions))
@@ -678,11 +682,6 @@ export default {
 .ai-icon {
   background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
   box-shadow: 0 8px 24px rgba(245, 158, 11, 0.35);
-}
-
-.mcp-icon {
-  background: linear-gradient(135deg, #14B8A6 0%, #0F766E 100%);
-  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.35);
 }
 
 .card-content {

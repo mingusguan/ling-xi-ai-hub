@@ -67,3 +67,12 @@ export function getUnreadReminderCount() {
     method: 'get'
   })
 }
+
+// 获取当前用户的超时提醒，统一复用消息中心查询接口。
+export function getTimeoutReminders(params) {
+  return request({
+    url: '/system/message/list',
+    method: 'get',
+    params: { ...params, status: 'UNREAD', category: 'TIMEOUT' }
+  })
+}

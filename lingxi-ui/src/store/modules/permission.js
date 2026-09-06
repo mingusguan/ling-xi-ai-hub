@@ -1,10 +1,99 @@
 import auth from '@/plugins/auth'
-import router, { constantRoutes, dynamicRoutes, oaRoutes, aiRoutes, mcpMarketRoutes } from '@/router'
+import router, { constantRoutes, dynamicRoutes, oaRoutes, aiRoutes, knowledgeRoutes, companionAdminRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
 import store from '@/store'
+import { joinRoutePath } from '@/utils/validate'
+
+const cloneRoutes = (routes) => {
+  return routes.map(route => ({
+    ...route,
+    meta: route.meta ? { ...route.meta } : route.meta,
+    children: route.children ? cloneRoutes(route.children) : route.children
+  }))
+}
+
+const trimSlashes = (value) => String(value || '').replace(/^\/+|\/+$/g, '')
+
+const normalizeWithPrefix = (path, prefix) => {
+  const cleanPrefix = trimSlashes(prefix)
+  const cleanPath = trimSlashes(path)
+  const relativePath = cleanPath === cleanPrefix
+    ? ''
+    : cleanPath.replace(new RegExp(`^${cleanPrefix}/`), '')
+  return relativePath ? `/${cleanPrefix}/${relativePath}` : `/${cleanPrefix}`
+}
+
+const hasRenderableRoute = (routes) => {
+  return routes.some(route => {
+    if (route.hidden) {
+      return false
+    }
+    if (route.children && route.children.length) {
+      return hasRenderableRoute(route.children)
+    }
+    return route.component && ![Layout, ParentView, InnerLink, 'Layout', 'ParentView', 'InnerLink'].includes(route.component)
+  })
+}
+
+const staticRoutesBySysCode = (sysCode) => {
+  if (sysCode === 'oa') {
+    return oaRoutes
+  }
+  if (sysCode === 'knowledge') {
+    return knowledgeRoutes
+  }
+  if (sysCode === 'ai_tool') {
+    return aiRoutes
+  }
+  if (sysCode === 'companion_admin') {
+    return companionAdminRoutes
+  }
+  return null
+}
+
+const commitRoutes = (commit, routes) => {
+  ensureDirectoryRedirects(routes)
+  commit('SET_ROUTES', routes)
+  commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(routes))
+  commit('SET_DEFAULT_ROUTES', routes)
+  commit('SET_TOPBAR_ROUTES', routes)
+}
+
+const isNoRedirect = (redirect) => {
+  return redirect === 'noRedirect' || redirect === 'noredirect'
+}
+
+const firstVisibleRoutePath = (route, parentPath = '') => {
+  if (!route || route.hidden) {
+    return ''
+  }
+  const currentPath = joinRoutePath(parentPath, route.path)
+  if (route.children && route.children.length) {
+    for (const child of route.children) {
+      const childPath = firstVisibleRoutePath(child, currentPath)
+      if (childPath) {
+        return childPath
+      }
+    }
+    return ''
+  }
+  return currentPath
+}
+
+const ensureDirectoryRedirects = (routes, parentPath = '') => {
+  routes.forEach(route => {
+    const currentPath = joinRoutePath(parentPath, route.path)
+    if (route.children && route.children.length) {
+      if (!route.redirect || isNoRedirect(route.redirect)) {
+        route.redirect = firstVisibleRoutePath(route, parentPath) || route.redirect
+      }
+      ensureDirectoryRedirects(route.children, currentPath)
+    }
+  })
+}
 
 const permission = {
   state: {
@@ -33,16 +122,17 @@ const permission = {
     GenerateRoutes({ commit }) {
       return new Promise(resolve => {
         const sysCode = store.getters.sysCode
+        if (sysCode === 'companion_admin') {
+          const filteredRoutes = filterDynamicRoutes(cloneRoutes(companionAdminRoutes))
+          commitRoutes(commit, filteredRoutes)
+          resolve(filteredRoutes)
+          return
+        }
         getRouters(sysCode).then(res => {
           const addPathPrefix = (routes, prefix) => {
             routes.forEach(route => {
               if (route.path) {
-                route.path = route.path.replace(new RegExp('^' + prefix.replace(/\//g, '\\/')), '')
-                route.path = route.path.replace(/^\/?oa\//, '')
-                route.path = route.path.replace(/^\/?knowledge\//, '')
-                route.path = route.path.replace(/^\/?mcp-market\//, '')
-                // 所有路由(包括children)都统一加前缀！
-                route.path = prefix + route.path.replace(/^\//, '')
+                route.path = normalizeWithPrefix(route.path, prefix)
               }
               if (route.children && route.children.length) {
                 addPathPrefix(route.children, prefix)
@@ -57,85 +147,36 @@ const permission = {
             addPathPrefix(rdata, prefix)
           }
           if (sysCode === 'ai_tool') {
-            const prefix = '/' + 'ai' + '/'
-            addPathPrefix(sdata, prefix)
-            addPathPrefix(rdata, prefix)
-          }
-          if (sysCode === 'mcp_market') {
-            const prefix = '/mcp-market/'
+            const prefix = '/ai/'
             addPathPrefix(sdata, prefix)
             addPathPrefix(rdata, prefix)
           }
           const sidebarRoutes = filterAsyncRouter(sdata)
           const rewriteRoutes = filterAsyncRouter(rdata, false, true)
           const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
-          rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
           router.addRoutes(asyncRoutes)
 
-          if (sysCode === 'oa' && rewriteRoutes.length <= 1) {
-            const staticOaRoutes = JSON.parse(JSON.stringify(oaRoutes))
-            const filteredRoutes = filterDynamicRoutes(staticOaRoutes)
-            commit('SET_ROUTES', filteredRoutes)
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
-            commit('SET_DEFAULT_ROUTES', filteredRoutes)
-            commit('SET_TOPBAR_ROUTES', filteredRoutes)
-            resolve(filteredRoutes)
-            return
-          }
-          if (sysCode === 'ai_tool' && rewriteRoutes.length <= 1) {
-            const staticAiRoutes = JSON.parse(JSON.stringify(aiRoutes))
-            const filteredRoutes = filterDynamicRoutes(staticAiRoutes)
-            commit('SET_ROUTES', filteredRoutes)
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
-            commit('SET_DEFAULT_ROUTES', filteredRoutes)
-            commit('SET_TOPBAR_ROUTES', filteredRoutes)
-            resolve(filteredRoutes)
-            return
-          }
-          if (sysCode === 'mcp_market' && rewriteRoutes.length <= 1) {
-            const staticMcpMarketRoutes = JSON.parse(JSON.stringify(mcpMarketRoutes))
-            const filteredRoutes = filterDynamicRoutes(staticMcpMarketRoutes)
-            commit('SET_ROUTES', filteredRoutes)
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
-            commit('SET_DEFAULT_ROUTES', filteredRoutes)
-            commit('SET_TOPBAR_ROUTES', filteredRoutes)
+          const staticRoutes = staticRoutesBySysCode(sysCode)
+          if (staticRoutes && !hasRenderableRoute(rewriteRoutes)) {
+            const filteredRoutes = filterDynamicRoutes(cloneRoutes(staticRoutes))
+            commitRoutes(commit, filteredRoutes)
             resolve(filteredRoutes)
             return
           }
 
+          ensureDirectoryRedirects(rewriteRoutes)
+          ensureDirectoryRedirects(sidebarRoutes)
+          rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
           commit('SET_ROUTES', rewriteRoutes)
           commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
           commit('SET_DEFAULT_ROUTES', sidebarRoutes)
           commit('SET_TOPBAR_ROUTES', sidebarRoutes)
           resolve(rewriteRoutes)
         }).catch(() => {
-          if (sysCode === 'oa') {
-            const staticOaRoutes = JSON.parse(JSON.stringify(oaRoutes))
-            const filteredRoutes = filterDynamicRoutes(staticOaRoutes)
-            commit('SET_ROUTES', filteredRoutes)
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
-            commit('SET_DEFAULT_ROUTES', filteredRoutes)
-            commit('SET_TOPBAR_ROUTES', filteredRoutes)
-            resolve(filteredRoutes)
-            return
-          }
-          if (sysCode === 'ai_tool') {
-            const staticAiRoutes = JSON.parse(JSON.stringify(aiRoutes))
-            const filteredRoutes = filterDynamicRoutes(staticAiRoutes)
-            commit('SET_ROUTES', filteredRoutes)
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
-            commit('SET_DEFAULT_ROUTES', filteredRoutes)
-            commit('SET_TOPBAR_ROUTES', filteredRoutes)
-            resolve(filteredRoutes)
-            return
-          }
-          if (sysCode === 'mcp_market') {
-            const staticMcpMarketRoutes = JSON.parse(JSON.stringify(mcpMarketRoutes))
-            const filteredRoutes = filterDynamicRoutes(staticMcpMarketRoutes)
-            commit('SET_ROUTES', filteredRoutes)
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(filteredRoutes))
-            commit('SET_DEFAULT_ROUTES', filteredRoutes)
-            commit('SET_TOPBAR_ROUTES', filteredRoutes)
+          const staticRoutes = staticRoutesBySysCode(sysCode)
+          if (staticRoutes) {
+            const filteredRoutes = filterDynamicRoutes(cloneRoutes(staticRoutes))
+            commitRoutes(commit, filteredRoutes)
             resolve(filteredRoutes)
             return
           }
@@ -175,7 +216,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
 function filterChildren(childrenMap, lastRouter = false) {
   let children = []
   childrenMap.forEach(el => {
-    el.path = lastRouter ? lastRouter.path + '/' + el.path : el.path
+    el.path = lastRouter ? joinRoutePath(lastRouter.path, el.path) : el.path
     if (el.children && el.children.length && el.component === 'ParentView') {
       children = children.concat(filterChildren(el.children, el))
     } else {
@@ -188,12 +229,9 @@ function filterChildren(childrenMap, lastRouter = false) {
 export function filterDynamicRoutes(routes) {
   const res = []
   routes.forEach(route => {
-    // 先过滤children
     if (route.children && route.children.length > 0) {
-      // 递归过滤子路由
       const filteredChildren = []
       route.children.forEach(child => {
-        // 子路由有permissions的话检查权限
         if (child.permissions) {
           if (auth.hasPermiOr(child.permissions)) {
             filteredChildren.push(child)
@@ -203,14 +241,11 @@ export function filterDynamicRoutes(routes) {
             filteredChildren.push(child)
           }
         } else {
-          // 没有权限要求的直接保留
           filteredChildren.push(child)
         }
       })
-      // 更新过滤后的children
       route.children = filteredChildren
     }
-    // 顶层路由有permissions的话检查权限，否则直接保留
     if (route.permissions) {
       if (auth.hasPermiOr(route.permissions)) {
         res.push(route)
@@ -220,7 +255,6 @@ export function filterDynamicRoutes(routes) {
         res.push(route)
       }
     } else {
-      // 顶层路由没有权限要求（如父路由Layout），直接保留
       res.push(route)
     }
   })

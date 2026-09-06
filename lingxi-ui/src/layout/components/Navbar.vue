@@ -12,12 +12,6 @@
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
-        <el-badge :value="unreadReminderCount" :hidden="unreadReminderCount === 0" type="primary" class="reminder-badge">
-          <el-tooltip content="消息中心" effect="dark" placement="bottom">
-            <i class="el-icon-bell reminder-icon right-menu-item hover-effect" @click="goToReminder"></i>
-          </el-tooltip>
-        </el-badge>
-
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
       </template>
@@ -29,7 +23,6 @@
           <i class="el-icon-caret-bottom"></i>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="openProfile">个人中心</el-dropdown-item>
           <el-dropdown-item @click.native="setLayout" v-if="setting">
             <span>布局设置</span>
           </el-dropdown-item>
@@ -104,7 +97,6 @@ export default {
     }
   },
   mounted() {
-    this.loadUnreadReminderCount()
     window.addEventListener('openProfileDialog', this.handleOpenProfileDialog)
   },
   beforeDestroy() {
@@ -145,7 +137,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
-          location.href = withPublicPath('/index')
+          location.href = withPublicPath('/login')
         })
       }).catch(() => {})
     }

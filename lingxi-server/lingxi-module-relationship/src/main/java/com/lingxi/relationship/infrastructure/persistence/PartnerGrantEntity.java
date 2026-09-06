@@ -1,0 +1,18 @@
+package com.lingxi.relationship.infrastructure.persistence;
+
+import com.baomidou.mybatisplus.annotation.*;
+import java.time.*;
+import lombok.*;
+
+@Getter
+@Setter
+@TableName("rel_partner_grant")
+public class PartnerGrantEntity extends RelationshipLogicalDeletionEntity {
+  @TableId private Long id;
+  private Long relationId, ownerUserId, goalId;
+  private String permissionsJson;
+  private Instant expiresAt;
+  private String status;
+  @Version private Long version;
+  private LocalDateTime createdAt, updatedAt;
+}

@@ -37,16 +37,37 @@ export const constantRoutes = [
   ] }
 ]
 
+export const companionAdminRoutes = [
+  {
+    path: '/admin',
+    component: Layout,
+    redirect: '/admin/dashboard',
+    alwaysShow: true,
+    meta: { title: '灵犀伴行后台', icon: 'dashboard', sysCode: 'companion_admin' },
+    children: [
+      { path: 'dashboard', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminDashboard', meta: { title: '运营总览', icon: 'dashboard', module: 'dashboard' }, permissions: ['dashboard:read'] },
+      { path: 'users', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminUsers', meta: { title: '用户与会员', icon: 'user', module: 'users' }, permissions: ['identity:user:read', 'identity:risk:manage', 'identity:age-appeal:manage', 'relationship:guardian-dispute:manage'] },
+      { path: 'templates', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminTemplates', meta: { title: '目标模板中心', icon: 'tree', module: 'templates' }, permissions: ['content:template:read'] },
+      { path: 'ai-config', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminAiConfig', meta: { title: 'AI 配置中心', icon: 'edit', module: 'aiConfig' }, permissions: ['config.release.create', 'config.release.validate', 'config.release.approve', 'config.release.publish', 'config.release.rollback'] },
+      { path: 'safety', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminSafety', meta: { title: '内容安全中心', icon: 'monitor', module: 'safety' }, permissions: ['safety:case:manage'] },
+      { path: 'engagement', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminEngagement', meta: { title: '消息与触达', icon: 'bell', module: 'engagement' }, permissions: ['message:campaign:manage'] },
+      { path: 'commerce', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminCommerce', meta: { title: '订单与权益', icon: 'money', module: 'commerce' }, permissions: ['commerce:read', 'commerce:catalog:manage', 'commerce:reconcile:manage', 'commerce:entitlement:adjust', 'commerce.refund.confirm'] },
+      { path: 'support', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminSupport', meta: { title: '客服与反馈', icon: 'message', module: 'support' }, permissions: ['support.ticket.manage', 'support:ticket:reply'] },
+      { path: 'analytics', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminAnalytics', meta: { title: '数据分析', icon: 'chart', module: 'analytics' }, permissions: ['analytics:read', 'experiment:manage'] },
+      { path: 'system', component: () => import('@/views/companion-admin/index'), name: 'CompanionAdminSystem', meta: { title: '系统与合规', icon: 'setting', module: 'system' }, permissions: ['audit:read', 'identity:admin:manage', 'compliance:manage', 'app:release:manage', 'feature:flag:manage'] }
+    ]
+  }
+]
+
 export const knowledgeRoutes = [
   {
     path: '/knowledge',
     component: Layout,
-    redirect: 'noredirect',
+    redirect: '/knowledge/document',
     hidden: true,
     children: [
       { path: 'category', component: () => import('@/views/knowledge/category/index'), name: 'KnowledgeCategory', meta: { title: '分类管理', icon: 'tree' }, permissions: ['knowledge:category:list'] },
       { path: 'document', component: () => import('@/views/knowledge/document/index'), name: 'KnowledgeDocument', meta: { title: '文档管理', icon: 'documentation' }, permissions: ['knowledge:document:list'] },
-      { path: 'qa', component: () => import('@/views/knowledge/qa/index'), name: 'KnowledgeQa', meta: { title: '知识问答', icon: 'message' }, permissions: ['knowledge:qa:chat', 'knowledge:document:list'] },
       { path: 'operation', component: () => import('@/views/knowledge/operation/index'), name: 'KnowledgeOperation', meta: { title: '知识运营中心', icon: 'chart' }, permissions: ['knowledge:operation:view'] }
     ]
   }
@@ -56,7 +77,7 @@ export const oaRoutes = [
   {
     path: '/oa',
     component: Layout,
-    redirect: 'noredirect',
+    redirect: '/oa/dashboard',
     hidden: true,
     children: [
       { path: 'dashboard', component: () => import('@/views/oa/dashboard/index'), name: 'OaDashboard', meta: { title: 'OA工作台', icon: 'dashboard', sysCode: 'oa' }, permissions: ['oa:dashboard:view'] },
@@ -78,7 +99,7 @@ export const aiRoutes = [
   {
     path: '/ai',
     component: Layout,
-    redirect: 'noredirect',
+    redirect: '/ai/document',
     hidden: true,
     children: [
       { path: 'document', component: () => import('@/views/ai/document/index'), name: 'AiDocument', meta: { title: 'AI公文助手', icon: 'documentation', sysCode: 'ai_tool' }, permissions: ['ai:document:view'] },
@@ -91,17 +112,9 @@ export const aiRoutes = [
   { path: '/ai', redirect: '/ai/document', hidden: true }
 ]
 
-export const mcpMarketRoutes = [
-  {
-    path: '/mcp-market',
-    component: Layout,
-    redirect: '/mcp-market/tools',
-    hidden: true,
-    children: [
-      { path: 'tools', component: () => import('@/views/ai/mcp-market/index'), name: 'McpToolMarket', meta: { title: 'MCP工具市场', icon: 'list', sysCode: 'mcp_market' }, permissions: ['ai:mcp:market:list'] }
-    ]
-  },
-  { path: '/mcp-market', redirect: '/mcp-market/tools', hidden: true }
+export const mcpMarketRedirectRoutes = [
+  { path: '/mcp-market', redirect: '/ai/mcp-market', hidden: true },
+  { path: '/mcp-market/tools', redirect: '/ai/mcp-market', hidden: true }
 ]
 
 export const dynamicRoutes = [
@@ -117,9 +130,18 @@ let routerReplace = Router.prototype.replace
 Router.prototype.push = function push(location) { return routerPush.call(this, location).catch(err => err) }
 Router.prototype.replace = function replace(location) { return routerReplace.call(this, location).catch(err => err) }
 
-export default new Router({
+const createRouter = () => new Router({
   mode: 'history',
   base: process.env.VUE_APP_PUBLIC_PATH || '/',
   scrollBehavior: () => ({ y: 0 }),
-  routes: [...constantRoutes, ...knowledgeRoutes, ...oaRoutes, ...aiRoutes, ...mcpMarketRoutes]
+  routes: [...constantRoutes, ...companionAdminRoutes, ...knowledgeRoutes, ...oaRoutes, ...aiRoutes, ...mcpMarketRedirectRoutes]
 })
+
+const router = createRouter()
+
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher
+}
+
+export default router

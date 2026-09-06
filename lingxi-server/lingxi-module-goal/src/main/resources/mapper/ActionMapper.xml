@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.goal.infrastructure.persistence.ActionMapper">
+    <insert id="insertBatch">
+        INSERT INTO goal_action
+        (id,goal_id,plan_version_id,milestone_id,client_key,title,recurrence_type,weekdays_json,
+         start_date,end_date,local_time,timezone,status,version,created_at,updated_at) VALUES
+        <foreach collection="items" item="i" separator=",">
+            (#{i.id},#{i.goalId},#{i.planVersionId},#{i.milestoneId},#{i.clientKey},#{i.title},
+             #{i.recurrenceType},#{i.weekdaysJson},#{i.startDate},#{i.endDate},#{i.localTime},
+             #{i.timezone},#{i.status},#{i.version},#{i.createdAt},#{i.updatedAt})
+        </foreach>
+    </insert>
+</mapper>

@@ -68,10 +68,12 @@ const user = {
       return new Promise((resolve, reject) => {
         login(username, password, code, uuid).then(res => {
           let data = res.data
-          setToken(data.access_token)
-          commit('SET_TOKEN', data.access_token)
-          setExpiresIn(data.expires_in)
-          commit('SET_EXPIRES_IN', data.expires_in)
+          setToken(data.accessToken)
+          commit('SET_TOKEN', data.accessToken)
+          const expiresIn = Math.max(0, Math.floor((new Date(data.expiresAt).getTime() - Date.now()) / 1000))
+          setExpiresIn(expiresIn)
+          commit('SET_EXPIRES_IN', expiresIn)
+          commit('SET_SYS_CODE', 'companion_admin')
           resolve()
         }).catch(error => {
           reject(error)
@@ -83,36 +85,20 @@ const user = {
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
-          const user = res.user
-          const avatar = (isEmpty(user.avatar)) ? defAva : filePreviewUrl(user.avatar)
-          if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', res.roles)
-            commit('SET_PERMISSIONS', res.permissions)
+          const user = res.data
+          const avatar = defAva
+          if (user.roles && user.roles.length > 0) {
+            commit('SET_ROLES', user.roles)
+            commit('SET_PERMISSIONS', user.permissions || [])
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
-          commit('SET_ID', user.userId)
-          commit('SET_DEPT_ID', user.deptId)
-          commit('SET_NAME', user.userName)
-          commit('SET_NICK_NAME', user.nickName)
+          commit('SET_ID', user.adminId)
+          commit('SET_DEPT_ID', '')
+          commit('SET_NAME', user.username)
+          commit('SET_NICK_NAME', user.displayName)
           commit('SET_AVATAR', avatar)
-          const openProfileDialog = () => {
-            setTimeout(() => {
-              window.dispatchEvent(new CustomEvent('openProfileDialog', { detail: { tab: 'resetPwd' } }))
-            }, 300)
-          }
-          /* 初始密码提示 */
-          if(res.isDefaultModifyPwd) {
-            MessageBox.confirm('您的密码还是初始密码，请修改密码！',  '安全提示', {  confirmButtonText: '确定',  cancelButtonText: '取消',  type: 'warning' }).then(() => {
-              openProfileDialog()
-            }).catch(() => {})
-          }
-          /* 过期密码提示 */
-          if(!res.isDefaultModifyPwd && res.isPasswordExpired) {
-            MessageBox.confirm('您的密码已过期，请尽快修改密码！',  '安全提示', {  confirmButtonText: '确定',  cancelButtonText: '取消',  type: 'warning' }).then(() => {
-              openProfileDialog()
-            }).catch(() => {})
-          }
+          commit('SET_SYS_CODE', 'companion_admin')
           resolve(res)
         }).catch(error => {
           reject(error)
