@@ -50,7 +50,6 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./uploadPath:/app/uploadPath
-      - /data/mingus/lingxi/logs:/app/logs
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
