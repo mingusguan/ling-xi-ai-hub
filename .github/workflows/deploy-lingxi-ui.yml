@@ -1,0 +1,109 @@
+name: LingXi Admin UI Build & Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/workflows/deploy-lingxi-ui.yml'
+      - 'lingxi-ui/**'
+
+concurrency:
+  group: lingxi-ui-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build And Deploy Admin UI
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      NODE_OPTIONS: --openssl-legacy-provider --max_old_space_size=8192
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: lingxi-ui/package-lock.json
+
+      - name: Install dependencies
+        working-directory: lingxi-ui
+        run: npm ci
+
+      - name: Build
+        working-directory: lingxi-ui
+        run: npx vue-cli-service build
+
+      - name: Package build output
+        shell: bash
+        run: |
+          test -s lingxi-ui/dist/index.html
+          tar -C lingxi-ui/dist -czf "lingxi-ui-${GITHUB_SHA}.tar.gz" .
+
+      - name: Configure SSH
+        shell: bash
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SERVER_SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -T 10 -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload build output
+        shell: bash
+        run: |
+          ssh "$SERVER_USERNAME@$SERVER_HOST" \
+            "mkdir -p /data/mingus/nginx/html/lingxi"
+          scp "lingxi-ui-${GITHUB_SHA}.tar.gz" \
+            "$SERVER_USERNAME@$SERVER_HOST:/data/mingus/nginx/html/lingxi/.lingxi-ui-${GITHUB_SHA}.tar.gz"
+
+      - name: Activate release
+        shell: bash
+        run: |
+          ssh "$SERVER_USERNAME@$SERVER_HOST" \
+            "GITHUB_SHA='$GITHUB_SHA' sh -s" <<'REMOTE'
+          set -eu
+
+          base_dir=/data/mingus/nginx/html/lingxi
+          archive="$base_dir/.lingxi-ui-$GITHUB_SHA.tar.gz"
+          release="$base_dir/.dist-$GITHUB_SHA"
+          target="$base_dir/dist"
+          previous="$base_dir/.dist-previous"
+
+          docker exec mingus-nginx nginx -t
+
+          rm -rf "$release"
+          mkdir -p "$release"
+          tar -xzf "$archive" -C "$release"
+          test -s "$release/index.html"
+          chmod -R a+rX "$release"
+
+          rm -rf "$previous"
+          if [ -d "$target" ]; then
+            mv "$target" "$previous"
+          fi
+
+          if mv "$release" "$target"; then
+            rm -f "$archive"
+          else
+            if [ -d "$previous" ]; then
+              mv "$previous" "$target"
+            fi
+            exit 1
+          fi
+
+          docker exec mingus-nginx nginx -s reload
+          test -s "$target/index.html"
+          echo "Admin UI deployed: $GITHUB_SHA"
+          REMOTE
