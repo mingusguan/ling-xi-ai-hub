@@ -14,6 +14,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /** 验证身份供应商桥接层签发的 HMAC 断言。 */
 @Component
@@ -24,6 +25,7 @@ public class HmacIdentityAssertionVerifier implements IdentityAssertionVerifier 
   private final byte[] secret;
   private final Clock clock;
 
+  @Autowired
   public HmacIdentityAssertionVerifier(
       ObjectMapper objectMapper, @Value("${lingxi.identity.assertion-secret}") String secret) {
     this(objectMapper, secret, Clock.systemUTC());

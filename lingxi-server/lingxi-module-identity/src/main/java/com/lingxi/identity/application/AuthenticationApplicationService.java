@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HexFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,7 @@ public class AuthenticationApplicationService implements AuthenticationFacade {
   private final Duration recentAuthenticationWindow;
   private final LoginRiskRecorder riskRecorder;
 
+  @Autowired
   public AuthenticationApplicationService(
       IdentitySecurityRepository repository,
       IdentityApplicationService identityService,

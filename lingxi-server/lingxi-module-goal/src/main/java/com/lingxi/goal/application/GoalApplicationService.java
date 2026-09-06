@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /** 目标、计划、行动、打卡和复盘应用服务。 */
 @Service
@@ -30,6 +31,7 @@ public class GoalApplicationService implements GoalFacade {
   private final ObjectMapper objectMapper;
   private final Clock clock;
 
+  @Autowired
   public GoalApplicationService(
       GoalRepository repository,
       IdentityFacade identityFacade,

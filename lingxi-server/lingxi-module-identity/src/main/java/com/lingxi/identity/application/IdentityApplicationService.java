@@ -29,6 +29,7 @@ import java.util.HexFormat;
 import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /** 身份准入和账号状态应用服务。 */
 @Service
@@ -39,6 +40,7 @@ public class IdentityApplicationService implements IdentityFacade {
   private final DomainEventPublisher eventPublisher;
   private final Clock clock;
 
+  @Autowired
   public IdentityApplicationService(
       IdentityRepository repository,
       AgeAccessPolicy ageAccessPolicy,

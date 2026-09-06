@@ -16,6 +16,7 @@ import java.time.*;
 import java.util.HexFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /** 隐私权利请求的创建、查询与可恢复任务编排入口。 */
 @Service
@@ -33,6 +34,7 @@ public class PrivacyApplicationService implements PrivacyFacade {
   private final PrivacyExportStore exportStore;
   private final PrivacyScopeParser scopeParser;
 
+  @Autowired
   public PrivacyApplicationService(
       IdentitySecurityRepository repository,
       IdentityFacade identityFacade,
