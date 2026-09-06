@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.identity.infrastructure.persistence.PrivacyExportMapper">
+  <insert id="upsert"
+      parameterType="com.lingxi.identity.infrastructure.persistence.PrivacyExportEntity">
+    INSERT INTO id_privacy_export (
+      request_id, user_id, nonce, cipher_text, expires_at, created_at, deleted
+    ) VALUES (
+      #{requestId}, #{userId}, #{nonce}, #{cipherText}, #{expiresAt}, #{createdAt}, 0
+    )
+    ON DUPLICATE KEY UPDATE
+      user_id = VALUES(user_id),
+      nonce = VALUES(nonce),
+      cipher_text = VALUES(cipher_text),
+      expires_at = VALUES(expires_at),
+      created_at = VALUES(created_at),
+      deleted = 0
+  </insert>
+</mapper>

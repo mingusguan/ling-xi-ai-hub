@@ -1,0 +1,30 @@
+package com.lingxi.commerce.infrastructure.persistence;
+
+import com.lingxi.commerce.api.AdminCommerceManagementFacade.*;
+import com.lingxi.commerce.domain.CommerceAdminWriteRepository;
+import com.lingxi.kernel.BusinessException;
+import com.lingxi.kernel.PageResult;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+/** 商品、价格、促销和对账事实表仓储。 */
+@Repository
+public class JdbcCommerceAdminWriteRepository implements CommerceAdminWriteRepository {
+  private final JdbcTemplate jdbc;
+  public JdbcCommerceAdminWriteRepository(JdbcTemplate jdbc){this.jdbc=jdbc;}
+  @Override public ManagedResult saveProduct(long id,ProductCommand c,LocalDateTime now){long next=c.id()==0?0:c.expectedVersion()+1;if(c.id()==0)jdbc.update("INSERT INTO pay_product(id,product_key,name,scene,billing_period,age_policy,entitlement_key,entitlement_amount,status,version,deleted,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,0,0,?,?)",id,c.productKey(),c.name(),c.scene(),c.billingPeriod(),c.agePolicy(),c.entitlementKey(),c.entitlementAmount(),c.status(),now,now);else updated(jdbc.update("UPDATE pay_product SET name=?,scene=?,billing_period=?,age_policy=?,entitlement_key=?,entitlement_amount=?,status=?,version=?,updated_at=? WHERE id=? AND version=? AND deleted=0",c.name(),c.scene(),c.billingPeriod(),c.agePolicy(),c.entitlementKey(),c.entitlementAmount(),c.status(),next,now,c.id(),c.expectedVersion()));return new ManagedResult(id,"PRODUCT",c.productKey(),c.status(),next,now);}
+  @Override public ManagedResult savePrice(long id,PriceCommand c,LocalDateTime now){long next=c.id()==0?0:c.expectedVersion()+1;if(c.id()==0)jdbc.update("INSERT INTO pay_price(id,product_id,version_no,amount_minor,currency,status,version,deleted,created_at,updated_at) VALUES(?,?,?,?,?,?,0,0,?,?)",id,c.productId(),c.versionNo(),c.amountMinor(),c.currency(),c.status(),now,now);else updated(jdbc.update("UPDATE pay_price SET status=?,version=?,updated_at=? WHERE id=? AND version=? AND deleted=0",c.status(),next,now,c.id(),c.expectedVersion()));return new ManagedResult(id,"PRICE",c.productId()+":"+c.versionNo(),c.status(),next,now);}
+  @Override public ManagedResult savePromotion(long id,PromotionCommand c,LocalDateTime now){long next=c.id()==0?0:c.expectedVersion()+1;if(c.id()==0)jdbc.update("INSERT INTO pay_promotion(id,promotion_key,name,promotion_type,rule_json,audience_rule,starts_at,ends_at,status,version,deleted,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,0,0,?,?)",id,c.promotionKey(),c.name(),c.promotionType(),c.ruleJson(),c.audienceRule(),c.startsAt(),c.endsAt(),c.status(),now,now);else updated(jdbc.update("UPDATE pay_promotion SET name=?,promotion_type=?,rule_json=?,audience_rule=?,starts_at=?,ends_at=?,status=?,version=?,updated_at=? WHERE id=? AND version=? AND deleted=0",c.name(),c.promotionType(),c.ruleJson(),c.audienceRule(),c.startsAt(),c.endsAt(),c.status(),next,now,c.id(),c.expectedVersion()));return new ManagedResult(id,"PROMOTION",c.promotionKey(),c.status(),next,now);}
+  @Override public PageResult<PromotionSummary> promotions(String status,int page,int size){List<Object>a=new ArrayList<>();String w=" WHERE deleted=0";if(status!=null&&!status.isBlank()){w+=" AND status=?";a.add(status);}long total=value(jdbc.queryForObject("SELECT COUNT(*) FROM pay_promotion"+w,Long.class,a.toArray()));a.add(size);a.add((page-1)*size);List<PromotionSummary>items=jdbc.query("SELECT * FROM pay_promotion"+w+" ORDER BY updated_at DESC LIMIT ? OFFSET ?",(rs,row)->promotion(rs),a.toArray());return new PageResult<>(items,total,page,size);}
+  @Override public PageResult<ReconciliationSummary> reconciliationCases(String status,int page,int size){List<Object>a=new ArrayList<>();String w=" WHERE deleted=0";if(status!=null&&!status.isBlank()){w+=" AND status=?";a.add(status);}long total=value(jdbc.queryForObject("SELECT COUNT(*) FROM pay_reconciliation_case"+w,Long.class,a.toArray()));a.add(size);a.add((page-1)*size);List<ReconciliationSummary>items=jdbc.query("SELECT * FROM pay_reconciliation_case"+w+" ORDER BY created_at DESC LIMIT ? OFFSET ?",(rs,row)->reconciliation(rs),a.toArray());return new PageResult<>(items,total,page,size);}
+  @Override public ReconciliationSummary resolveReconciliation(long adminId,ReconciliationCommand c,LocalDateTime now){updated(jdbc.update("UPDATE pay_reconciliation_case SET status='RESOLVED',reviewer_admin_id=?,resolution=?,version=version+1,updated_at=? WHERE id=? AND version=? AND deleted=0 AND status<>'RESOLVED'",adminId,c.resolution(),now,c.id(),c.expectedVersion()));return jdbc.query("SELECT * FROM pay_reconciliation_case WHERE id=? AND deleted=0",(rs,row)->reconciliation(rs),c.id()).stream().findFirst().orElseThrow();}
+  private PromotionSummary promotion(ResultSet r)throws SQLException{return new PromotionSummary(r.getLong("id"),r.getString("promotion_key"),r.getString("name"),r.getString("promotion_type"),r.getString("rule_json"),r.getString("audience_rule"),r.getObject("starts_at",LocalDateTime.class),r.getObject("ends_at",LocalDateTime.class),r.getString("status"),r.getLong("version"),r.getObject("updated_at",LocalDateTime.class));}
+  private ReconciliationSummary reconciliation(ResultSet r)throws SQLException{long reviewer=r.getLong("reviewer_admin_id");boolean noReviewer=r.wasNull();return new ReconciliationSummary(r.getLong("id"),r.getString("case_no"),r.getString("channel"),r.getString("business_type"),r.getString("business_id"),r.getLong("expected_minor"),r.getLong("actual_minor"),r.getString("currency"),r.getString("difference_reason"),r.getString("status"),noReviewer?null:reviewer,r.getString("resolution"),r.getLong("version"),r.getObject("created_at",LocalDateTime.class),r.getObject("updated_at",LocalDateTime.class));}
+  private long value(Long v){return v==null?0:v;}
+  private void updated(int n){if(n!=1)throw new BusinessException("PAY_ADMIN_RESOURCE_CONFLICT","商业化资源已变化，请刷新后重试");}
+}

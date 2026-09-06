@@ -1,0 +1,72 @@
+-- 用户确认所有隐私删除统一采用业务不可恢复的逻辑删除。
+ALTER TABLE id_user ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE id_age_verification ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE id_login_identity ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE id_device ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE id_session ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE id_user_consent ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE id_privacy_export ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE goal_goal ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE goal_plan_version ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE goal_milestone ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE goal_action ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE goal_action_occurrence ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE goal_check_in ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE goal_review ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE ai_conversation ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE ai_message ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE ai_agent_run ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE ai_action_proposal ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE ai_run_event ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE ai_memory ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE ai_safety_event ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE eng_notification_rule ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE eng_notification_task ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE eng_notification_delivery ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE eng_inbox_message ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE eng_calendar_binding ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE eng_calendar_event_binding ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE eng_sync_cursor ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE eng_offline_command ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE rel_guardian_relation ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE rel_guardian_permission ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE rel_partner_relation ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE rel_partner_grant ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE rel_partner_interaction ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE rel_share_link ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE rel_block_relation ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE rel_report ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE content_file ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE content_file_reference ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE content_file_derivative ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE content_import_job ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE content_export_job ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE pay_order ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE pay_order_item ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE pay_transaction ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE pay_refund ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE pay_subscription ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE pay_entitlement ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE pay_entitlement_ledger ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE pay_channel_callback ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+ALTER TABLE ops_support_ticket ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE ops_audit_log ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0;
+
+CREATE TABLE id_privacy_deletion_audit (
+    id BIGINT NOT NULL,
+    request_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    module_name VARCHAR(32) NOT NULL,
+    affected_rows INT NOT NULL,
+    completed_at DATETIME(3) NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_id_privacy_deletion_audit_step (request_id, module_name),
+    KEY idx_id_privacy_deletion_audit_user (user_id, completed_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='隐私逻辑删除模块执行审计';

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.identity.infrastructure.persistence.SessionMapper">
+    <update id="tombstoneByUser">
+        UPDATE id_session
+        SET family_id = SHA2(CONCAT('deleted:', #{requestId}, ':family:', id), 256),
+            access_token_hash = SHA2(CONCAT('deleted:', #{requestId}, ':access:', id), 256),
+            refresh_token_hash = SHA2(CONCAT('deleted:', #{requestId}, ':refresh:', id), 256),
+            previous_refresh_token_hash = CASE
+                WHEN previous_refresh_token_hash IS NULL THEN NULL
+                ELSE SHA2(CONCAT('deleted:', #{requestId}, ':previous:', id), 256)
+            END,
+            revoked_at = COALESCE(revoked_at, UTC_TIMESTAMP(3)),
+            revoke_reason = 'ACCOUNT_CLOSED',
+            deleted = 1,
+            updated_at = UTC_TIMESTAMP(3)
+        WHERE user_id = #{userId} AND deleted = 0
+    </update>
+</mapper>

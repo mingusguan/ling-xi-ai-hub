@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.identity.infrastructure.persistence.LoginIdentityMapper">
+    <update id="tombstoneByUser">
+        UPDATE id_login_identity
+        SET subject_hash = SHA2(CONCAT('deleted:', #{requestId}, ':login:', id), 256),
+            deleted = 1
+        WHERE user_id = #{userId} AND deleted = 0
+    </update>
+</mapper>

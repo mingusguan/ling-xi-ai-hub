@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.commerce.infrastructure.persistence.EntitlementMapper">
+    <!-- 授予和续期必须在单条 SQL 中完成，防止并发覆盖余额或缩短有效期。 -->
+    <insert id="grant">
+        INSERT INTO pay_entitlement
+            (id, user_id, resource_key, balance, expires_at, version, created_at, updated_at)
+        VALUES
+            (#{id}, #{user}, #{resource}, #{delta}, #{expires}, 0, #{now}, #{now})
+        ON DUPLICATE KEY UPDATE
+            balance = balance + VALUES(balance),
+            expires_at = CASE
+                WHEN expires_at IS NULL OR VALUES(expires_at) > expires_at THEN VALUES(expires_at)
+                ELSE expires_at
+            END,
+            version = version + 1,
+            updated_at = VALUES(updated_at)
+    </insert>
+
+    <!-- 余额、有效期和扣减条件由数据库原子判断，禁止应用层先查后扣。 -->
+    <update id="consume">
+        UPDATE pay_entitlement
+        SET balance = balance - #{amount},
+            version = version + 1,
+            updated_at = #{now}
+        WHERE user_id = #{user}
+          AND resource_key = #{resource}
+          AND deleted = 0
+          AND balance >= #{amount}
+          AND (expires_at IS NULL OR expires_at > UTC_TIMESTAMP(6))
+    </update>
+</mapper>

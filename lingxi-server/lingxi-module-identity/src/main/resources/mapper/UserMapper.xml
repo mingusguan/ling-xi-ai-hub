@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.identity.infrastructure.persistence.UserMapper">
+    <update id="tombstoneClosedUser">
+        UPDATE id_user
+        SET public_id = SHA2(CONCAT('deleted:', #{requestId}, ':public:', id), 256),
+            registration_key = SHA2(CONCAT('deleted:', #{requestId}, ':registration:', id), 256),
+            registration_digest = SHA2(CONCAT('deleted:', #{requestId}, ':digest:', id), 256),
+            deleted = 1,
+            updated_at = UTC_TIMESTAMP(3)
+        WHERE id = #{userId} AND status = 'CLOSED' AND deleted = 0
+    </update>
+
+    <select id="countDeletedUser" resultType="int">
+        SELECT COUNT(*) FROM id_user WHERE id = #{userId} AND deleted = 1
+    </select>
+</mapper>

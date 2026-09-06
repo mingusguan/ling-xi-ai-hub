@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingxi.relationship.infrastructure.persistence.ShareLinkMapper">
+    <!-- 单条原子更新同时校验有效期和访问次数，防止并发超发。 -->
+    <update id="consume">
+        UPDATE rel_share_link
+        SET visit_count = visit_count + 1,
+            status = CASE
+                WHEN visit_limit IS NOT NULL AND visit_count + 1 >= visit_limit THEN 'EXHAUSTED'
+                ELSE status
+            END,
+            version = version + 1,
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+          AND deleted = 0
+          AND status = 'ACTIVE'
+          AND expires_at > #{now}
+          AND (visit_limit IS NULL OR visit_count &lt; visit_limit)
+    </update>
+</mapper>
