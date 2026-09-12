@@ -193,3 +193,62 @@ export interface PrivacyRequestResult {
   deadline: string;
   resultReference: string | null;
 }
+
+/**
+ * 复盘视图。
+ *
+ * 注意：服务端把 64 位标识序列化为 JSON 字符串（`JacksonLongAsStringConfiguration`），
+ * 因此 `reviewId`/`goalId` 在真实响应中是字符串，需要按字符串处理并原样回传。
+ */
+export interface ReviewResult {
+  reviewId: string;
+  goalId: string;
+  periodKey: string;
+  status: string;
+  conclusionJson: string | null;
+  completedAt: string | null;
+  inputSnapshotJson: string | null;
+  createdAt: string | null;
+}
+
+/** 客服工单视图；`ticketId`/`userId`/`version` 在响应中为字符串。 */
+export interface SupportTicketResult {
+  ticketId: string;
+  ticketNo: string;
+  userId: string;
+  category: string;
+  subject: string;
+  status: string;
+  priority: string;
+  assigneeAdminId: string | null;
+  version: string;
+  createdAt: string;
+}
+
+export type GuardianPermissionType =
+  | 'VIEW_GOAL_PROGRESS'
+  | 'MANAGE_SCHEDULE'
+  | 'RECEIVE_SAFETY_ALERTS';
+
+/** 监护关系视图；标识字段在响应中为字符串。 */
+export interface GuardianRelationResult {
+  relationId: string;
+  teenUserId: string;
+  guardianUserId: string | null;
+  status: string;
+  permissions: GuardianPermissionType[];
+  effectiveAt: string | null;
+}
+
+export type NotificationChannel = 'INBOX' | 'PUSH';
+
+/** 通知偏好视图；`userId`/`version` 在响应中为字符串。 */
+export interface NotificationPreferenceResult {
+  userId: string;
+  scene: string;
+  channels: NotificationChannel[];
+  quietStart: string | null;
+  quietEnd: string | null;
+  timezone: string;
+  version: string;
+}

@@ -8,6 +8,9 @@ import {
   ConversationResult,
   GoalResult,
   GuardianInvitationResult,
+  GuardianRelationResult,
+  NotificationChannel,
+  NotificationPreferenceResult,
   NotificationResult,
   OccurrenceResult,
   PageResult,
@@ -16,7 +19,9 @@ import {
   PrivacyRequestResult,
   PrivacyRequestType,
   RegisteredUserResult,
-  SessionTokens
+  ReviewResult,
+  SessionTokens,
+  SupportTicketResult
 } from '../model/Types';
 
 /** 与 PC Web 完全一致的接口封装；两端不得出现业务能力差异。 */
@@ -138,6 +143,60 @@ export class LingxiApi {
       query['goalId'] = `${goalId}`;
     }
     return this.http.send<PageResult<AchievementResult>>('/api/v1/achievements', { query: query });
+  }
+
+  /** 分页查询本人复盘，可按目标过滤。 */
+  listReviews(goalId: string | null, page: number, pageSize: number): Promise<PageResult<ReviewResult>> {
+    const query: Record<string, string> = { page: `${page}`, pageSize: `${pageSize}` };
+    if (goalId !== null) {
+      query['goalId'] = goalId;
+    }
+    return this.http.send<PageResult<ReviewResult>>('/api/v1/reviews', { query: query });
+  }
+
+  /** 查询单条复盘详情。 */
+  getReview(reviewId: string): Promise<ReviewResult> {
+    return this.http.send<ReviewResult>(`/api/v1/reviews/${reviewId}`);
+  }
+
+  /** 分页查询本人客服工单，按创建时间倒序。 */
+  listSupportTickets(page: number, pageSize: number): Promise<PageResult<SupportTicketResult>> {
+    return this.http.send<PageResult<SupportTicketResult>>('/api/v1/support-tickets', {
+      query: { page: `${page}`, pageSize: `${pageSize}` }
+    });
+  }
+
+  /** 分页查询与本人相关的监护关系（青少年侧与监护人侧）。 */
+  listGuardianRelations(page: number, pageSize: number): Promise<PageResult<GuardianRelationResult>> {
+    return this.http.send<PageResult<GuardianRelationResult>>('/api/v1/guardian-relations', {
+      query: { page: `${page}`, pageSize: `${pageSize}` }
+    });
+  }
+
+  /**
+   * 保存通知偏好。
+   *
+   * `expectedVersion` 首次传 `'0'`，之后必须回传上次响应中的 `version`，否则服务端按乐观并发返回 409。
+   */
+  updateNotificationPreference(
+    scene: string,
+    channels: NotificationChannel[],
+    quietStart: string | null,
+    quietEnd: string | null,
+    timezone: string,
+    expectedVersion: string
+  ): Promise<NotificationPreferenceResult> {
+    return this.http.send<NotificationPreferenceResult>('/api/v1/notification-preferences', {
+      method: http.RequestMethod.PUT,
+      body: {
+        scene: scene,
+        channels: channels,
+        quietStart: quietStart,
+        quietEnd: quietEnd,
+        timezone: timezone,
+        expectedVersion: expectedVersion
+      }
+    });
   }
 
   listNotifications(cursor: number, limit: number): Promise<NotificationResult[]> {
