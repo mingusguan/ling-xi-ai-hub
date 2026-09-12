@@ -61,13 +61,21 @@ public class MybatisEngagementRepository implements EngagementRepository {
 
   @Override
   public boolean updatePreference(NotificationPreference p, long previous) {
-    NotificationPreferenceEntity e = preferenceEntity(p);
+    // 显式乐观并发：WHERE 带 previous 版本并在 SET 写入领域对象的新版本。
+    // 必须传 null 实体，否则 MyBatis-Plus 的 @Version 优化锁会再自增一次并追加重复版本条件
+    // （生成 `... AND version = ? AND version = ?`），导致永远匹配不到行。
     return preferenceMapper.update(
-            e,
+            null,
             Wrappers.<NotificationPreferenceEntity>lambdaUpdate()
                 .eq(NotificationPreferenceEntity::getUserId, p.getUserId())
                 .eq(NotificationPreferenceEntity::getScene, p.getScene())
-                .eq(NotificationPreferenceEntity::getVersion, previous))
+                .eq(NotificationPreferenceEntity::getVersion, previous)
+                .set(NotificationPreferenceEntity::getChannelsJson, write(p.getChannels()))
+                .set(NotificationPreferenceEntity::getQuietStart, p.getQuietStart())
+                .set(NotificationPreferenceEntity::getQuietEnd, p.getQuietEnd())
+                .set(NotificationPreferenceEntity::getTimezone, p.getTimezone())
+                .set(NotificationPreferenceEntity::getVersion, p.getVersion())
+                .set(NotificationPreferenceEntity::getUpdatedAt, p.getUpdatedAt()))
         == 1;
   }
 
@@ -208,12 +216,17 @@ public class MybatisEngagementRepository implements EngagementRepository {
 
   @Override
   public boolean updateCalendar(CalendarBinding b, long previous) {
-    CalendarBindingEntity e = calendarEntity(b);
+    // 与通知偏好同理：显式版本条件配合领域对象的新版本，不能传实体，否则 @Version 会重复自增与追加条件。
     return calendarMapper.update(
-            e,
+            null,
             Wrappers.<CalendarBindingEntity>lambdaUpdate()
                 .eq(CalendarBindingEntity::getId, b.getId())
-                .eq(CalendarBindingEntity::getVersion, previous))
+                .eq(CalendarBindingEntity::getVersion, previous)
+                .set(CalendarBindingEntity::getStatus, b.getStatus().name())
+                .set(CalendarBindingEntity::getCredentialReference, b.getCredentialReference())
+                .set(CalendarBindingEntity::getDeleteCreatedEvents, b.isDeleteCreatedEvents())
+                .set(CalendarBindingEntity::getVersion, b.getVersion())
+                .set(CalendarBindingEntity::getUpdatedAt, b.getUpdatedAt()))
         == 1;
   }
 

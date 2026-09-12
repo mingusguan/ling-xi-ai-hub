@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import type { NotificationResult, StreamEvent, SyncChangeResult } from '@lingxi/api-client';
+import type {
+  NotificationChannel,
+  NotificationPreferenceResult,
+  NotificationResult,
+  StreamEvent,
+  SyncChangeResult
+} from '@lingxi/api-client';
 import { api } from '@/api/client';
 import { useSessionStore } from '@/stores/session';
 
@@ -12,6 +18,10 @@ export const useEngagementStore = defineStore('engagement', () => {
   const cursor = ref<string>(window.localStorage.getItem(CURSOR_KEY) ?? '0');
   const streaming = ref(false);
   const errorMessage = ref<string | null>(null);
+  /** 最近一次保存成功的通知偏好。 */
+  const preference = ref<NotificationPreferenceResult | null>(null);
+  /** 通知偏好乐观并发版本；首次保存传 0，之后必须回传服务端返回值。 */
+  const preferenceVersion = ref<string>('0');
   let controller: AbortController | null = null;
 
   const unreadCount = computed(() => notifications.value.filter((item) => item.readAt === null).length);
@@ -96,6 +106,33 @@ export const useEngagementStore = defineStore('engagement', () => {
     });
   }
 
+  /**
+   * 更新通知偏好。
+   *
+   * <p>服务端按乐观并发校验 `expectedVersion`：首次创建忽略该值，之后必须回传服务端返回的最新版本，
+   * 因此这里在成功后同步保存版本，避免连续保存时误报冲突。
+   */
+  async function updatePreference(input: {
+    scene: string;
+    channels: NotificationChannel[];
+    quietStart: string | null;
+    quietEnd: string | null;
+    timezone: string;
+  }): Promise<NotificationPreferenceResult | null> {
+    try {
+      const saved = await api.engagement.updatePreference({
+        ...input,
+        expectedVersion: preferenceVersion.value
+      });
+      preference.value = saved;
+      preferenceVersion.value = saved.version;
+      return saved;
+    } catch (error) {
+      errorMessage.value = error instanceof Error ? error.message : '通知偏好保存失败';
+      return null;
+    }
+  }
+
   return {
     notifications,
     unreadCount,
@@ -103,11 +140,14 @@ export const useEngagementStore = defineStore('engagement', () => {
     cursor,
     streaming,
     errorMessage,
+    preference,
+    preferenceVersion,
     loadNotifications,
     markRead,
     pullChanges,
     startStream,
     stopStream,
-    submitOfflineCommand
+    submitOfflineCommand,
+    updatePreference
   };
 });
