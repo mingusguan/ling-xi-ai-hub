@@ -32,7 +32,6 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <ProfileDialog ref="profileDialog" v-model="profileVisible" />
   </div>
 </template>
 
@@ -48,8 +47,6 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
-import ProfileDialog from '@/components/ProfileDialog'
-import { getUnreadMessageCount } from '@/api/system/message'
 import { withPublicPath } from '@/utils/appPath'
 
 export default {
@@ -64,14 +61,10 @@ export default {
     SizeSelect,
     Search,
     RuoYiGit,
-    RuoYiDoc,
-    ProfileDialog
+    RuoYiDoc
   },
   data() {
-    return {
-      unreadReminderCount: 0,
-      profileVisible: false
-    }
+    return {}
   },
   computed: {
     ...mapGetters([
@@ -96,39 +89,12 @@ export default {
       }
     }
   },
-  mounted() {
-    window.addEventListener('openProfileDialog', this.handleOpenProfileDialog)
-  },
-  beforeDestroy() {
-    window.removeEventListener('openProfileDialog', this.handleOpenProfileDialog)
-  },
   methods: {
-    handleOpenProfileDialog(e) {
-      this.profileVisible = true
-      if (e.detail && e.detail.tab) {
-        this.$nextTick(() => {
-          this.$refs.profileDialog.selectedTab = e.detail.tab
-        })
-      }
-    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
     setLayout(event) {
       this.$parent.$refs.settingRef.openSetting()
-    },
-    loadUnreadReminderCount() {
-      getUnreadMessageCount().then(res => {
-        this.unreadReminderCount = res.data.count || 0
-      }).catch(() => {
-        this.unreadReminderCount = 0
-      })
-    },
-    goToReminder() {
-      this.$router.push('/message/center')
-    },
-    openProfile() {
-      this.profileVisible = true
     },
     logout() {
       this.$confirm('确定注销并退出系统吗？', '提示', {

@@ -31,9 +31,6 @@ const resolveSysCodeByPath = (path) => {
   if (path.startsWith('/admin')) {
     return 'companion_admin'
   }
-  if (path.startsWith('/message') || path.startsWith('/system') || path.startsWith('/monitor') || path.startsWith('/tool') || path.startsWith('/index')) {
-    return 'basic'
-  }
   return ''
 }
 
