@@ -55,6 +55,7 @@ public class AdminAuthenticationApplicationService implements AdminAuthorization
         || blank(command.deviceId())) {
       throw new BusinessException("ADMIN_LOGIN_INVALID", "账号、密码和设备标识不能为空");
     }
+    // 账号不存在与密码错误保持同一文案，避免通过响应差异枚举管理员账号。
     AdminAccount account = repository.findByUsername(command.username().trim())
         .orElseThrow(() -> new BusinessException("ADMIN_LOGIN_FAILED", "账号或密码错误"));
     LocalDateTime now = now();
@@ -65,7 +66,8 @@ public class AdminAuthenticationApplicationService implements AdminAuthorization
       if (!repository.updateAccount(account, old)) {
         throw new BusinessException("ADMIN_LOGIN_CONFLICT", "登录状态已变化，请重试");
       }
-      throw new BusinessException("ADMIN_LOGIN_FAILED", "账号或密码错误");
+      // 提示剩余尝试次数，避免用户不知情地把账号打到锁定。
+      throw new BusinessException("ADMIN_LOGIN_FAILED", account.loginFailedMessage());
     }
 
     String accessToken = tokens.nextToken();

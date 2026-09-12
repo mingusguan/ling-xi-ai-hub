@@ -1,6 +1,7 @@
 package com.lingxi.identity.domain;
 
 import com.lingxi.kernel.BusinessException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -86,18 +87,49 @@ public class AdminAccount {
     updatedAt = now;
   }
 
+  /** 登录失败达到该次数即锁定账号。 */
+  private static final int MAX_FAILED_ATTEMPTS = 5;
+  /** 锁定时长（分钟）。 */
+  private static final long LOCK_MINUTES = 15;
+
   public void ensureLoginAllowed(LocalDateTime now) {
     if (!"ACTIVE".equals(status)) throw new BusinessException("ADMIN_ACCOUNT_DISABLED", "管理员账号已停用");
     if (lockedUntil != null && lockedUntil.isAfter(now)) {
-      throw new BusinessException("ADMIN_ACCOUNT_LOCKED", "登录失败次数过多，请稍后再试");
+      throw new BusinessException(
+          "ADMIN_ACCOUNT_LOCKED",
+          "连续 "
+              + MAX_FAILED_ATTEMPTS
+              + " 次登录失败，账号已临时锁定，请 "
+              + remainingMinutes(now)
+              + " 分钟后再试");
     }
+  }
+
+  /** 锁定剩余分钟数，向上取整：正好 15 分钟显示 15，剩余不足 1 分钟显示 1，不出现 0。 */
+  private long remainingMinutes(LocalDateTime now) {
+    long seconds = Math.max(0, Duration.between(now, lockedUntil).getSeconds());
+    return Math.max(1, (seconds + 59) / 60);
   }
 
   public void loginFailed(LocalDateTime now) {
     failedAttempts++;
-    if (failedAttempts >= 5) lockedUntil = now.plusMinutes(15);
+    if (failedAttempts >= MAX_FAILED_ATTEMPTS) lockedUntil = now.plusMinutes(LOCK_MINUTES);
     version++;
     updatedAt = now;
+  }
+
+  /** 本次失败后仍可尝试的次数；已锁定则返回 0。 */
+  public int remainingAttempts() {
+    return lockedUntil != null ? 0 : Math.max(0, MAX_FAILED_ATTEMPTS - failedAttempts);
+  }
+
+  /** 密码错误提示：带剩余次数，避免用户在不知情的情况下把账号打到锁定。 */
+  public String loginFailedMessage() {
+    int remaining = remainingAttempts();
+    if (remaining <= 0) {
+      return "账号或密码错误，且失败次数已达上限，账号已临时锁定 " + LOCK_MINUTES + " 分钟";
+    }
+    return "账号或密码错误（还可尝试 " + remaining + " 次，之后账号将临时锁定 " + LOCK_MINUTES + " 分钟）";
   }
 
   public void loginSucceeded(LocalDateTime now) {
