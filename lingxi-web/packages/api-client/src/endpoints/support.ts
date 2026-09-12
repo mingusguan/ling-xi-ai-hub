@@ -1,4 +1,4 @@
-import type { ApiClient, LongId } from '../http';
+import type { ApiClient, LongId, PageResult } from '../http';
 import type {
   ClientBootstrapResult,
   GuardianInvitationResult,
@@ -44,6 +44,13 @@ export class GuardianApi {
     return this.client.send<GuardianRelationResult>(`/api/v1/guardian-relations/${relationId}`);
   }
 
+  /** 分页查询与本人相关的监护关系（自己作为青少年被监护，或自己作为监护人）。 */
+  listRelations(page = 1, pageSize = 20): Promise<PageResult<GuardianRelationResult>> {
+    return this.client.send<PageResult<GuardianRelationResult>>('/api/v1/guardian-relations', {
+      query: { page, pageSize }
+    });
+  }
+
   /** 提交监护关系争议。 */
   submitDispute(relationId: LongId, reason: string): Promise<unknown> {
     return this.client.send<unknown>('/api/v1/guardian-disputes', {
@@ -73,6 +80,13 @@ export class SupportApi {
   /** 查询本人工单。 */
   getTicket(ticketId: LongId): Promise<SupportTicketResult> {
     return this.client.send<SupportTicketResult>(`/api/v1/support-tickets/${ticketId}`);
+  }
+
+  /** 分页查询本人全部工单，按创建时间倒序。 */
+  listTickets(page = 1, pageSize = 20): Promise<PageResult<SupportTicketResult>> {
+    return this.client.send<PageResult<SupportTicketResult>>('/api/v1/support-tickets', {
+      query: { page, pageSize }
+    });
   }
 }
 

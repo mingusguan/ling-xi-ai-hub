@@ -110,6 +110,9 @@ export interface ReviewResult {
   status: string;
   conclusionJson: string | null;
   completedAt: string | null;
+  /** 生成复盘时的输入快照，用于展示当时的进度与打卡统计。 */
+  inputSnapshotJson: string | null;
+  createdAt: string | null;
 }
 
 /** 成就视图。 */

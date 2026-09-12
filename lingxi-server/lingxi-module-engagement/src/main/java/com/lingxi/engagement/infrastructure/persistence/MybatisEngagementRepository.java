@@ -143,7 +143,7 @@ public class MybatisEngagementRepository implements EngagementRepository {
     e.setResourceType(resourceType);
     e.setResourceId(resourceId);
     e.setSummary(summary);
-    e.setCursor(cursor);
+    e.setCursorNo(cursor);
     e.setCreatedAt(now);
     inboxMapper.insert(e);
   }
@@ -154,8 +154,8 @@ public class MybatisEngagementRepository implements EngagementRepository {
         .selectList(
             Wrappers.<InboxMessageEntity>lambdaQuery()
                 .eq(InboxMessageEntity::getUserId, userId)
-                .gt(InboxMessageEntity::getCursor, cursor)
-                .orderByAsc(InboxMessageEntity::getCursor)
+                .gt(InboxMessageEntity::getCursorNo, cursor)
+                .orderByAsc(InboxMessageEntity::getCursorNo)
                 .last("LIMIT " + Math.min(Math.max(limit, 1), 200)))
         .stream()
         .map(
@@ -169,7 +169,7 @@ public class MybatisEngagementRepository implements EngagementRepository {
                     e.getReadAt() == null ? "UNREAD" : "READ",
                     e.getCreatedAt().toInstant(ZoneOffset.UTC),
                     e.getReadAt() == null ? null : e.getReadAt().toInstant(ZoneOffset.UTC),
-                    e.getCursor()))
+                    e.getCursorNo()))
         .toList();
   }
 

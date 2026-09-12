@@ -11,6 +11,7 @@ import com.lingxi.identity.api.IdentityFacade;
 import com.lingxi.identity.api.RestrictTeenCommand;
 import com.lingxi.kernel.BusinessException;
 import com.lingxi.kernel.IdGenerator;
+import com.lingxi.kernel.PageResult;
 import com.lingxi.relationship.api.AcceptGuardianInvitationCommand;
 import com.lingxi.relationship.api.CreateGuardianInvitationCommand;
 import com.lingxi.relationship.api.GuardianFacade;
@@ -42,6 +43,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service
 public class GuardianApplicationService implements GuardianFacade {
   private static final Duration INVITATION_TTL = Duration.ofDays(3);
+  /** 列表类查询允许的最大页大小。 */
+  private static final int MAX_PAGE_SIZE = 200;
   private final GuardianRepository repository;
   private final GuardianDisputeRepository disputes;
   private final IdentityFacade identityFacade;
@@ -177,6 +180,21 @@ public class GuardianApplicationService implements GuardianFacade {
             .orElseThrow(() -> new BusinessException("GUARDIAN_RELATION_NOT_FOUND", "监护关系不存在"));
     relation.assertParticipant(participantUserId);
     return result(relation, repository.findPermissions(relationId));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<GuardianRelationResult> listRelations(
+      long participantUserId, int page, int pageSize) {
+    if (page < 1 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
+      throw new BusinessException("GUARDIAN_INVALID_QUERY", "监护关系查询参数不合法");
+    }
+    long total = repository.countRelationsByParticipant(participantUserId);
+    List<GuardianRelationResult> items =
+        repository.findRelationsByParticipant(participantUserId, page, pageSize).stream()
+            .map(relation -> result(relation, repository.findPermissions(relation.getId())))
+            .toList();
+    return new PageResult<>(items, total, page, pageSize);
   }
 
   private void assertNoOpenDispute(long relationId) {

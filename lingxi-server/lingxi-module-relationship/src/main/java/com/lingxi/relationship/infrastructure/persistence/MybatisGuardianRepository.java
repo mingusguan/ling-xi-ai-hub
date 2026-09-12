@@ -83,6 +83,37 @@ public class MybatisGuardianRepository implements GuardianRepository {
   }
 
   @Override
+  public long countRelationsByParticipant(long userId) {
+    return relationMapper.selectCount(participantQuery(userId));
+  }
+
+  @Override
+  public List<GuardianRelation> findRelationsByParticipant(long userId, int page, int pageSize) {
+    long offset = (long) (page - 1) * pageSize;
+    return relationMapper
+        .selectList(
+            participantQuery(userId)
+                .orderByDesc(GuardianRelationEntity::getCreatedAt)
+                .orderByDesc(GuardianRelationEntity::getId)
+                .last("LIMIT " + pageSize + " OFFSET " + offset))
+        .stream()
+        .map(this::toDomain)
+        .toList();
+  }
+
+  /** 关系双方都可能查询：命中青少年侧或监护人侧都算参与。 */
+  private com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<GuardianRelationEntity>
+      participantQuery(long userId) {
+    return Wrappers.<GuardianRelationEntity>lambdaQuery()
+        .and(
+            wrapper ->
+                wrapper
+                    .eq(GuardianRelationEntity::getTeenUserId, userId)
+                    .or()
+                    .eq(GuardianRelationEntity::getGuardianUserId, userId));
+  }
+
+  @Override
   public void insertPermissions(
       long relationId, List<GuardianPermissionType> permissions, LocalDateTime now) {
     List<GuardianPermissionEntity> entities =

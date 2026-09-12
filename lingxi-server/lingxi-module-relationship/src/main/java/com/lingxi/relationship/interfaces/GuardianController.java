@@ -2,6 +2,7 @@ package com.lingxi.relationship.interfaces;
 
 import com.lingxi.kernel.ActorContextHolder;
 import com.lingxi.kernel.ApiResponse;
+import com.lingxi.kernel.PageResult;
 import com.lingxi.kernel.RequestAttributes;
 import com.lingxi.relationship.api.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +46,14 @@ public class GuardianController {
         guardianFacade.revokeRelation(
             new RevokeGuardianRelationCommand(id, userId(), body.reason())),
         request);
+  }
+
+  @GetMapping
+  public ApiResponse<PageResult<GuardianRelationResult>> list(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest request) {
+    return ok(guardianFacade.listRelations(userId(), page, pageSize), request);
   }
 
   @GetMapping("/{id}")

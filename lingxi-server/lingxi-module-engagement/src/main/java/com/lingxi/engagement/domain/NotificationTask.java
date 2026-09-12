@@ -118,6 +118,16 @@ public class NotificationTask {
     updatedAt = now;
   }
 
+  /** 取消尚未开始投递的任务，例如行动已完成或计划已变更。 */
+  public void cancelBeforeSend(String reason, LocalDateTime now) {
+    if (status != NotificationTaskStatus.PENDING) {
+      throw new BusinessException("ENG_TASK_NOT_PENDING", "通知任务不在待投递状态");
+    }
+    status = NotificationTaskStatus.CANCELLED;
+    lastError = reason;
+    updatedAt = now;
+  }
+
   public void failed(String error, boolean retryable, LocalDateTime now) {
     attemptCount++;
     status =

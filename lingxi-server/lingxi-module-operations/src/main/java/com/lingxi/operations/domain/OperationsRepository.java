@@ -1,10 +1,17 @@
 package com.lingxi.operations.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface OperationsRepository {
   Optional<SupportTicket> findTicket(long id);
+
+  /** 统计指定用户的工单总数，用于“我的工单”列表分页。 */
+  long countTicketsByUser(long userId);
+
+  /** 按创建时间倒序分页查询指定用户的工单。 */
+  List<SupportTicket> findTicketsByUser(long userId, int page, int pageSize);
 
   void insertTicket(SupportTicket ticket);
 

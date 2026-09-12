@@ -9,6 +9,7 @@ import com.lingxi.identity.api.IdentityFacade;
 import com.lingxi.kernel.BusinessException;
 import com.lingxi.kernel.DomainEventPublisher;
 import com.lingxi.kernel.IdGenerator;
+import com.lingxi.kernel.PageResult;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -24,6 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 /** 目标、计划、行动、打卡和复盘应用服务。 */
 @Service
 public class GoalApplicationService implements GoalFacade {
+  /** 列表类查询允许的最大页大小。 */
+  private static final int MAX_PAGE_SIZE = 200;
+  /** 行动实例滚动生成窗口长度（含当天）。 */
+  private static final int ROLLING_WINDOW_DAYS = 14;
+
   private final GoalRepository repository;
   private final IdentityFacade identityFacade;
   private final IdGenerator idGenerator;
@@ -189,6 +195,8 @@ public class GoalApplicationService implements GoalFacade {
             active.id(),
             goal.getVersion(),
             clock.instant()));
+    // 计划生效即生成实例，用户无需等待下一次滚动调度。
+    generateActivatedPlanOccurrences(goal, active.id(), now);
     return result(goal);
   }
 
@@ -245,6 +253,8 @@ public class GoalApplicationService implements GoalFacade {
     eventPublisher.publish(
         new PlanActivatedEvent(
             idGenerator.nextEventId(), goal.getUserId(), goal.getId(), plan.id(), goal.getVersion(), instant));
+    // 计划生效即生成实例，用户无需等待下一次滚动调度。
+    generateActivatedPlanOccurrences(goal, plan.id(), now);
     return result(goal);
   }
 
@@ -259,6 +269,54 @@ public class GoalApplicationService implements GoalFacade {
   public List<GoalResult> listGoals(long userId) {
     requireCoreAccess(userId);
     return repository.findByUserId(userId).stream().map(this::result).toList();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Optional<OccurrenceResult> findOccurrence(long userId, long occurrenceId) {
+    if (userId <= 0 || occurrenceId <= 0) {
+      return Optional.empty();
+    }
+    ActionOccurrence occurrence = repository.findOccurrence(occurrenceId).orElse(null);
+    if (occurrence == null) {
+      return Optional.empty();
+    }
+    Action action = repository.findAction(occurrence.getActionId()).orElse(null);
+    if (action == null) {
+      return Optional.empty();
+    }
+    Goal goal = repository.findById(action.goalId()).orElse(null);
+    if (goal == null || goal.getUserId() != userId) {
+      return Optional.empty();
+    }
+    return Optional.of(occurrenceResult(occurrence, action));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<ReviewResult> listReviews(long userId, Long goalId, int page, int pageSize) {
+    requireCoreAccess(userId);
+    if (page < 1 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
+      throw new BusinessException("GOAL_INVALID_QUERY", "复盘查询参数不合法");
+    }
+    long total = repository.countReviews(userId, goalId);
+    List<ReviewResult> items =
+        repository.findReviewsByUser(userId, goalId, page, pageSize).stream()
+            .map(this::reviewResult)
+            .toList();
+    return new PageResult<>(items, total, page, pageSize);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public ReviewResult getReview(long userId, long reviewId) {
+    requireCoreAccess(userId);
+    Review review =
+        repository
+            .findReview(reviewId)
+            .orElseThrow(() -> new BusinessException("GOAL_REVIEW_NOT_FOUND", "复盘不存在"));
+    ownedGoal(userId, review.getGoalId());
+    return reviewResult(review);
   }
 
   @Override
@@ -290,7 +348,12 @@ public class GoalApplicationService implements GoalFacade {
           ActionOccurrence.schedule(
               idGenerator.nextId(), action.id(), scheduled, date, action.timezone(), now));
     }
-    return repository.insertOccurrences(occurrences);
+    Goal goal =
+        repository
+            .findById(action.goalId())
+            .orElseThrow(() -> new BusinessException("GOAL_NOT_FOUND", "目标不存在"));
+    return insertNewOccurrences(
+        occurrences, Map.of(action.id(), action), Map.of(goal.getId(), goal));
   }
 
   @Override
@@ -439,11 +502,43 @@ public class GoalApplicationService implements GoalFacade {
   @Transactional
   public int generateRollingOccurrences() {
     LocalDate from = LocalDate.ofInstant(clock.instant(), ZoneOffset.UTC);
-    LocalDate to = from.plusDays(13);
+    LocalDate to = from.plusDays(ROLLING_WINDOW_DAYS - 1);
     LocalDateTime now = utc(clock.instant());
-    List<Long> goalIds = repository.findActiveGoals().stream().map(Goal::getId).toList();
+    List<Goal> activeGoals = repository.findActiveGoals();
+    Map<Long, Goal> goalsById =
+        activeGoals.stream().collect(Collectors.toMap(Goal::getId, Function.identity()));
+    List<Action> actions =
+        repository.findActionsByGoalIds(activeGoals.stream().map(Goal::getId).toList());
+    return generateOccurrences(actions, goalsById, from, to, now);
+  }
+
+  /**
+   * 为刚激活的计划立即生成滚动窗口内的实例。
+   *
+   * <p>滚动调度每小时执行一次；若确认计划后等待下一次调度，用户会在「今日行动」看到空列表，
+   * 提醒也不会产生。因此在确认事务内按同一规则生成，重复调度由唯一键与去重逻辑兜底。
+   */
+  private int generateActivatedPlanOccurrences(Goal goal, long planId, LocalDateTime now) {
+    List<Action> planActions =
+        repository.findActionsByGoalIds(List.of(goal.getId())).stream()
+            .filter(action -> action.planVersionId() == planId)
+            .filter(action -> action.status() == ActionStatus.ACTIVE)
+            .toList();
+    if (planActions.isEmpty()) {
+      return 0;
+    }
+    LocalDate from = LocalDate.ofInstant(clock.instant(), ZoneOffset.UTC);
+    LocalDate to = from.plusDays(ROLLING_WINDOW_DAYS - 1);
+    return generateOccurrences(planActions, Map.of(goal.getId(), goal), from, to, now);
+  }
+
+  /** 按重复规则展开日期窗口内的实例并只写入新实例。 */
+  private int generateOccurrences(
+      List<Action> actions, Map<Long, Goal> goalsById, LocalDate from, LocalDate to, LocalDateTime now) {
+    Map<Long, Action> actionsById =
+        actions.stream().collect(Collectors.toMap(Action::id, Function.identity()));
     List<ActionOccurrence> occurrences = new ArrayList<>();
-    for (Action action : repository.findActionsByGoalIds(goalIds)) {
+    for (Action action : actions) {
       for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
         if (!action.occursOn(date)) {
           continue;
@@ -455,7 +550,60 @@ public class GoalApplicationService implements GoalFacade {
                 idGenerator.nextId(), action.id(), scheduled, date, action.timezone(), now));
       }
     }
-    return repository.insertOccurrences(occurrences);
+    return insertNewOccurrences(occurrences, actionsById, goalsById);
+  }
+
+  /**
+   * 只写入尚不存在的实例，并只为新实例发布 {@link OccurrenceScheduledEvent}。
+   *
+   * <p>滚动调度每小时都会重算同一窗口，若对已存在实例重复发布事件会产生通知噪声；
+   * 因此先按 action+scheduledAt 去重再写入。并发下 INSERT IGNORE 仍兜底唯一键，
+   * 消费者按实例标识幂等，重复事件不会重复提醒。
+   */
+  private int insertNewOccurrences(
+      List<ActionOccurrence> candidates,
+      Map<Long, Action> actionsById,
+      Map<Long, Goal> goalsById) {
+    if (candidates.isEmpty()) {
+      return 0;
+    }
+    List<Long> actionIds = candidates.stream().map(ActionOccurrence::getActionId).distinct().toList();
+    LocalDate from = candidates.stream().map(ActionOccurrence::getLocalDate).min(LocalDate::compareTo).orElseThrow();
+    LocalDate to = candidates.stream().map(ActionOccurrence::getLocalDate).max(LocalDate::compareTo).orElseThrow();
+    Set<String> existing =
+        repository.findOccurrences(actionIds, from, to).stream()
+            .map(o -> o.getActionId() + "@" + o.getScheduledAt())
+            .collect(Collectors.toSet());
+    List<ActionOccurrence> fresh =
+        candidates.stream()
+            .filter(o -> !existing.contains(o.getActionId() + "@" + o.getScheduledAt()))
+            .toList();
+    if (fresh.isEmpty()) {
+      return 0;
+    }
+    int inserted = repository.insertOccurrences(fresh);
+    for (ActionOccurrence occurrence : fresh) {
+      Action action = actionsById.get(occurrence.getActionId());
+      if (action == null) {
+        continue;
+      }
+      Goal goal = goalsById.get(action.goalId());
+      if (goal == null) {
+        continue;
+      }
+      eventPublisher.publish(
+          new OccurrenceScheduledEvent(
+              idGenerator.nextEventId(),
+              goal.getUserId(),
+              goal.getId(),
+              action.id(),
+              occurrence.getId(),
+              action.title(),
+              occurrence.getScheduledAt(),
+              occurrence.getLocalDate(),
+              occurrence.getTimezone()));
+    }
+    return inserted;
   }
 
   /** 为全部活跃目标幂等创建当前自然周复盘。 */
@@ -650,7 +798,20 @@ public class GoalApplicationService implements GoalFacade {
         r.getPeriodKey(),
         r.getStatus().name(),
         r.getConclusionJson(),
-        r.getCompletedAt() == null ? null : r.getCompletedAt().toInstant(ZoneOffset.UTC));
+        r.getCompletedAt() == null ? null : r.getCompletedAt().toInstant(ZoneOffset.UTC),
+        r.getInputSnapshotJson(),
+        r.getCreatedAt() == null ? null : r.getCreatedAt().toInstant(ZoneOffset.UTC));
+  }
+
+  private OccurrenceResult occurrenceResult(ActionOccurrence o, Action action) {
+    return new OccurrenceResult(
+        o.getId(),
+        o.getActionId(),
+        action.title(),
+        o.getScheduledAt(),
+        o.getLocalDate(),
+        o.getTimezone(),
+        o.getStatus().name());
   }
 
   private LocalDateTime utc(Instant instant) {

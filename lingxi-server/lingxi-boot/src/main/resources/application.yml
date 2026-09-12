@@ -55,3 +55,9 @@ lingxi:
     achievement:
       # 连续打卡成就阈值天数，产品确认具体数值前使用可配置默认值
       check-in-streak-days: ${LINGXI_GOAL_ACHIEVEMENT_STREAK_DAYS:7}
+  engagement:
+    reminder:
+      # 行动提醒开关与提前量（分钟）；0 表示在行动的本地计划时刻提醒。
+      # 时区、免打扰与青少年限制在投递期由服务端策略判定，不在此处绕过。
+      enabled: ${LINGXI_REMINDER_ENABLED:true}
+      lead-minutes: ${LINGXI_REMINDER_LEAD_MINUTES:0}

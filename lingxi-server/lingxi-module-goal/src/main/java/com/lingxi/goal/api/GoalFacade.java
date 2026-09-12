@@ -1,7 +1,9 @@
 package com.lingxi.goal.api;
 
+import com.lingxi.kernel.PageResult;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /** 目标模块对其他模块公开的应用门面。 */
 public interface GoalFacade {
@@ -28,6 +30,16 @@ public interface GoalFacade {
 
   /** 查询用户行动实例。 */
   List<OccurrenceResult> listOccurrences(long userId, LocalDate fromDate, LocalDate toDate);
+
+  /** 查询用户自己的行动实例，供提醒投递前校验实例是否仍可执行。 */
+  Optional<OccurrenceResult> findOccurrence(long userId, long occurrenceId);
+
+  /** 分页查询用户复盘，可按目标过滤，页码从 1 开始。 */
+  com.lingxi.kernel.PageResult<ReviewResult> listReviews(
+      long userId, Long goalId, int page, int pageSize);
+
+  /** 查询用户自己的复盘明细。 */
+  ReviewResult getReview(long userId, long reviewId);
 
   /** 幂等打卡或显式修正已有打卡。 */
   CheckInResult checkIn(CheckInCommand command);

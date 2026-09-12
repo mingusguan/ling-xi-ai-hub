@@ -120,6 +120,29 @@ public class NotificationTaskLifecycleService {
     }
   }
 
+  /** 读取任务当前状态；投递前用它判断任务是否已被取消。 */
+  @Transactional(readOnly = true)
+  public java.util.Optional<NotificationTask> find(long id) {
+    return repository.findTask(id);
+  }
+
+  /** 取消尚未开始投递的任务，例如行动已完成或计划已变更。 */
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void cancelPending(NotificationTask task, String reason) {
+    String previous = task.getStatus().name();
+    task.cancelBeforeSend(reason, now());
+    if (repository.updateTask(task, previous)) {
+      repository.insertDelivery(
+          ids.nextId(),
+          task.getId(),
+          task.getAttemptCount() + 1,
+          null,
+          "CANCELLED",
+          reason,
+          now());
+    }
+  }
+
   private boolean safetyCritical(String payload) {
     try {
       return mapper.readTree(payload).path("safetyCritical").asBoolean(false);

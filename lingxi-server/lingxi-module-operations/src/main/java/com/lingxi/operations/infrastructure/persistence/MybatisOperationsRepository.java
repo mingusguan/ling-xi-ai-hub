@@ -26,6 +26,27 @@ public class MybatisOperationsRepository implements OperationsRepository {
     return Optional.ofNullable(tickets.selectById(id)).map(this::ticket);
   }
 
+  @Override
+  public long countTicketsByUser(long userId) {
+    Long total = tickets.selectCount(Wrappers.<SupportTicketEntity>lambdaQuery()
+        .eq(SupportTicketEntity::getUserId, userId));
+    return total == null ? 0L : total;
+  }
+
+  @Override
+  public List<SupportTicket> findTicketsByUser(long userId, int page, int pageSize) {
+    long offset = (long) (page - 1) * pageSize;
+    return tickets.selectList(
+            Wrappers.<SupportTicketEntity>lambdaQuery()
+                .eq(SupportTicketEntity::getUserId, userId)
+                .orderByDesc(SupportTicketEntity::getCreatedAt)
+                .orderByDesc(SupportTicketEntity::getId)
+                .last("LIMIT " + pageSize + " OFFSET " + offset))
+        .stream()
+        .map(this::ticket)
+        .toList();
+  }
+
   public void insertTicket(SupportTicket t) {
     SupportTicketEntity e = new SupportTicketEntity();
     fill(e, t);

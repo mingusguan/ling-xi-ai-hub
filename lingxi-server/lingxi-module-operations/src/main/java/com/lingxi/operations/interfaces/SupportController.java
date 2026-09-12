@@ -23,6 +23,14 @@ public class SupportController {
         r);
   }
 
+  @GetMapping
+  public ApiResponse<PageResult<SupportTicketResult>> list(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest r) {
+    return ok(facade.listTickets(user(), page, pageSize), r);
+  }
+
   @GetMapping("/{id}")
   public ApiResponse<SupportTicketResult> get(@PathVariable long id, HttpServletRequest r) {
     return ok(facade.getTicket(user(), id), r);

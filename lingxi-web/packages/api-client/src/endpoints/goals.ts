@@ -128,6 +128,22 @@ export class GoalApi {
     });
   }
 
+  /** 分页查询本人复盘，可按目标过滤。 */
+  listReviews(
+    goalId: LongId | null = null,
+    page = 1,
+    pageSize = 20
+  ): Promise<PageResult<ReviewResult>> {
+    return this.client.send<PageResult<ReviewResult>>('/api/v1/reviews', {
+      query: { goalId, page, pageSize }
+    });
+  }
+
+  /** 查询单条复盘详情。 */
+  getReview(reviewId: LongId): Promise<ReviewResult> {
+    return this.client.send<ReviewResult>(`/api/v1/reviews/${reviewId}`);
+  }
+
   /** 分页查询本人成就，可按目标过滤。 */
   listAchievements(goalId: LongId | null, page = 1, pageSize = 20): Promise<PageResult<AchievementResult>> {
     return this.client.send<PageResult<AchievementResult>>('/api/v1/achievements', {

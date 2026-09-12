@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.*;
 
 @Service
 public class OperationsApplicationService implements OperationsFacade {
+  /** 列表类查询允许的最大页大小。 */
+  private static final int MAX_PAGE_SIZE = 200;
+
   private final OperationsRepository repo;
   private final IdentityFacade identities;
   private final IdGenerator ids;
@@ -64,6 +67,20 @@ public class OperationsApplicationService implements OperationsFacade {
     SupportTicket t = ticket(id);
     t.owner(user);
     return result(t);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<SupportTicketResult> listTickets(long user, int page, int pageSize) {
+    if (page < 1 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
+      throw error("OPS_TICKET_INVALID_QUERY", "工单查询参数不合法");
+    }
+    // 先确认账号可用，再按归属用户查询，避免越权返回他人工单。
+    identities.getAccessProfile(user);
+    long total = repo.countTicketsByUser(user);
+    List<SupportTicketResult> items =
+        repo.findTicketsByUser(user, page, pageSize).stream().map(this::result).toList();
+    return new PageResult<>(items, total, page, pageSize);
   }
 
   @Transactional

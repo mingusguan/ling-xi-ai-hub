@@ -12,10 +12,12 @@ const route = useRoute();
 const navItems = computed(() => [
   { name: 'home', label: '今日行动' },
   { name: 'goals', label: '我的目标' },
+  { name: 'reviews', label: '周期复盘' },
   { name: 'achievements', label: '我的成就' },
   { name: 'companion', label: '灵犀对话' },
   { name: 'notifications', label: '消息与同步' },
   { name: 'guardian', label: '监护' },
+  { name: 'support', label: '客服工单' },
   { name: 'privacy', label: '隐私与账号' }
 ]);
 

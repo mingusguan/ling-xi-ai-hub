@@ -27,6 +27,18 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '我的成就' }
       },
       {
+        path: 'reviews',
+        name: 'reviews',
+        component: () => import('@/views/ReviewsView.vue'),
+        meta: { title: '周期复盘' }
+      },
+      {
+        path: 'support',
+        name: 'support',
+        component: () => import('@/views/SupportView.vue'),
+        meta: { title: '客服工单' }
+      },
+      {
         path: 'companion',
         name: 'companion',
         component: () => import('@/views/CompanionView.vue'),

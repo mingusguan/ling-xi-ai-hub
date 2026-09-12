@@ -1,6 +1,7 @@
 package com.lingxi.goal.infrastructure.persistence;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -355,6 +356,53 @@ public class MybatisGoalRepository implements GoalRepository {
     return reviews.isEmpty()
         ? 0
         : reviewMapper.insertIgnoreBatch(reviews.stream().map(this::toEntity).toList());
+  }
+
+  @Override
+  public long countReviews(long userId, Long goalId) {
+    List<Long> goalIds = ownedGoalIds(userId, goalId);
+    if (goalIds.isEmpty()) {
+      return 0;
+    }
+    return reviewMapper.selectCount(
+        Wrappers.<ReviewEntity>lambdaQuery().in(ReviewEntity::getGoalId, goalIds));
+  }
+
+  @Override
+  public List<Review> findReviewsByUser(long userId, Long goalId, int page, int pageSize) {
+    List<Long> goalIds = ownedGoalIds(userId, goalId);
+    if (goalIds.isEmpty()) {
+      return List.of();
+    }
+    Page<ReviewEntity> result =
+        reviewMapper.selectPage(
+            Page.of(page, pageSize),
+            Wrappers.<ReviewEntity>lambdaQuery()
+                .in(ReviewEntity::getGoalId, goalIds)
+                .orderByDesc(ReviewEntity::getPeriodKey)
+                .orderByDesc(ReviewEntity::getId));
+    return result.getRecords().stream().map(this::toDomain).toList();
+  }
+
+  /** 用户目标标识；传入 goalId 时先校验归属，避免跨用户读取复盘。 */
+  private List<Long> ownedGoalIds(long userId, Long goalId) {
+    if (goalId != null) {
+      boolean owned =
+          goalMapper.selectCount(
+                  Wrappers.<GoalEntity>lambdaQuery()
+                      .eq(GoalEntity::getId, goalId)
+                      .eq(GoalEntity::getUserId, userId))
+              > 0;
+      return owned ? List.of(goalId) : List.of();
+    }
+    return goalMapper
+        .selectList(
+            Wrappers.<GoalEntity>lambdaQuery()
+                .select(GoalEntity::getId)
+                .eq(GoalEntity::getUserId, userId))
+        .stream()
+        .map(GoalEntity::getId)
+        .toList();
   }
 
   @Override

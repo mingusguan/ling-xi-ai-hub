@@ -62,6 +62,12 @@ public interface GoalRepository {
 
   Optional<Review> findReview(long reviewId);
 
+  /** 统计用户复盘总数，可按目标过滤。 */
+  long countReviews(long userId, Long goalId);
+
+  /** 分页查询用户复盘，按周期倒序，页码从 1 开始。 */
+  List<Review> findReviewsByUser(long userId, Long goalId, int page, int pageSize);
+
   int insertReviews(List<Review> reviews);
 
   boolean updateReview(Review review, long previousVersion);

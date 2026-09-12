@@ -3,6 +3,7 @@ package com.lingxi.goal.interfaces;
 import com.lingxi.goal.api.*;
 import com.lingxi.kernel.ActorContextHolder;
 import com.lingxi.kernel.ApiResponse;
+import com.lingxi.kernel.PageResult;
 import com.lingxi.kernel.RequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.*;
@@ -119,8 +120,22 @@ public class GoalController {
         request);
   }
 
+  @GetMapping("/reviews")
+  public ApiResponse<PageResult<ReviewResult>> reviews(
+      @RequestParam(required = false) Long goalId,
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest request) {
+    return ok(goalFacade.listReviews(userId(), goalId, page, pageSize), request);
+  }
+
+  @GetMapping("/reviews/{id}")
+  public ApiResponse<ReviewResult> review(@PathVariable long id, HttpServletRequest request) {
+    return ok(goalFacade.getReview(userId(), id), request);
+  }
+
   @PostMapping("/reviews/{id}/complete")
-  public ApiResponse<ReviewResult> review(
+  public ApiResponse<ReviewResult> completeReview(
       @PathVariable long id,
       @RequestHeader("Idempotency-Key") String key,
       @RequestBody ReviewBody body,
