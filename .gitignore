@@ -50,9 +50,14 @@ docker/
 /docker/
 
 # Production deployment secrets
+# deploy/.env 是生产环境真实配置（含数据库/Redis 密码、断言密钥、隐私导出密钥、
+# 管理员初始口令、云存储密钥），只保留在本地与服务器，绝不入库。
 deploy/.env
 deploy/.env.*
 !deploy/.env.example
+# 本地密钥备份与对比产物统一放这里，整个目录忽略
+.secrets/
+*.env.bak
 
 # Node.js 前端依赖（lingxi-web / lingxi-ui / lingxi-harmony 本地安装产物）
 node_modules/

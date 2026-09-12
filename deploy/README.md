@@ -191,3 +191,40 @@ Rollback is the same command with the previous image tag:
 ```bash
 ./deploy.sh previous-good-tag
 ```
+
+## 生产 .env 同步
+
+`deploy/.env` 是**生产环境真实配置**（数据库与 Redis 密码、身份断言密钥、隐私导出密钥、
+管理员初始口令、云存储密钥）。它被 `.gitignore` 忽略，**只存在于本地工作区和服务器两侧，绝不入库**。
+
+本地与服务器各存一份，用 `deploy/sync-env.ps1` 保持一致：
+
+```powershell
+# 比对差异（默认动作，只读；值以长度形式打码，不会回显明文）
+powershell -File deploy/sync-env.ps1 -Action compare
+
+# 从服务器拉取，覆盖本地（自动备份旧文件到 .secrets/）
+powershell -File deploy/sync-env.ps1 -Action pull
+
+# 把本地推送到服务器（自动备份服务器原文件为 .env.bak-<时间戳>）
+powershell -File deploy/sync-env.ps1 -Action push
+```
+
+约定与注意事项：
+
+1. **`IMAGE_TAG` 由 CI 拥有。** GitHub Actions 每次部署都会把当前 commit SHA 写进服务器
+   `.env`，本地那份通常是过期的。`push` 会**保留服务器上的 `IMAGE_TAG`**，不会用本地旧值覆盖，
+   否则 `deploy.sh` 会去拉一个旧镜像。需要单独改版本请用 `./deploy.sh <tag>`。
+2. **推送后需重启容器才生效**（`.env` 只在容器创建时读取）：
+   ```bash
+   ssh obsidian-server 'cd /data/mingus/lingxi/deploy && docker compose --env-file .env -f docker-compose.prod.yml up -d lingxi-admin'
+   ```
+3. **不要在服务器上手工编辑 `.env`。** 本地推送会整份覆盖。若确实在服务器改过，先 `pull` 回来。
+   脚本检测到 `.env.swp`（存在编辑器会话）时会拒绝写入，避免覆盖未保存的改动；
+   确认是僵尸文件后加 `-Force`。
+4. **`.env.example` 是权威键清单**，新增配置项时要同步更新它，让新环境知道需要哪些键。
+5. 管理员口令只在**账号不存在时**由 `AdminBootstrapInitializer` 写入；账号已存在后改
+   `LINGXI_ADMIN_PASSWORD` 不会重置密码。忘记密码时通过管理后台「管理员管理 → 重置密码」
+   或直接在库中改写 `id_admin_account.password_hash`。
+6. CI **不上传 `.env`**（只上传 `docker-compose.prod.yml` 与 `deploy.sh`），所以同步只能由本地发起。
+   若希望 CI 可部署全新环境，需要把配置改存到 GitHub Actions Secrets。
