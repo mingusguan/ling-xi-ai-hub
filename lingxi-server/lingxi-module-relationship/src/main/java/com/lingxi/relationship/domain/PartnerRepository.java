@@ -11,6 +11,12 @@ public interface PartnerRepository {
 
   Optional<PartnerRelation> findOpenRelation(long a, long b);
 
+  /** 统计与指定用户相关的伙伴关系总数（作为邀请方或被邀请方）。 */
+  long countRelationsByParticipant(long userId);
+
+  /** 按创建时间倒序分页查询与指定用户相关的伙伴关系。 */
+  List<PartnerRelation> findRelationsByParticipant(long userId, int page, int pageSize);
+
   void insertRelation(PartnerRelation relation);
 
   boolean updateRelation(PartnerRelation relation, long previousVersion);
@@ -20,6 +26,9 @@ public interface PartnerRepository {
   Optional<PartnerGrant> findGrant(long relationId, long goalId);
 
   List<PartnerGrant> findActiveGrants(long goalId);
+
+  /** 查询指定用户作为授权方发出的全部目标授权（含已过期与已撤销，由客户端按状态展示）。 */
+  List<PartnerGrant> findGrantsByOwner(long ownerUserId);
 
   void insertGrant(PartnerGrant grant);
 
@@ -47,6 +56,12 @@ public interface PartnerRepository {
       LocalDateTime now);
 
   Optional<ShareLink> findShare(long id);
+
+  /** 统计指定用户创建的分享链接总数。 */
+  long countSharesByOwner(long ownerUserId);
+
+  /** 按创建时间倒序分页查询指定用户创建的分享链接。 */
+  List<ShareLink> findSharesByOwner(long ownerUserId, int page, int pageSize);
 
   Optional<ShareLink> findShareByRequestKey(String key);
 

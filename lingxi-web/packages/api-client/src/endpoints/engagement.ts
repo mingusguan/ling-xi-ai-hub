@@ -71,6 +71,11 @@ export class EngagementApi {
     });
   }
 
+  /** 查询本人全部日历绑定，供页面展示当前绑定与撤销入口。 */
+  listCalendarBindings(): Promise<CalendarBindingResult[]> {
+    return this.client.send<CalendarBindingResult[]>('/api/v1/calendar/bindings');
+  }
+
   /** 绑定日历渠道，需要近期认证。 */
   bindCalendar(body: CalendarBody, idempotencyKey: string): Promise<CalendarBindingResult> {
     return this.client.send<CalendarBindingResult>('/api/v1/calendar/bindings', {

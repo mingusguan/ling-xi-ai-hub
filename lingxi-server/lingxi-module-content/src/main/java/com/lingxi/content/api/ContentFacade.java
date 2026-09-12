@@ -1,5 +1,6 @@
 package com.lingxi.content.api;
 
+import com.lingxi.kernel.PageResult;
 import java.util.List;
 
 /** 私有文件、模板和导入导出的公开门面。 */
@@ -13,6 +14,9 @@ public interface ContentFacade {
   FileResult referenceReadyFile(ReferenceFileCommand command);
 
   FileResult getReadyFile(long userId, long fileId);
+
+  /** 分页查询本人拥有的文件。 */
+  PageResult<FileResult> listMyFiles(long userId, int page, int pageSize);
 
   FileResult removeReference(long userId, long fileId, String resourceType, String resourceId);
 

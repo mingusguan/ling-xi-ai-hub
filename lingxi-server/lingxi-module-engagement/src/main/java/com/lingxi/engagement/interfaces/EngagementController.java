@@ -51,6 +51,11 @@ public class EngagementController {
         request);
   }
 
+  @GetMapping("/calendar/bindings")
+  public ApiResponse<List<CalendarBindingResult>> bindings(HttpServletRequest request) {
+    return ok(facade.listCalendarBindings(userId()), request);
+  }
+
   @PostMapping("/calendar/bindings")
   public ApiResponse<CalendarBindingResult> bind(
       @RequestHeader("Idempotency-Key") String key,

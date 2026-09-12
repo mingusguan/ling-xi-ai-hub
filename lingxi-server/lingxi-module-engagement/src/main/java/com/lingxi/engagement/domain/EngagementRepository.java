@@ -45,6 +45,9 @@ public interface EngagementRepository {
 
   Optional<CalendarBinding> findCalendarByUserProvider(long userId, String provider);
 
+  /** 查询指定用户的全部日历绑定，供客户端展示当前绑定与撤销入口。 */
+  List<CalendarBinding> findCalendarsByUser(long userId);
+
   Optional<CalendarBinding> findCalendar(long id);
 
   void insertCalendar(CalendarBinding binding);

@@ -113,6 +113,13 @@ public class EngagementApplicationService implements EngagementFacade {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public List<CalendarBindingResult> listCalendarBindings(long userId) {
+    requireAccess(userId);
+    return repository.findCalendarsByUser(userId).stream().map(this::calendar).toList();
+  }
+
+  @Override
   @Transactional
   public CalendarBindingResult bindCalendar(CalendarBindingCommand c) {
     requireAccess(c.userId());

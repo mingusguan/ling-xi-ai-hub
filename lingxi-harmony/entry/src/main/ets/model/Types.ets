@@ -194,6 +194,19 @@ export interface PrivacyRequestResult {
   resultReference: string | null;
 }
 
+/** 长期记忆视图；`id`/`userId`/`version` 在响应中为字符串。 */
+export interface MemoryResult {
+  id: string;
+  userId: string;
+  purpose: string;
+  contentText: string;
+  sourceRef: string;
+  sensitivity: string;
+  status: string;
+  version: string;
+  updatedAt: string;
+}
+
 /**
  * 复盘视图。
  *
@@ -250,5 +263,131 @@ export interface NotificationPreferenceResult {
   quietStart: string | null;
   quietEnd: string | null;
   timezone: string;
+  version: string;
+}
+
+/** 日历绑定视图；`bindingId`/`version` 在响应中为字符串。 */
+export interface CalendarBindingResult {
+  bindingId: string;
+  provider: string;
+  status: string;
+  version: string;
+}
+
+/** 会员商品与价格版本；标识字段在响应中为字符串。 */
+export interface ProductResult {
+  productId: string;
+  productKey: string;
+  name: string;
+  scene: string;
+  priceId: string;
+  priceVersion: number;
+  amountMinor: string;
+  currency: string;
+  billingPeriod: string;
+  agePolicy: string;
+}
+
+/** 订单视图；金额与标识字段在响应中为字符串。 */
+export interface OrderResult {
+  orderId: string;
+  orderNo: string;
+  userId: string;
+  productId: string;
+  amountMinor: string;
+  currency: string;
+  status: string;
+  paymentReference: string | null;
+  refundedMinor: string;
+  version: string;
+  createdAt: string;
+}
+
+/** 订阅视图。 */
+export interface SubscriptionResult {
+  subscriptionId: string;
+  userId: string;
+  productId: string;
+  status: string;
+  periodEnd: string | null;
+  cancelMode: string | null;
+  version: string;
+}
+
+/** 权益余额视图。 */
+export interface EntitlementResult {
+  userId: string;
+  resourceKey: string;
+  balance: string;
+  expiresAt: string | null;
+  version: string;
+}
+
+/** 私有文件视图。 */
+export interface FileResult {
+  fileId: string;
+  publicId: string;
+  ownerUserId: string;
+  purpose: string;
+  originalName: string;
+  sizeBytes: string;
+  mimeType: string;
+  contentHash: string;
+  sensitivity: string;
+  status: string;
+  scanResult: string | null;
+  version: string;
+}
+
+/** 内容模板版本视图，客户端只读。 */
+export interface TemplateVersionResult {
+  versionId: string;
+  templateId: string;
+  versionNo: number;
+  ageScope: string;
+  contentSnapshot: string;
+  status: string;
+  reviewerUserId: string | null;
+  reviewReason: string | null;
+  publishedAt: string | null;
+  version: string;
+}
+
+/** 伙伴关系视图。 */
+export interface PartnerRelationResult {
+  relationId: string;
+  inviterUserId: string;
+  inviteeUserId: string;
+  status: string;
+  version: string;
+}
+
+/** 伙伴授权权限，与服务端 PartnerPermission 一致。 */
+export type PartnerPermission = 'VIEW_PROGRESS' | 'ENCOURAGE' | 'COMMENT' | 'CO_CHECK_IN';
+
+/** 伙伴目标授权视图。 */
+export interface PartnerGrantResult {
+  grantId: string;
+  relationId: string;
+  ownerUserId: string;
+  goalId: string;
+  permissions: PartnerPermission[];
+  expiresAt: string | null;
+  status: string;
+  version: string;
+}
+
+/** 受控分享链接视图；rawToken 只在创建时返回一次，列表查询为 null。 */
+export interface ShareLinkResult {
+  shareId: string;
+  rawToken: string | null;
+  resourceType: string;
+  resourceId: string;
+  fields: string[];
+  snapshotJson: string | null;
+  status: string;
+  visitCount: number;
+  visitLimit: number | null;
+  expiresAt: string | null;
   version: string;
 }

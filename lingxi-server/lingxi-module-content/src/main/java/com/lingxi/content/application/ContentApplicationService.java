@@ -17,6 +17,8 @@ public class ContentApplicationService implements ContentFacade {
       IMPORT_PREVIEW = "content.import.preview",
       IMPORT_APPLY = "content.import.apply",
       EXPORT = "content.export";
+  /** 列表类查询允许的最大页大小。 */
+  private static final int MAX_PAGE_SIZE = 200;
   private final ContentRepository repo;
   private final IdentityFacade identities;
   private final IdGenerator ids;
@@ -143,6 +145,20 @@ public class ContentApplicationService implements ContentFacade {
     FileAsset f = file(id);
     f.assertReady(user);
     return result(f);
+  }
+
+  /** 分页查询本人拥有的文件（含未完成上传与待清理记录，由客户端按状态展示）。 */
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<FileResult> listMyFiles(long user, int page, int pageSize) {
+    if (page < 1 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
+      throw error("CONTENT_INVALID_QUERY", "文件查询参数不合法");
+    }
+    requireUser(user);
+    long total = repo.countFilesByOwner(user);
+    List<FileResult> items =
+        repo.findFilesByOwner(user, page, pageSize).stream().map(this::result).toList();
+    return new PageResult<>(items, total, page, pageSize);
   }
 
   @Transactional

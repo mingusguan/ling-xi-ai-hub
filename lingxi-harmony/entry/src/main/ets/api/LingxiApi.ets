@@ -3,25 +3,36 @@ import { HttpClient } from './HttpClient';
 import {
   AchievementResult,
   AgentRunResult,
+  CalendarBindingResult,
   CheckInResult,
   CheckInResultType,
   ConversationResult,
+  EntitlementResult,
+  FileResult,
   GoalResult,
   GuardianInvitationResult,
   GuardianRelationResult,
+  MemoryResult,
   NotificationChannel,
   NotificationPreferenceResult,
   NotificationResult,
   OccurrenceResult,
+  OrderResult,
   PageResult,
+  PartnerGrantResult,
+  PartnerRelationResult,
   PlanActionDraft,
   PlanMilestoneDraft,
   PrivacyRequestResult,
   PrivacyRequestType,
+  ProductResult,
   RegisteredUserResult,
   ReviewResult,
   SessionTokens,
-  SupportTicketResult
+  ShareLinkResult,
+  SubscriptionResult,
+  SupportTicketResult,
+  TemplateVersionResult
 } from '../model/Types';
 
 /** 与 PC Web 完全一致的接口封装；两端不得出现业务能力差异。 */
@@ -197,6 +208,142 @@ export class LingxiApi {
         expectedVersion: expectedVersion
       }
     });
+  }
+
+  /** 查询本人全部日历绑定。 */
+  listCalendarBindings(): Promise<CalendarBindingResult[]> {
+    return this.http.send<CalendarBindingResult[]>('/api/v1/calendar/bindings');
+  }
+
+  /** 绑定外部日历；需要服务端近期认证。 */
+  bindCalendar(provider: string, credentialReference: string): Promise<CalendarBindingResult> {
+    return this.http.send<CalendarBindingResult>('/api/v1/calendar/bindings', {
+      method: http.RequestMethod.POST,
+      body: { provider: provider, credentialReference: credentialReference },
+      idempotencyKey: this.http.newIdempotencyKey()
+    });
+  }
+
+  /** 撤销外部日历绑定；deleteCreatedEvents 决定是否同时删除已投影事件。 */
+  revokeCalendar(bindingId: string, deleteCreatedEvents: boolean): Promise<CalendarBindingResult> {
+    return this.http.send<CalendarBindingResult>(
+      `/api/v1/calendar/bindings/${bindingId}?deleteCreatedEvents=${deleteCreatedEvents}`,
+      { method: http.RequestMethod.DELETE }
+    );
+  }
+
+  /** 分页查询本人订单。 */
+  listOrders(page: number, pageSize: number): Promise<PageResult<OrderResult>> {
+    return this.http.send<PageResult<OrderResult>>('/api/v1/orders', {
+      query: { page: `${page}`, pageSize: `${pageSize}` }
+    });
+  }
+
+  /** 分页查询本人订阅（含已取消与已过期）。 */
+  listSubscriptions(page: number, pageSize: number): Promise<PageResult<SubscriptionResult>> {
+    return this.http.send<PageResult<SubscriptionResult>>('/api/v1/subscriptions', {
+      query: { page: `${page}`, pageSize: `${pageSize}` }
+    });
+  }
+
+  /** 查询本人权益余额总览。 */
+  listEntitlements(): Promise<EntitlementResult[]> {
+    return this.http.send<EntitlementResult[]>('/api/v1/entitlements');
+  }
+
+  /** 查询当前场景可购买商品；服务端按年龄策略过滤。 */
+  listProducts(scene: string): Promise<ProductResult[]> {
+    return this.http.send<ProductResult[]>('/api/v1/products', { query: { scene: scene } });
+  }
+
+  /** 分页查询本人文件。 */
+  listMyFiles(page: number, pageSize: number): Promise<PageResult<FileResult>> {
+    return this.http.send<PageResult<FileResult>>('/api/v1/files', {
+      query: { page: `${page}`, pageSize: `${pageSize}` }
+    });
+  }
+
+  /** 查询已发布内容模板；服务端按账号年龄范围过滤。 */
+  listTemplates(): Promise<TemplateVersionResult[]> {
+    return this.http.send<TemplateVersionResult[]>('/api/v1/templates');
+  }
+
+  /** 分页查询与本人相关的伙伴关系。 */
+  listPartnerRelations(page: number, pageSize: number): Promise<PageResult<PartnerRelationResult>> {
+    return this.http.send<PageResult<PartnerRelationResult>>('/api/v1/relationships/partners', {
+      query: { page: `${page}`, pageSize: `${pageSize}` }
+    });
+  }
+
+  /** 接受伙伴邀请。 */
+  acceptPartnerRelation(relationId: string, expectedVersion: string): Promise<PartnerRelationResult> {
+    return this.http.send<PartnerRelationResult>(
+      `/api/v1/relationships/partners/${relationId}/accept`,
+      {
+        method: http.RequestMethod.POST,
+        body: { expectedVersion: expectedVersion }
+      }
+    );
+  }
+
+  /** 查询本人作为授权方发出的目标授权。 */
+  listPartnerGrants(): Promise<PartnerGrantResult[]> {
+    return this.http.send<PartnerGrantResult[]>('/api/v1/relationships/grants');
+  }
+
+  /** 分页查询本人创建的分享链接；列表不回显明文 token。 */
+  listShares(page: number, pageSize: number): Promise<PageResult<ShareLinkResult>> {
+    return this.http.send<PageResult<ShareLinkResult>>('/api/v1/shares', {
+      query: { page: `${page}`, pageSize: `${pageSize}` }
+    });
+  }
+
+  /**
+   * 创建受控分享链接。
+   *
+   * `expiresAt` 为必填且必须晚于当前时刻，服务端会拒绝空值或过期时间。
+   */
+  createShare(
+    resourceType: string,
+    resourceId: string,
+    fields: string[],
+    expiresAt: string,
+    visitLimit: number | null,
+    password: string | null
+  ): Promise<ShareLinkResult> {
+    return this.http.send<ShareLinkResult>('/api/v1/shares', {
+      method: http.RequestMethod.POST,
+      body: {
+        resourceType: resourceType,
+        resourceId: resourceId,
+        fields: fields,
+        expiresAt: expiresAt,
+        visitLimit: visitLimit,
+        password: password
+      },
+      idempotencyKey: this.http.newIdempotencyKey()
+    });
+  }
+
+  /** 撤销分享链接。 */
+  revokeShare(shareId: string, expectedVersion: string): Promise<void> {
+    return this.http.send<void>(
+      `/api/v1/shares/${shareId}?expectedVersion=${expectedVersion}`,
+      { method: http.RequestMethod.DELETE }
+    );
+  }
+
+  /** 列出长期记忆。 */
+  listMemories(): Promise<MemoryResult[]> {
+    return this.http.send<MemoryResult[]>('/api/v1/memories');
+  }
+
+  /** 删除长期记忆；服务端异步传播删除。 */
+  deleteMemory(memoryId: string, expectedVersion: string): Promise<MemoryResult> {
+    return this.http.send<MemoryResult>(
+      `/api/v1/memories/${memoryId}?expectedVersion=${expectedVersion}`,
+      { method: http.RequestMethod.DELETE }
+    );
   }
 
   listNotifications(cursor: number, limit: number): Promise<NotificationResult[]> {

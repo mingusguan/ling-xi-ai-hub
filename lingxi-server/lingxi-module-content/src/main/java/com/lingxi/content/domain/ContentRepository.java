@@ -7,6 +7,12 @@ public interface ContentRepository {
 
   Optional<FileAsset> findFileByRequestKey(String key);
 
+  /** 统计指定用户拥有的文件总数，用于客户端“我的文件”分页。 */
+  long countFilesByOwner(long ownerUserId);
+
+  /** 按创建时间倒序分页查询指定用户拥有的文件。 */
+  List<FileAsset> findFilesByOwner(long ownerUserId, int page, int pageSize);
+
   void insertFile(FileAsset file);
 
   boolean updateFile(FileAsset file, long version);

@@ -45,6 +45,29 @@ public class MybatisContentRepository implements ContentRepository {
         .map(this::file);
   }
 
+  @Override
+  public long countFilesByOwner(long ownerUserId) {
+    Long total =
+        files.selectCount(
+            Wrappers.<ContentFileEntity>lambdaQuery().eq(ContentFileEntity::getOwnerUserId, ownerUserId));
+    return total == null ? 0L : total;
+  }
+
+  @Override
+  public List<FileAsset> findFilesByOwner(long ownerUserId, int page, int pageSize) {
+    long offset = (long) (page - 1) * pageSize;
+    return files
+        .selectList(
+            Wrappers.<ContentFileEntity>lambdaQuery()
+                .eq(ContentFileEntity::getOwnerUserId, ownerUserId)
+                .orderByDesc(ContentFileEntity::getCreatedAt)
+                .orderByDesc(ContentFileEntity::getId)
+                .last("LIMIT " + pageSize + " OFFSET " + offset))
+        .stream()
+        .map(this::file)
+        .toList();
+  }
+
   public void insertFile(FileAsset f) {
     ContentFileEntity e = new ContentFileEntity();
     e.setId(f.getId());

@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.*;
 /** 商品、订单、支付、退款、订阅和权益应用服务。 */
 @Service
 public class CommerceApplicationService implements CommerceFacade, EntitlementFacade {
+  /** 列表类查询允许的最大页大小。 */
+  private static final int MAX_PAGE_SIZE = 200;
+
   private final CommerceRepository repo;
   private final IdentityFacade identities;
   private final IdGenerator ids;
@@ -132,6 +135,13 @@ public class CommerceApplicationService implements CommerceFacade, EntitlementFa
     return entitlement(repo.getEntitlement(user, resource));
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public List<EntitlementResult> list(long user) {
+    profile(user);
+    return repo.findEntitlementsByUser(user).stream().map(this::entitlement).toList();
+  }
+
   @Transactional
   public EntitlementResult consume(ConsumeEntitlementCommand c) {
     profile(c.userId());
@@ -160,8 +170,39 @@ public class CommerceApplicationService implements CommerceFacade, EntitlementFa
             && ("ALL".equals(p.agePolicy()) || "TEEN_ALLOWED".equals(p.agePolicy()));
   }
 
-  private PaymentChannelAdapter channel(String key) {
-    PaymentChannelAdapter a = channels.get(key);
+  /** 分页查询本人订单：只按归属用户过滤，账号受限时仍可查看历史订单。 */
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<OrderResult> listOrders(long user, int page, int pageSize) {
+    requirePaging(page, pageSize);
+    identities.getAccessProfile(user);
+    long total = repo.countOrdersByUser(user);
+    List<OrderResult> items =
+        repo.findOrdersByUser(user, page, pageSize).stream().map(this::result).toList();
+    return new PageResult<>(items, total, page, pageSize);
+  }
+
+  /** 分页查询本人订阅，含已取消与已过期记录。 */
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<SubscriptionResult> listSubscriptions(long user, int page, int pageSize) {
+    requirePaging(page, pageSize);
+    identities.getAccessProfile(user);
+    long total = repo.countSubscriptionsByUser(user);
+    List<SubscriptionResult> items =
+        repo.findSubscriptionsByUser(user, page, pageSize).stream()
+            .map(this::subscription)
+            .toList();
+    return new PageResult<>(items, total, page, pageSize);
+  }
+
+  private void requirePaging(int page, int pageSize) {
+    if (page < 1 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
+      throw error("PAY_INVALID_QUERY", "查询参数不合法");
+    }
+  }
+
+  private PaymentChannelAdapter channel(String key) {    PaymentChannelAdapter a = channels.get(key);
     if (a == null) throw error("PAY_CHANNEL_UNAVAILABLE", "支付渠道尚未配置");
     return a;
   }

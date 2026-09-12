@@ -39,6 +39,36 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '客服工单' }
       },
       {
+        path: 'membership',
+        name: 'membership',
+        component: () => import('@/views/MembershipView.vue'),
+        meta: { title: '会员与权益' }
+      },
+      {
+        path: 'partner',
+        name: 'partner',
+        component: () => import('@/views/PartnerView.vue'),
+        meta: { title: '伙伴与分享' }
+      },
+      {
+        path: 'assets',
+        name: 'assets',
+        component: () => import('@/views/AssetsView.vue'),
+        meta: { title: '内容资产' }
+      },
+      {
+        path: 'calendar',
+        name: 'calendar',
+        component: () => import('@/views/CalendarView.vue'),
+        meta: { title: '日历同步' }
+      },
+      {
+        path: 'memory',
+        name: 'memory',
+        component: () => import('@/views/MemoryView.vue'),
+        meta: { title: '记忆管理' }
+      },
+      {
         path: 'companion',
         name: 'companion',
         component: () => import('@/views/CompanionView.vue'),

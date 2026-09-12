@@ -15,7 +15,12 @@ const navItems = computed(() => [
   { name: 'reviews', label: '周期复盘' },
   { name: 'achievements', label: '我的成就' },
   { name: 'companion', label: '灵犀对话' },
+  { name: 'memory', label: '记忆管理' },
   { name: 'notifications', label: '消息与同步' },
+  { name: 'calendar', label: '日历同步' },
+  { name: 'partner', label: '伙伴与分享' },
+  { name: 'assets', label: '内容资产' },
+  { name: 'membership', label: '会员与权益' },
   { name: 'guardian', label: '监护' },
   { name: 'support', label: '客服工单' },
   { name: 'privacy', label: '隐私与账号' }

@@ -122,6 +122,28 @@ public class MybatisCommerceRepository implements CommerceRepository {
         .toList();
   }
 
+  @Override
+  public long countOrdersByUser(long user) {
+    Long total =
+        orders.selectCount(Wrappers.<OrderEntity>lambdaQuery().eq(OrderEntity::getUserId, user));
+    return total == null ? 0L : total;
+  }
+
+  @Override
+  public List<Order> findOrdersByUser(long user, int page, int pageSize) {
+    long offset = (long) (page - 1) * pageSize;
+    return orders
+        .selectList(
+            Wrappers.<OrderEntity>lambdaQuery()
+                .eq(OrderEntity::getUserId, user)
+                .orderByDesc(OrderEntity::getCreatedAt)
+                .orderByDesc(OrderEntity::getId)
+                .last("LIMIT " + pageSize + " OFFSET " + offset))
+        .stream()
+        .map(this::order)
+        .toList();
+  }
+
   public void insertOrder(Order o, SellablePrice priceSnapshot) {
     OrderEntity e = new OrderEntity();
     e.setId(o.getId());
@@ -301,6 +323,29 @@ public class MybatisCommerceRepository implements CommerceRepository {
         .toList();
   }
 
+  @Override
+  public long countSubscriptionsByUser(long user) {
+    Long total =
+        subscriptions.selectCount(
+            Wrappers.<SubscriptionEntity>lambdaQuery().eq(SubscriptionEntity::getUserId, user));
+    return total == null ? 0L : total;
+  }
+
+  @Override
+  public List<Subscription> findSubscriptionsByUser(long user, int page, int pageSize) {
+    long offset = (long) (page - 1) * pageSize;
+    return subscriptions
+        .selectList(
+            Wrappers.<SubscriptionEntity>lambdaQuery()
+                .eq(SubscriptionEntity::getUserId, user)
+                .orderByDesc(SubscriptionEntity::getCreatedAt)
+                .orderByDesc(SubscriptionEntity::getId)
+                .last("LIMIT " + pageSize + " OFFSET " + offset))
+        .stream()
+        .map(this::subscription)
+        .toList();
+  }
+
   public void markSubscriptionReconciled(long subscriptionId, LocalDateTime reconciledAt) {
     subscriptions.update(
         null,
@@ -398,6 +443,26 @@ public class MybatisCommerceRepository implements CommerceRepository {
             e.getBalance(),
             e.getExpiresAt(),
             e.getVersion());
+  }
+
+  @Override
+  public List<EntitlementSnapshot> findEntitlementsByUser(long user) {
+    return entitlements
+        .selectList(
+            Wrappers.<EntitlementEntity>lambdaQuery()
+                .eq(EntitlementEntity::getUserId, user)
+                .orderByAsc(EntitlementEntity::getResourceKey))
+        .stream()
+        .map(
+            e ->
+                new EntitlementSnapshot(
+                    e.getId(),
+                    e.getUserId(),
+                    e.getResourceKey(),
+                    e.getBalance(),
+                    e.getExpiresAt(),
+                    e.getVersion()))
+        .toList();
   }
 
   private EntitlementEntity findEnt(long user, String resource) {

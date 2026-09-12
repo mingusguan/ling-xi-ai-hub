@@ -378,3 +378,134 @@ export interface SupportTicketResult {
   version: LongId;
   createdAt: string;
 }
+
+/** 会员商品与价格版本，对应 ProductResult。 */
+export interface ProductResult {
+  productId: LongId;
+  productKey: string;
+  name: string;
+  scene: string;
+  priceId: LongId;
+  priceVersion: number;
+  amountMinor: LongId;
+  currency: string;
+  billingPeriod: string;
+  agePolicy: string;
+}
+
+/** 订单视图，对应 OrderResult。 */
+export interface OrderResult {
+  orderId: LongId;
+  orderNo: string;
+  userId: LongId;
+  productId: LongId;
+  amountMinor: LongId;
+  currency: string;
+  status: string;
+  paymentReference: string | null;
+  refundedMinor: LongId;
+  version: LongId;
+  createdAt: string;
+}
+
+/** 订阅视图，对应 SubscriptionResult。 */
+export interface SubscriptionResult {
+  subscriptionId: LongId;
+  userId: LongId;
+  productId: LongId;
+  status: string;
+  periodEnd: string | null;
+  cancelMode: string | null;
+  version: LongId;
+}
+
+/** 权益余额视图，对应 EntitlementResult。 */
+export interface EntitlementResult {
+  userId: LongId;
+  resourceKey: string;
+  balance: LongId;
+  expiresAt: string | null;
+  version: LongId;
+}
+
+/** 私有文件视图，对应 FileResult。 */
+export interface FileResult {
+  fileId: LongId;
+  publicId: string;
+  ownerUserId: LongId;
+  purpose: string;
+  originalName: string;
+  sizeBytes: LongId;
+  mimeType: string;
+  contentHash: string;
+  sensitivity: string;
+  status: string;
+  scanResult: string | null;
+  version: LongId;
+}
+
+/** 内容模板版本视图，对应 TemplateVersionResult。 */
+export interface TemplateVersionResult {
+  versionId: LongId;
+  templateId: LongId;
+  versionNo: number;
+  ageScope: string;
+  contentSnapshot: string;
+  status: string;
+  reviewerUserId: LongId | null;
+  reviewReason: string | null;
+  publishedAt: string | null;
+  version: LongId;
+}
+
+/** 导入导出任务视图，对应 TransferJobResult。 */
+export interface TransferJobResult {
+  jobId: LongId;
+  type: string;
+  userId: LongId;
+  status: string;
+  previewJson: string | null;
+  errorJson: string | null;
+  resultFileId: LongId | null;
+  expiresAt: string | null;
+  version: LongId;
+}
+
+/** 伙伴关系视图，对应 PartnerRelationResult。 */
+export interface PartnerRelationResult {
+  relationId: LongId;
+  inviterUserId: LongId;
+  inviteeUserId: LongId;
+  status: string;
+  version: LongId;
+}
+
+/** 伙伴授权权限，对应 PartnerPermission。 */
+export type PartnerPermission = 'VIEW_PROGRESS' | 'ENCOURAGE' | 'COMMENT' | 'CO_CHECK_IN';
+
+/** 伙伴目标授权视图，对应 PartnerGrantResult。 */
+export interface PartnerGrantResult {
+  grantId: LongId;
+  relationId: LongId;
+  ownerUserId: LongId;
+  goalId: LongId;
+  permissions: PartnerPermission[];
+  expiresAt: string | null;
+  status: string;
+  version: LongId;
+}
+
+/** 受控分享链接视图；rawToken 只在创建时返回一次，列表查询为 null。 */
+export interface ShareLinkResult {
+  shareId: LongId;
+  rawToken: string | null;
+  resourceType: string;
+  resourceId: string;
+  fields: string[];
+  snapshotJson: string | null;
+  status: string;
+  visitCount: number;
+  visitLimit: number | null;
+  expiresAt: string | null;
+  version: LongId;
+}

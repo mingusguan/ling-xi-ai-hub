@@ -36,12 +36,18 @@ export type {
 export { CompanionApi, parseAgentEvent } from './endpoints/companion';
 export type { ConfirmationBody, ConversationBody, RunBody } from './endpoints/companion';
 export { GuardianApi, RuntimeApi, SupportApi } from './endpoints/support';
+export { CommerceApi } from './endpoints/commerce';
+export { ContentApi } from './endpoints/content';
+export { PartnerApi } from './endpoints/partner';
 
 import { ApiClient } from './http';
+import { CommerceApi } from './endpoints/commerce';
 import { CompanionApi } from './endpoints/companion';
+import { ContentApi } from './endpoints/content';
 import { EngagementApi } from './endpoints/engagement';
 import { GoalApi } from './endpoints/goals';
 import { IdentityApi } from './endpoints/identity';
+import { PartnerApi } from './endpoints/partner';
 import { GuardianApi, RuntimeApi, SupportApi } from './endpoints/support';
 
 /** 聚合客户端，用户端所有接口统一从这里访问。 */
@@ -55,6 +61,9 @@ export interface LingxiApi {
   guardian: GuardianApi;
   runtime: RuntimeApi;
   support: SupportApi;
+  commerce: CommerceApi;
+  content: ContentApi;
+  partner: PartnerApi;
 }
 
 /** 成就查询入口（与目标接口同属 goal 模块）。 */
@@ -77,6 +86,9 @@ export function createLingxiApi(client: ApiClient): LingxiApi {
     companion: new CompanionApi(client),
     guardian: new GuardianApi(client),
     runtime: new RuntimeApi(client),
-    support: new SupportApi(client)
+    support: new SupportApi(client),
+    commerce: new CommerceApi(client),
+    content: new ContentApi(client),
+    partner: new PartnerApi(client)
   };
 }

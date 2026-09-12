@@ -14,6 +14,9 @@ public interface EngagementFacade {
 
   CalendarBindingResult bindCalendar(CalendarBindingCommand command);
 
+  /** 查询本人全部日历绑定，供客户端展示当前绑定与撤销入口。 */
+  List<CalendarBindingResult> listCalendarBindings(long userId);
+
   long projectCalendar(CalendarProjectionCommand command);
 
   CalendarBindingResult revokeCalendar(RevokeCalendarCommand command);

@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PartnerApplicationService implements PartnerFacade {
   private static final Set<String> GOAL_FIELDS =
       Set.of("title", "successCriteria", "status", "progress");
+  /** 列表类查询允许的最大页大小。 */
+  private static final int MAX_PAGE_SIZE = 200;
   private final PartnerRepository repo;
   private final IdentityFacade identities;
   private final GoalFacade goals;
@@ -313,6 +315,49 @@ public class PartnerApplicationService implements PartnerFacade {
 
   private PartnerRelation relation(long id) {
     return repo.findRelation(id).orElseThrow(() -> error("REL_PARTNER_NOT_FOUND", "伙伴关系不存在"));
+  }
+
+  /** 分页查询与本人相关的伙伴关系，只按归属过滤，不暴露对方私密数据。 */
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<PartnerRelationResult> listRelations(
+      long participantUserId, int page, int pageSize) {
+    requirePaging(page, pageSize);
+    identities.getAccessProfile(participantUserId);
+    long total = repo.countRelationsByParticipant(participantUserId);
+    List<PartnerRelationResult> items =
+        repo.findRelationsByParticipant(participantUserId, page, pageSize).stream()
+            .map(this::result)
+            .toList();
+    return new PageResult<>(items, total, page, pageSize);
+  }
+
+  /** 本人发出的目标授权列表，用于“我授权了谁”的可见性管理。 */
+  @Override
+  @Transactional(readOnly = true)
+  public List<PartnerGrantResult> listGrants(long ownerUserId) {
+    identities.getAccessProfile(ownerUserId);
+    return repo.findGrantsByOwner(ownerUserId).stream().map(this::result).toList();
+  }
+
+  /** 本人创建的分享链接；明文 token 只在创建时返回一次，列表不回显。 */
+  @Override
+  @Transactional(readOnly = true)
+  public PageResult<ShareLinkResult> listShares(long ownerUserId, int page, int pageSize) {
+    requirePaging(page, pageSize);
+    identities.getAccessProfile(ownerUserId);
+    long total = repo.countSharesByOwner(ownerUserId);
+    List<ShareLinkResult> items =
+        repo.findSharesByOwner(ownerUserId, page, pageSize).stream()
+            .map(s -> result(s, null))
+            .toList();
+    return new PageResult<>(items, total, page, pageSize);
+  }
+
+  private void requirePaging(int page, int pageSize) {
+    if (page < 1 || pageSize < 1 || pageSize > MAX_PAGE_SIZE) {
+      throw error("REL_INVALID_QUERY", "查询参数不合法");
+    }
   }
 
   private PartnerRelation activeRelation(long id) {

@@ -50,6 +50,14 @@ public class ContentController {
         r);
   }
 
+  @GetMapping("/files")
+  public ApiResponse<PageResult<FileResult>> myFiles(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest r) {
+    return ok(facade.listMyFiles(user(), page, pageSize), r);
+  }
+
   @GetMapping("/files/{id}")
   public ApiResponse<FileResult> file(@PathVariable long id, HttpServletRequest r) {
     return ok(facade.getReadyFile(user(), id), r);

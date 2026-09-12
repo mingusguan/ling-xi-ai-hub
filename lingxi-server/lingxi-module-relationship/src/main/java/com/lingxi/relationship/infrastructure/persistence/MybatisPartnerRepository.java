@@ -67,6 +67,38 @@ public class MybatisPartnerRepository implements PartnerRepository {
         .map(this::relation);
   }
 
+  @Override
+  public long countRelationsByParticipant(long user) {
+    Long total = relations.selectCount(participantQuery(user));
+    return total == null ? 0L : total;
+  }
+
+  @Override
+  public List<PartnerRelation> findRelationsByParticipant(long user, int page, int pageSize) {
+    long offset = (long) (page - 1) * pageSize;
+    return relations
+        .selectList(
+            participantQuery(user)
+                .orderByDesc(PartnerRelationEntity::getCreatedAt)
+                .orderByDesc(PartnerRelationEntity::getId)
+                .last("LIMIT " + pageSize + " OFFSET " + offset))
+        .stream()
+        .map(this::relation)
+        .toList();
+  }
+
+  /** 关系双方都可能查询：命中邀请方或被邀请方都算参与。 */
+  private com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<PartnerRelationEntity>
+      participantQuery(long user) {
+    return Wrappers.<PartnerRelationEntity>lambdaQuery()
+        .and(
+            wrapper ->
+                wrapper
+                    .eq(PartnerRelationEntity::getInviterUserId, user)
+                    .or()
+                    .eq(PartnerRelationEntity::getInviteeUserId, user));
+  }
+
   public void insertRelation(PartnerRelation r) {
     PartnerRelationEntity e = new PartnerRelationEntity();
     e.setId(r.getId());
@@ -112,6 +144,19 @@ public class MybatisPartnerRepository implements PartnerRepository {
             Wrappers.<PartnerGrantEntity>lambdaQuery()
                 .eq(PartnerGrantEntity::getGoalId, goalId)
                 .eq(PartnerGrantEntity::getStatus, "ACTIVE"))
+        .stream()
+        .map(this::grant)
+        .toList();
+  }
+
+  @Override
+  public List<PartnerGrant> findGrantsByOwner(long ownerUserId) {
+    return grants
+        .selectList(
+            Wrappers.<PartnerGrantEntity>lambdaQuery()
+                .eq(PartnerGrantEntity::getOwnerUserId, ownerUserId)
+                .orderByDesc(PartnerGrantEntity::getCreatedAt)
+                .orderByDesc(PartnerGrantEntity::getId))
         .stream()
         .map(this::grant)
         .toList();
@@ -222,6 +267,29 @@ public class MybatisPartnerRepository implements PartnerRepository {
                     .eq(ShareLinkEntity::getTokenHash, hash)
                     .last("LIMIT 1")))
         .map(this::share);
+  }
+
+  @Override
+  public long countSharesByOwner(long ownerUserId) {
+    Long total =
+        shares.selectCount(
+            Wrappers.<ShareLinkEntity>lambdaQuery().eq(ShareLinkEntity::getOwnerUserId, ownerUserId));
+    return total == null ? 0L : total;
+  }
+
+  @Override
+  public List<ShareLink> findSharesByOwner(long ownerUserId, int page, int pageSize) {
+    long offset = (long) (page - 1) * pageSize;
+    return shares
+        .selectList(
+            Wrappers.<ShareLinkEntity>lambdaQuery()
+                .eq(ShareLinkEntity::getOwnerUserId, ownerUserId)
+                .orderByDesc(ShareLinkEntity::getCreatedAt)
+                .orderByDesc(ShareLinkEntity::getId)
+                .last("LIMIT " + pageSize + " OFFSET " + offset))
+        .stream()
+        .map(this::share)
+        .toList();
   }
 
   public void insertShare(ShareLink r) {

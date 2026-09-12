@@ -4,6 +4,7 @@ import com.lingxi.kernel.*;
 import com.lingxi.relationship.api.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,14 @@ public class PartnerController {
 
   public PartnerController(PartnerFacade facade) {
     this.facade = facade;
+  }
+
+  @GetMapping("/relationships/partners")
+  public ApiResponse<PageResult<PartnerRelationResult>> partners(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest r) {
+    return ok(facade.listRelations(user(), page, pageSize), r);
   }
 
   @PostMapping("/relationships/partners")
@@ -38,6 +47,11 @@ public class PartnerController {
       @RequestParam(defaultValue = "TERMINATE") String reason,
       HttpServletRequest r) {
     return ok(facade.terminate(user(), id, expectedVersion, reason), r);
+  }
+
+  @GetMapping("/relationships/grants")
+  public ApiResponse<List<PartnerGrantResult>> grants(HttpServletRequest r) {
+    return ok(facade.listGrants(user()), r);
   }
 
   @PutMapping("/relationships/partners/{id}/grants")
@@ -73,6 +87,14 @@ public class PartnerController {
             new CreateReportCommand(
                 user(), b.targetType(), b.targetId(), b.reasonCode(), b.evidenceReference())),
         r);
+  }
+
+  @GetMapping("/shares")
+  public ApiResponse<PageResult<ShareLinkResult>> shares(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest r) {
+    return ok(facade.listShares(user(), page, pageSize), r);
   }
 
   @PostMapping("/shares")

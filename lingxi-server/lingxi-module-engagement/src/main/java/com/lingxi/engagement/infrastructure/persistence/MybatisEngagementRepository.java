@@ -205,6 +205,18 @@ public class MybatisEngagementRepository implements EngagementRepository {
   }
 
   @Override
+  public List<CalendarBinding> findCalendarsByUser(long userId) {
+    return calendarMapper
+        .selectList(
+            Wrappers.<CalendarBindingEntity>lambdaQuery()
+                .eq(CalendarBindingEntity::getUserId, userId)
+                .orderByAsc(CalendarBindingEntity::getProvider))
+        .stream()
+        .map(this::calendar)
+        .toList();
+  }
+
+  @Override
   public Optional<CalendarBinding> findCalendar(long id) {
     return Optional.ofNullable(calendarMapper.selectById(id)).map(this::calendar);
   }

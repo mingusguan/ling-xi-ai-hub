@@ -23,6 +23,14 @@ public class CommerceController {
     return ok(commerce.listProducts(user(), scene), r);
   }
 
+  @GetMapping("/orders")
+  public ApiResponse<PageResult<OrderResult>> orders(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest r) {
+    return ok(commerce.listOrders(user(), page, pageSize), r);
+  }
+
   @PostMapping("/orders")
   public ApiResponse<OrderResult> order(
       @RequestHeader("Idempotency-Key") String key,
@@ -48,6 +56,14 @@ public class CommerceController {
     return ok(commerce.handlePaymentCallback(new PaymentCallbackCommand(channel, raw, h)), r);
   }
 
+  @GetMapping("/subscriptions")
+  public ApiResponse<PageResult<SubscriptionResult>> subscriptions(
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int pageSize,
+      HttpServletRequest r) {
+    return ok(commerce.listSubscriptions(user(), page, pageSize), r);
+  }
+
   @PostMapping("/subscriptions/{id}/cancel")
   public ApiResponse<SubscriptionResult> cancel(
       @PathVariable long id,
@@ -64,6 +80,11 @@ public class CommerceController {
                 b.expectedVersion(),
                 ActorContextHolder.requireUser().recentAuthentication())),
         r);
+  }
+
+  @GetMapping("/entitlements")
+  public ApiResponse<List<EntitlementResult>> entitlements(HttpServletRequest r) {
+    return ok(entitlements.list(user()), r);
   }
 
   @GetMapping("/entitlements/{resource}")
