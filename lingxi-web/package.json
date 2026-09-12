@@ -1,0 +1,15 @@
+{
+  "name": "lingxi-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "灵犀伴行 PC Web 用户端与管理端共享工程",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @lingxi/user-web",
+    "build": "npm run build --workspace @lingxi/user-web",
+    "typecheck": "npm run typecheck --workspace @lingxi/user-web"
+  }
+}

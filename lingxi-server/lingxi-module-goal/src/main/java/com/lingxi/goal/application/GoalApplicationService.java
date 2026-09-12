@@ -28,6 +28,7 @@ public class GoalApplicationService implements GoalFacade {
   private final IdentityFacade identityFacade;
   private final IdGenerator idGenerator;
   private final DomainEventPublisher eventPublisher;
+  private final AchievementApplicationService achievementService;
   private final ObjectMapper objectMapper;
   private final Clock clock;
 
@@ -37,8 +38,16 @@ public class GoalApplicationService implements GoalFacade {
       IdentityFacade identityFacade,
       IdGenerator idGenerator,
       DomainEventPublisher eventPublisher,
+      AchievementApplicationService achievementService,
       ObjectMapper objectMapper) {
-    this(repository, identityFacade, idGenerator, eventPublisher, objectMapper, Clock.systemUTC());
+    this(
+        repository,
+        identityFacade,
+        idGenerator,
+        eventPublisher,
+        achievementService,
+        objectMapper,
+        Clock.systemUTC());
   }
 
   GoalApplicationService(
@@ -46,12 +55,14 @@ public class GoalApplicationService implements GoalFacade {
       IdentityFacade identityFacade,
       IdGenerator idGenerator,
       DomainEventPublisher eventPublisher,
+      AchievementApplicationService achievementService,
       ObjectMapper objectMapper,
       Clock clock) {
     this.repository = repository;
     this.identityFacade = identityFacade;
     this.idGenerator = idGenerator;
     this.eventPublisher = eventPublisher;
+    this.achievementService = achievementService;
     this.objectMapper = objectMapper;
     this.clock = clock;
   }
@@ -244,6 +255,13 @@ public class GoalApplicationService implements GoalFacade {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public List<GoalResult> listGoals(long userId) {
+    requireCoreAccess(userId);
+    return repository.findByUserId(userId).stream().map(this::result).toList();
+  }
+
+  @Override
   @Transactional
   public int generateOccurrences(long actionId, LocalDate fromDate, LocalDate toDate) {
     if (fromDate == null
@@ -331,7 +349,7 @@ public class GoalApplicationService implements GoalFacade {
       if (!repeated.getRequestDigest().equals(requestDigest)) {
         throw new BusinessException("GOAL_IDEMPOTENCY_CONFLICT", "同一打卡请求不能提交不同内容");
       }
-      return checkInResult(repeated, occurrence, goal.getProgress());
+      return checkInResult(repeated, occurrence, goal.getProgress(), List.of());
     }
     CheckIn effective = repository.findEffectiveCheckIn(occurrence.getId()).orElse(null);
     if (effective != null && !command.correction()) {
@@ -362,6 +380,7 @@ public class GoalApplicationService implements GoalFacade {
     }
     repository.insertCheckIn(checkIn);
     long previousGoalVersion = goal.getVersion();
+    GoalStatus statusBeforeCheckIn = goal.getStatus();
     goal.updateProgress(repository.calculateProgress(goal.getId(), now), now);
     if (!repository.updateProgress(goal, previousGoalVersion)) {
       throw new BusinessException("GOAL_VERSION_CONFLICT", "目标进度已变化");
@@ -375,7 +394,12 @@ public class GoalApplicationService implements GoalFacade {
             command.result(),
             goal.getVersion(),
             instant));
-    return checkInResult(checkIn, occurrence, goal.getProgress());
+    // 成就与打卡共用同一本地事务，授予结果随本次打卡一起返回。
+    List<AchievementResult> newAchievements =
+        achievementService.grantForCheckIn(
+            new CheckInAchievementContext(goal, statusBeforeCheckIn, action, occurrence, command.result()),
+            now);
+    return checkInResult(checkIn, occurrence, goal.getProgress(), newAchievements);
   }
 
   @Override
@@ -607,14 +631,16 @@ public class GoalApplicationService implements GoalFacade {
         g.getVersion());
   }
 
-  private CheckInResult checkInResult(CheckIn c, ActionOccurrence o, int progress) {
+  private CheckInResult checkInResult(
+      CheckIn c, ActionOccurrence o, int progress, List<AchievementResult> newAchievements) {
     return new CheckInResult(
         c.getId(),
         o.getId(),
         c.getResult(),
         o.getStatus().name(),
         progress,
-        c.getRecordedAt().toInstant(ZoneOffset.UTC));
+        c.getRecordedAt().toInstant(ZoneOffset.UTC),
+        newAchievements);
   }
 
   private ReviewResult reviewResult(Review r) {

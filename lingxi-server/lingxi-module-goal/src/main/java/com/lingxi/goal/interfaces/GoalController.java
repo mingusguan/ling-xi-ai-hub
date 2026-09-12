@@ -30,6 +30,11 @@ public class GoalController {
         request);
   }
 
+  @GetMapping("/goals")
+  public ApiResponse<List<GoalResult>> list(HttpServletRequest request) {
+    return ok(goalFacade.listGoals(userId()), request);
+  }
+
   @GetMapping("/goals/{id}")
   public ApiResponse<GoalResult> get(@PathVariable long id, HttpServletRequest request) {
     return ok(goalFacade.getGoal(userId(), id), request);

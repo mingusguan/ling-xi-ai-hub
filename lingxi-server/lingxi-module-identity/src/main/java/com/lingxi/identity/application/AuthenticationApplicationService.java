@@ -115,7 +115,28 @@ public class AuthenticationApplicationService implements AuthenticationFacade {
     if (profile.status() == com.lingxi.identity.api.AccountStatus.CLOSED) {
       throw new BusinessException("AUTH_ACCOUNT_CLOSED", "账号已关闭");
     }
-    Instant now = clock.instant();
+    return issue(profile, command.deviceId(), clock.instant());
+  }
+
+  /**
+   * 为已核验的登录身份签发会话。
+   *
+   * <p>断言登录与手机号登录必须共用同一会话语义（Opaque Token、设备绑定、15 分钟 access、
+   * 30 天 refresh 与授权版本快照），因此会话签发收敛到此处，避免两条登录路径产生差异。
+   */
+  @Transactional
+  public SessionTokens issueSession(long userId, String deviceId) {
+    if (userId <= 0 || isBlank(deviceId)) {
+      throw new BusinessException("AUTH_INVALID_LOGIN", "登录参数不完整");
+    }
+    AccessProfile profile = identityService.getAccessProfile(userId);
+    if (profile.status() == com.lingxi.identity.api.AccountStatus.CLOSED) {
+      throw new BusinessException("AUTH_ACCOUNT_CLOSED", "账号已关闭");
+    }
+    return issue(profile, deviceId, clock.instant());
+  }
+
+  private SessionTokens issue(AccessProfile profile, String deviceId, Instant now) {
     String accessToken = tokenGenerator.nextToken();
     String refreshToken = tokenGenerator.nextToken();
     String familyId = tokenGenerator.nextToken();
@@ -124,14 +145,14 @@ public class AuthenticationApplicationService implements AuthenticationFacade {
             idGenerator.nextId(),
             familyId,
             profile.userId(),
-            command.deviceId(),
+            deviceId,
             hash(accessToken),
             hash(refreshToken),
             profile.authorizationVersion(),
             utc(now.plus(ACCESS_TTL)),
             utc(now.plus(REFRESH_TTL)),
             utc(now));
-    repository.ensureDevice(idGenerator.nextId(), profile.userId(), command.deviceId(), utc(now));
+    repository.ensureDevice(idGenerator.nextId(), profile.userId(), deviceId, utc(now));
     repository.insertSession(session);
     return tokens(accessToken, refreshToken, session, profile);
   }

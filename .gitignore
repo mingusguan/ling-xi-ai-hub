@@ -53,3 +53,6 @@ docker/
 deploy/.env
 deploy/.env.*
 !deploy/.env.example
+
+# Node.js 前端依赖（lingxi-web / lingxi-ui / lingxi-harmony 本地安装产物）
+node_modules/

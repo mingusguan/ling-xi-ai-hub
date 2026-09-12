@@ -66,5 +66,17 @@ public interface GoalRepository {
 
   boolean updateReview(Review review, long previousVersion);
 
+  /** 查询里程碑，用于成就判定。 */
+  Optional<Milestone> findMilestone(long milestoneId);
+
+  /** 查询里程碑下的行动，用于成就判定。 */
+  List<Action> findActionsByMilestone(long milestoneId);
+
+  /** 查询指定行动已生成的全部实例，用于成就判定。 */
+  List<ActionOccurrence> findOccurrencesByActionIds(List<Long> actionIds);
+
+  /** 查询用户当前有效行动在窗口内已完成打卡的本地日期，用于连续打卡判定。 */
+  List<LocalDate> findCompletedCheckInDates(long userId, LocalDate fromDate, LocalDate toDate);
+
   int logicallyDeleteUserData(long userId);
 }

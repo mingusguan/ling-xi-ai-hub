@@ -3,6 +3,7 @@ package com.lingxi.goal.infrastructure.privacy;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lingxi.goal.domain.AchievementRepository;
 import com.lingxi.goal.domain.GoalRepository;
 import com.lingxi.goal.infrastructure.persistence.*;
 import com.lingxi.identity.api.*;
@@ -10,10 +11,11 @@ import java.util.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 导出或清理目标、计划、行动、打卡与复盘数据。 */
+/** 导出或清理目标、计划、行动、打卡、复盘与成就数据。 */
 @Component
 public class GoalPrivacyDataContributor implements PrivacyDataContributor {
   private final GoalRepository repository;
+  private final AchievementRepository achievementRepository;
   private final GoalMapper goalMapper;
   private final PlanVersionMapper planMapper;
   private final MilestoneMapper milestoneMapper;
@@ -21,10 +23,12 @@ public class GoalPrivacyDataContributor implements PrivacyDataContributor {
   private final OccurrenceMapper occurrenceMapper;
   private final CheckInMapper checkInMapper;
   private final ReviewMapper reviewMapper;
+  private final AchievementMapper achievementMapper;
   private final ObjectMapper objectMapper;
 
   public GoalPrivacyDataContributor(
       GoalRepository repository,
+      AchievementRepository achievementRepository,
       GoalMapper goalMapper,
       PlanVersionMapper planMapper,
       MilestoneMapper milestoneMapper,
@@ -32,8 +36,10 @@ public class GoalPrivacyDataContributor implements PrivacyDataContributor {
       OccurrenceMapper occurrenceMapper,
       CheckInMapper checkInMapper,
       ReviewMapper reviewMapper,
+      AchievementMapper achievementMapper,
       ObjectMapper objectMapper) {
     this.repository = repository;
+    this.achievementRepository = achievementRepository;
     this.goalMapper = goalMapper;
     this.planMapper = planMapper;
     this.milestoneMapper = milestoneMapper;
@@ -41,6 +47,7 @@ public class GoalPrivacyDataContributor implements PrivacyDataContributor {
     this.occurrenceMapper = occurrenceMapper;
     this.checkInMapper = checkInMapper;
     this.reviewMapper = reviewMapper;
+    this.achievementMapper = achievementMapper;
     this.objectMapper = objectMapper;
   }
 
@@ -55,7 +62,10 @@ public class GoalPrivacyDataContributor implements PrivacyDataContributor {
     long userId = context.userId();
     PrivacyRequestType type = context.type();
     if (type == PrivacyRequestType.DELETE_DATA || type == PrivacyRequestType.CLOSE_ACCOUNT) {
-      return PrivacyContribution.deleted(repository.logicallyDeleteUserData(userId));
+      // 成就同样属于用户数据，与目标执行数据一并逻辑删除。
+      return PrivacyContribution.deleted(
+          repository.logicallyDeleteUserData(userId)
+              + achievementRepository.logicallyDeleteUserData(userId));
     }
     if (type != PrivacyRequestType.EXPORT) {
       return PrivacyContribution.unchanged();
@@ -65,6 +75,10 @@ public class GoalPrivacyDataContributor implements PrivacyDataContributor {
     List<Long> goalIds = goals.stream().map(GoalEntity::getId).toList();
     Map<String, Object> data = new LinkedHashMap<>();
     data.put("goals", goals);
+    data.put(
+        "achievements",
+        achievementMapper.selectList(
+            Wrappers.<AchievementEntity>lambdaQuery().eq(AchievementEntity::getUserId, userId)));
     if (goalIds.isEmpty()) {
       return PrivacyContribution.exported(json(data));
     }

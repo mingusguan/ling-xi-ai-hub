@@ -20,6 +20,9 @@ public interface GoalFacade {
   /** 查询用户自己的目标。 */
   GoalResult getGoal(long userId, long goalId);
 
+  /** 查询用户全部目标，供 PC Web 与 HarmonyOS 的多目标列表使用。 */
+  List<GoalResult> listGoals(long userId);
+
   /** 为行动按本地时间语义生成发生实例。 */
   int generateOccurrences(long actionId, LocalDate fromDate, LocalDate toDate);
 

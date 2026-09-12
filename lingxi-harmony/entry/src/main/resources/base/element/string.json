@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "灵犀伴行主模块"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "灵犀伴行"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "灵犀伴行"
+    }
+  ]
+}

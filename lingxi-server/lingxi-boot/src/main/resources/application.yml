@@ -44,7 +44,14 @@ lingxi:
   identity:
     assertion-secret: ${IDENTITY_ASSERTION_SECRET}
     privacy-export-key: ${PRIVACY_EXPORT_KEY}
+    # 手机号登录（过渡入口）：不校验短信验证码，任何知道手机号的人都能登录该账号。
+    # 对外开放前必须接入短信验证码或受信身份桥接层；需要立即关闭时设为 false。
+    phone-login-enabled: ${LINGXI_PHONE_LOGIN_ENABLED:true}
     bootstrap-admin:
       username: ${LINGXI_ADMIN_USERNAME:}
       password: ${LINGXI_ADMIN_PASSWORD:}
       display-name: ${LINGXI_ADMIN_DISPLAY_NAME:平台管理员}
+  goal:
+    achievement:
+      # 连续打卡成就阈值天数，产品确认具体数值前使用可配置默认值
+      check-in-streak-days: ${LINGXI_GOAL_ACHIEVEMENT_STREAK_DAYS:7}

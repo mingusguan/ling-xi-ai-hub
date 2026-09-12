@@ -26,6 +26,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 /** 目标执行闭环的 MyBatis-Plus 仓储实现。 */
@@ -373,6 +374,94 @@ public class MybatisGoalRepository implements GoalRepository {
   }
 
   @Override
+  public Optional<Milestone> findMilestone(long milestoneId) {
+    return Optional.ofNullable(milestoneMapper.selectById(milestoneId)).map(this::toDomain);
+  }
+
+  @Override
+  public List<Action> findActionsByMilestone(long milestoneId) {
+    return actionMapper
+        .selectList(
+            Wrappers.<ActionEntity>lambdaQuery()
+                .eq(ActionEntity::getMilestoneId, milestoneId)
+                .orderByAsc(ActionEntity::getId))
+        .stream()
+        .map(this::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<ActionOccurrence> findOccurrencesByActionIds(List<Long> actionIds) {
+    if (actionIds.isEmpty()) {
+      return List.of();
+    }
+    return occurrenceMapper
+        .selectList(
+            Wrappers.<OccurrenceEntity>lambdaQuery()
+                .in(OccurrenceEntity::getActionId, actionIds)
+                .orderByAsc(OccurrenceEntity::getScheduledAt))
+        .stream()
+        .map(this::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<LocalDate> findCompletedCheckInDates(long userId, LocalDate fromDate, LocalDate toDate) {
+    List<Long> goalIds =
+        goalMapper
+            .selectList(
+                Wrappers.<GoalEntity>lambdaQuery()
+                    .select(GoalEntity::getId)
+                    .eq(GoalEntity::getUserId, userId))
+            .stream()
+            .map(GoalEntity::getId)
+            .toList();
+    if (goalIds.isEmpty()) {
+      return List.of();
+    }
+    List<Long> actionIds =
+        actionMapper
+            .selectList(
+                Wrappers.<ActionEntity>lambdaQuery()
+                    .select(ActionEntity::getId)
+                    .in(ActionEntity::getGoalId, goalIds)
+                    .eq(ActionEntity::getStatus, ActionStatus.ACTIVE.name()))
+            .stream()
+            .map(ActionEntity::getId)
+            .toList();
+    if (actionIds.isEmpty()) {
+      return List.of();
+    }
+    List<OccurrenceEntity> occurrences =
+        occurrenceMapper.selectList(
+            Wrappers.<OccurrenceEntity>lambdaQuery()
+                .select(OccurrenceEntity::getId, OccurrenceEntity::getLocalDate)
+                .in(OccurrenceEntity::getActionId, actionIds)
+                .between(OccurrenceEntity::getLocalDate, fromDate, toDate));
+    if (occurrences.isEmpty()) {
+      return List.of();
+    }
+    List<Long> occurrenceIds = occurrences.stream().map(OccurrenceEntity::getId).toList();
+    Set<Long> completedOccurrenceIds =
+        checkInMapper
+            .selectList(
+                Wrappers.<CheckInEntity>lambdaQuery()
+                    .select(CheckInEntity::getOccurrenceId)
+                    .in(CheckInEntity::getOccurrenceId, occurrenceIds)
+                    .eq(CheckInEntity::getEffectiveKey, 1)
+                    .eq(CheckInEntity::getResult, CheckInResultType.COMPLETED.name()))
+            .stream()
+            .map(CheckInEntity::getOccurrenceId)
+            .collect(Collectors.toSet());
+    return occurrences.stream()
+        .filter(occurrence -> completedOccurrenceIds.contains(occurrence.getId()))
+        .map(OccurrenceEntity::getLocalDate)
+        .distinct()
+        .sorted()
+        .toList();
+  }
+
+  @Override
   public int logicallyDeleteUserData(long userId) {
     int affectedRows = 0;
     List<Long> goalIds =
@@ -490,6 +579,16 @@ public class MybatisGoalRepository implements GoalRepository {
         e.getVersion(),
         e.getCreatedAt(),
         e.getUpdatedAt());
+  }
+
+  private Milestone toDomain(MilestoneEntity e) {
+    return new Milestone(
+        e.getId(),
+        e.getPlanVersionId(),
+        e.getSequenceNo(),
+        e.getTitle(),
+        e.getSuccessCriteria(),
+        e.getCreatedAt());
   }
 
   private ActionOccurrence toDomain(OccurrenceEntity e) {

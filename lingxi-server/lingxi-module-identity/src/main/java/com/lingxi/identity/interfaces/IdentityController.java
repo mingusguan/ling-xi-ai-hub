@@ -5,6 +5,7 @@ import com.lingxi.kernel.ActorContextHolder;
 import com.lingxi.kernel.ApiResponse;
 import com.lingxi.kernel.RequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import org.springframework.web.bind.annotation.*;
 
 /** 身份、会话与隐私权利的统一客户端接口。 */
@@ -13,14 +14,17 @@ import org.springframework.web.bind.annotation.*;
 public class IdentityController {
   private final RegistrationFacade registrationFacade;
   private final AuthenticationFacade authenticationFacade;
+  private final PhoneLoginFacade phoneLoginFacade;
   private final PrivacyFacade privacyFacade;
 
   public IdentityController(
       RegistrationFacade registrationFacade,
       AuthenticationFacade authenticationFacade,
+      PhoneLoginFacade phoneLoginFacade,
       PrivacyFacade privacyFacade) {
     this.registrationFacade = registrationFacade;
     this.authenticationFacade = authenticationFacade;
+    this.phoneLoginFacade = phoneLoginFacade;
     this.privacyFacade = privacyFacade;
   }
 
@@ -31,6 +35,21 @@ public class IdentityController {
         registrationFacade.register(
             new RegisterWithAssertionCommand(
                 body.requestKey(), body.signedAssertion(), body.timezone())),
+        request);
+  }
+
+  /**
+   * 手机号登录；手机号尚未绑定账号时按出生日期自动建立账号。
+   *
+   * <p>当前不校验短信验证码，只应作为过渡入口使用；可用 `lingxi.identity.phone-login-enabled=false` 关闭。
+   */
+  @PostMapping("/auth/phone-sessions")
+  public ApiResponse<SessionTokens> phoneLogin(
+      @RequestBody PhoneLoginBody body, HttpServletRequest request) {
+    return ok(
+        phoneLoginFacade.loginWithPhone(
+            new PhoneLoginCommand(
+                body.phoneNumber(), body.birthDate(), body.deviceId(), body.timezone())),
         request);
   }
 
@@ -99,6 +118,10 @@ public class IdentityController {
   }
 
   public record RegisterRequest(String requestKey, String signedAssertion, String timezone) {}
+
+  /** 手机号登录请求；首次登录需要提供出生日期。 */
+  public record PhoneLoginBody(
+      String phoneNumber, LocalDate birthDate, String deviceId, String timezone) {}
 
   public record LoginRequest(String requestKey, String signedAssertion, String deviceId) {}
 
