@@ -1,0 +1,114 @@
+name: LingXi PC Web Build & Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/workflows/deploy-lingxi-user-web.yml'
+      - 'lingxi-web/**'
+
+concurrency:
+  group: lingxi-user-web-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build And Deploy PC Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      SERVER_HOST: ${{ secrets.SERVER_HOST }}
+      SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+      SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      NODE_OPTIONS: --max_old_space_size=8192
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: lingxi-web/package-lock.json
+
+      # lingxi-web 是 npm workspaces 工程：apps/user-web 依赖 packages/api-client，
+      # 因此必须在工作区根目录安装，不能在 apps/user-web 内单独 npm ci。
+      - name: Install dependencies
+        working-directory: lingxi-web
+        run: npm ci
+
+      # build 脚本为 `vue-tsc --noEmit && vite build`，类型错误会直接让构建失败
+      - name: Build
+        working-directory: lingxi-web
+        run: npm run build --workspace @lingxi/user-web
+
+      - name: Package build output
+        shell: bash
+        run: |
+          test -s lingxi-web/apps/user-web/dist/index.html
+          tar -C lingxi-web/apps/user-web/dist -czf "lingxi-user-web-${GITHUB_SHA}.tar.gz" .
+
+      - name: Configure SSH
+        shell: bash
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SERVER_SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -T 10 -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload build output
+        shell: bash
+        run: |
+          ssh "$SERVER_USERNAME@$SERVER_HOST" \
+            "mkdir -p /data/mingus/nginx/html/lingxi-app"
+          scp "lingxi-user-web-${GITHUB_SHA}.tar.gz" \
+            "$SERVER_USERNAME@$SERVER_HOST:/data/mingus/nginx/html/lingxi-app/.lingxi-user-web-${GITHUB_SHA}.tar.gz"
+
+      # 与管理端一致：解压到 .dist-<sha>，再把 dist 软链/移动到新版本，
+      # 失败时回滚到 .dist-previous，保证发布过程不会出现半成品目录。
+      - name: Activate release
+        shell: bash
+        run: |
+          ssh "$SERVER_USERNAME@$SERVER_HOST" \
+            "GITHUB_SHA='$GITHUB_SHA' sh -s" <<'REMOTE'
+          set -eu
+
+          base_dir=/data/mingus/nginx/html/lingxi-app
+          archive="$base_dir/.lingxi-user-web-$GITHUB_SHA.tar.gz"
+          release="$base_dir/.dist-$GITHUB_SHA"
+          target="$base_dir/dist"
+          previous="$base_dir/.dist-previous"
+
+          docker exec mingus-nginx nginx -t
+
+          rm -rf "$release"
+          mkdir -p "$release"
+          tar -xzf "$archive" -C "$release"
+          test -s "$release/index.html"
+          chmod -R a+rX "$release"
+
+          rm -rf "$previous"
+          if [ -d "$target" ]; then
+            mv "$target" "$previous"
+          fi
+
+          if mv "$release" "$target"; then
+            rm -f "$archive"
+          else
+            if [ -d "$previous" ]; then
+              mv "$previous" "$target"
+            fi
+            exit 1
+          fi
+
+          docker exec mingus-nginx nginx -s reload
+          test -s "$target/index.html"
+          echo "PC Web deployed: $GITHUB_SHA"
+          REMOTE

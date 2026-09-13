@@ -13,11 +13,20 @@ triggers fully automated releases via two workflows:
   uploads `deploy/docker-compose.prod.yml` + `deploy/deploy.sh`, and runs
   `./deploy.sh <full-sha>` (pull + up + health check).
 
-- `.github/workflows/deploy-lingxi-ui.yml` — frontend (`lingxi-ui`)
+- `.github/workflows/deploy-lingxi-ui.yml` — 后台管理端（`lingxi-ui`）
   Triggered by any `lingxi-ui/**` change. Builds with `npm ci` +
   `vue-cli-service build` (Node 18, publicPath `/`), uploads `dist` to
   `/data/mingus/nginx/html/lingxi`, then atomically swaps the `dist` directory
   and reloads `mingus-nginx`.
+
+- `.github/workflows/deploy-lingxi-user-web.yml` — PC 用户端（`lingxi-web`）
+  Triggered by any `lingxi-web/**` change. Runs `npm ci` **at the workspace root**
+  (`lingxi-web/` is an npm workspaces project — `apps/user-web` depends on
+  `packages/api-client`, so it cannot be installed from `apps/user-web` alone),
+  then `npm run build --workspace @lingxi/user-web` (the script is
+  `vue-tsc --noEmit && vite build`, so type errors fail the build). Uploads the
+  tarball to `/data/mingus/nginx/html/lingxi-app`, swaps `dist` and reloads
+  `mingus-nginx` — same atomic pattern as the admin UI.
 
 Required GitHub repository secrets:
 `SERVER_HOST` (`1.14.43.81`), `SERVER_USERNAME` (`mingus`), `SERVER_SSH_KEY`
@@ -191,6 +200,66 @@ Rollback is the same command with the previous image tag:
 ```bash
 ./deploy.sh previous-good-tag
 ```
+
+## PC 用户端部署（app.mingusone.com）
+
+PC 用户端（`lingxi-web`，Vue3 + Vite）与后台管理端是两个独立入口：
+
+| 入口 | 域名 | 前端产物 | nginx vhost |
+| --- | --- | --- | --- |
+| 后台管理端 | `lingxi.mingusone.com` | `/data/mingus/nginx/html/lingxi/dist` | `conf.d/default.conf` |
+| PC 用户端 | `app.mingusone.com` | `/data/mingus/nginx/html/lingxi-app/dist` | `conf.d/lingxi-app.conf` |
+
+两端的接口前缀**不同**，不能混用：
+
+- 管理端前端用 `/prod-api/**`（`VUE_APP_BASE_API=/prod-api`），nginx 侧 `proxy_pass http://lingxi-admin:8080/`（**结尾带 `/`，会剥掉前缀**）。
+- 用户端前端用同源相对路径 `/api/v1/**`（`lingxi-web` 里 `baseUrl: ''`），nginx 侧 `proxy_pass http://lingxi-admin:8080`（**结尾不带 `/`，保留原路径**）。
+  用户端 vhost 还额外关闭了 `proxy_buffering`，因为 R04 Companion Agent 走 SSE 事件流。
+
+### vhost 文件
+
+| 文件 | 作用 |
+| --- | --- |
+| `deploy/nginx/lingxi-app.conf` | HTTP 入口（80），包含 SPA 兜底、`/api/`、`/actuator/`、`/profile/` |
+| `deploy/nginx/lingxi-app-https.conf.disabled` | HTTPS 入口（443）。**文件名以 `.disabled` 结尾，默认不被 nginx 加载**；证书签发后由 `enable-https.sh` 启用 |
+| `deploy/nginx/enable-https.sh` | 幂等脚本：校验 DNS → `certbot certonly --webroot` → 启用 443 vhost → `nginx -t && -s reload` → 自检 |
+
+服务器侧路径：vhost 放在 `/data/mingus/nginx/conf.d/`，脚本放在 `/data/mingus/nginx/`。
+
+> ⚠️ 这两个文件包含中文注释。**不要用 `ssh host "cat > file"` / `echo ... > file` 手工写**——
+> 经 Windows 管道传输时最后一个汉字的尾字节会被吞掉并连带吃掉换行，导致注释与下一条指令粘连
+> （实测踩到：`# 内容资产上传走这个入口` 把 `client_max_body_size` 吞进注释，随后 `proxy_pass`
+> 落到 server 上下文，报 `"proxy_pass" directive is not allowed here`）。
+> 请用 base64 传输：`[Convert]::ToBase64String([IO.File]::ReadAllBytes($f)) | ssh host "tr -d '\r\n' | base64 -d > /path"`。
+
+### 首次上线（已完成的部分 + 待办）
+
+已完成的服务器侧动作（2026-09-13）：
+
+1. 上传 `lingxi-app.conf` 与 `lingxi-app-https.conf.disabled` 到 `conf.d/`，`nginx -t` 通过。
+2. 手工发布了一版 `apps/user-web/dist` 到 `/data/mingus/nginx/html/lingxi-app/dist`（CI 建成后由 CI 接管）。
+3. 用 `Host: app.mingusone.com` 直连 IP 验证：`/`、`/goals`、`/login`、`/membership` 均 200，
+   静态资源 200，`/api/v1/goals` 返回 401 `AUTH_UNAUTHENTICATED`（反代正常）。
+
+待用户完成：
+
+1. **在 DNS 添加 `app.mingusone.com` 的 A 记录，指向 `1.14.43.81`**（与 lingxi/family/doc 一致）。
+2. DNS 生效后执行：
+
+```bash
+ssh obsidian-server 'sh /data/mingus/nginx/enable-https.sh'
+```
+
+脚本会自动签发证书、启用 443 vhost（80 端口改为 308 跳转到 https）并 reload。
+
+### 常见故障
+
+| 现象 | 原因与处理 |
+| --- | --- |
+| 访问站点 500，错误日志报 `rewrite or internal redirection cycle while internally redirecting to "/index.html"` | vhost 的 `server` 块**缺少 `root` 指令**，nginx 退回默认 root，`try_files` 回落到 `/index.html` 形成内部重定向环。补 `root /usr/share/nginx/html/lingxi-app/dist;` |
+| 页面能打开但接口全部 404/返回 HTML | `/api/` 的 `proxy_pass` 结尾多写了 `/`（会剥掉 `/api`），或该 vhost 误用了 `/prod-api/` 前缀 |
+| Agent 对话流式输出卡住不动 | SSE 被代理缓冲。确认 `/api/` 下有 `proxy_buffering off;`、`proxy_read_timeout 3600s;` 与 `add_header X-Accel-Buffering no;` |
+| 证书续期 | `certbot renew` 走 `/var/www/certbot` webroot；`obsidian.conf` 的 ACME location 也在同一路径，注意保留 |
 
 ## 生产 .env 同步
 
