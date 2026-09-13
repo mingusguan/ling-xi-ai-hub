@@ -23,10 +23,27 @@ fi
 echo "  ✓ $DOMAIN -> $RESOLVED"
 
 echo "[2/5] 申请/续期证书（webroot 校验）"
-if [ -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" ]; then
+# 两个必须显式指定的原因：
+# 1) webroot 要用宿主机路径 —— nginx 容器把 /data/mingus/certbot/www 以只读方式挂到
+#    /var/www/certbot，容器内路径对宿主机上的 certbot 不可写。该路径与服务器上
+#    doc.mingusone.com 的 renewal 配置一致（family 那条写的是容器内路径，属历史遗留错误）。
+# 2) certbot 默认读写 /etc/letsencrypt、/var/log/letsencrypt；本机的证书实际存放在
+#    /data/mingus/letsencrypt（nginx 容器挂载的正是这个目录），且这些目录属 root，
+#    因此必须用 sudo 并显式指定 config/work/logs 目录，否则报
+#    "Permission denied: /var/log/letsencrypt/.certbot.lock"。
+WEBROOT=/data/mingus/certbot/www
+CERT_DIR=/data/mingus/letsencrypt
+WORK_DIR=/data/mingus/certbot/work
+LOGS_DIR=/data/mingus/certbot/logs
+if [ ! -d "$WEBROOT" ]; then
+  echo "  ✗ 找不到 webroot 目录 $WEBROOT" >&2
+  exit 1
+fi
+CERTBOT="sudo -n certbot --config-dir $CERT_DIR --work-dir $WORK_DIR --logs-dir $LOGS_DIR"
+if [ -f "$CERT_DIR/live/$DOMAIN/fullchain.pem" ]; then
   echo "  证书已存在，跳过签发"
 else
-  certbot certonly --webroot -w /var/www/certbot -d "$DOMAIN" \
+  $CERTBOT certonly --webroot -w "$WEBROOT" -d "$DOMAIN" \
     --non-interactive --agree-tos --register-unsafely-without-email \
     --keep-until-expiring
 fi
@@ -40,6 +57,15 @@ elif [ -f "$HTTPS_CONF.disabled" ]; then
 else
   echo "  ✗ 找不到 $HTTPS_CONF(.disabled)" >&2
   exit 1
+fi
+
+# lingxi-app.conf 只在「证书就绪前」使用；它与 https 配置都声明了
+# listen 80 + server_name app.mingusone.com，两者共存时 nginx 会报
+# "conflicting server name ... ignored" 并且只采用先加载的那个 server 块。
+# 因此启用 https 配置后必须移除它（需要重新引导时再放回即可）。
+if [ -f "$HTTP_CONF" ]; then
+  mv "$HTTP_CONF" "$HTTP_CONF.bootstrap-disabled"
+  echo "  ✓ 已停用 $HTTP_CONF（保留为 .bootstrap-disabled 备份）"
 fi
 
 echo "[4/5] 校验并重载 nginx"

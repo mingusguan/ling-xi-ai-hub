@@ -51,12 +51,12 @@ npm run build --workspace @lingxi/user-web  # 类型检查 + 生产构建
 
 ## 部署
 
-生产入口为 **`app.mingusone.com`**（与后台管理端 `lingxi.mingusone.com` 分开）。
+生产入口为 **https://app.mingusone.com**（已上线，与后台管理端 `lingxi.mingusone.com` 分开）。
 
 | 项 | 值 |
 | --- | --- |
 | 前端产物 | `/data/mingus/nginx/html/lingxi-app/dist` |
-| nginx vhost | `deploy/nginx/lingxi-app.conf`（HTTP）、`deploy/nginx/lingxi-app-https.conf.disabled`（HTTPS，证书就绪后启用） |
+| nginx vhost | `deploy/nginx/lingxi-app-https.conf`（线上生效：80 → 308 跳转 + 443 站点）；`deploy/nginx/lingxi-app.conf` 为证书就绪前的 HTTP 引导配置，已由 `enable-https.sh` 停用 |
 | CI | `.github/workflows/deploy-lingxi-user-web.yml`，`lingxi-web/**` 变更即自动构建并原子发布 |
 | 接口前缀 | 前端用同源相对路径 `/api/v1/**`（`baseUrl: ''`）；vhost 的 `/api/` 使用 `proxy_pass http://lingxi-admin:8080`（**结尾不带 `/`**，保留原路径） |
 
@@ -68,5 +68,5 @@ npm run build --workspace @lingxi/user-web  # 类型检查 + 生产构建
 
 - `vue-tsc --noEmit` 与 `vite build` 已通过（构建产物 `apps/user-web/dist`）。
 - 服务端联调：已用真实 MySQL + 真实 HTTP 完成注册→登录→创建目标→确认计划→打卡→成就授予的端到端验证（见实施交接）。
-- 生产入口：vhost 与静态产物已就位，14 条导航与各域页面均已打开验证；**待 DNS 添加 `app.mingusone.com` A 记录后由 `deploy/nginx/enable-https.sh` 签发证书并启用 HTTPS**。
+- 生产入口：**已上线** https://app.mingusone.com —— HTTPS（Let's Encrypt，到期 2026-12-12，自动续期）、HTTP 308 跳转、浏览器协商 h2；`/`、`/goals`、`/login`、`/membership`、`/companion`、`/privacy` 均 200，`/api/v1/**` 同源反代正常；已用真实手机号在生产完成登录并进入「今日行动」。
 - 尚未完成：真实身份桥接层（手机号/华为账号）接入、HarmonyOS 编译与真机验证。

@@ -220,9 +220,15 @@ PC 用户端（`lingxi-web`，Vue3 + Vite）与后台管理端是两个独立入
 
 | 文件 | 作用 |
 | --- | --- |
-| `deploy/nginx/lingxi-app.conf` | HTTP 入口（80），包含 SPA 兜底、`/api/`、`/actuator/`、`/profile/` |
-| `deploy/nginx/lingxi-app-https.conf.disabled` | HTTPS 入口（443）。**文件名以 `.disabled` 结尾，默认不被 nginx 加载**；证书签发后由 `enable-https.sh` 启用 |
-| `deploy/nginx/enable-https.sh` | 幂等脚本：校验 DNS → `certbot certonly --webroot` → 启用 443 vhost → `nginx -t && -s reload` → 自检 |
+| `deploy/nginx/lingxi-app.conf` | **证书就绪前**的 HTTP 入口（80）：SPA 兜底、`/api/`、`/actuator/`、`/profile/` |
+| `deploy/nginx/lingxi-app-https.conf.disabled` | **证书就绪后**的正式入口：80 做 308 跳转 + 443 提供站点。文件名以 `.disabled` 结尾，默认不被 nginx 加载 |
+| `deploy/nginx/enable-https.sh` | 幂等脚本：校验 DNS → `certbot certonly --webroot` → 启用 443 vhost → **停用 `lingxi-app.conf`** → `nginx -t && -s reload` → 自检 |
+
+> ⚠️ `lingxi-app.conf` 与 `lingxi-app-https.conf` 都声明 `listen 80; server_name app.mingusone.com;`。
+> 两者共存时 nginx 会报 `conflicting server name "app.mingusone.com" on 0.0.0.0:80, ignored`，
+> 并且**只采用先加载的那个 server 块**，行为不再确定（实测遇到）。
+> 因此 `enable-https.sh` 在启用 443 配置后会把 `lingxi-app.conf` 改名为
+> `lingxi-app.conf.bootstrap-disabled`（保留备份）。需要重新引导时再放回去。
 
 服务器侧路径：vhost 放在 `/data/mingus/nginx/conf.d/`，脚本放在 `/data/mingus/nginx/`。
 
@@ -232,34 +238,47 @@ PC 用户端（`lingxi-web`，Vue3 + Vite）与后台管理端是两个独立入
 > 落到 server 上下文，报 `"proxy_pass" directive is not allowed here`）。
 > 请用 base64 传输：`[Convert]::ToBase64String([IO.File]::ReadAllBytes($f)) | ssh host "tr -d '\r\n' | base64 -d > /path"`。
 
-### 首次上线（已完成的部分 + 待办）
+### certbot 环境（本机特有，务必沿用）
 
-已完成的服务器侧动作（2026-09-13）：
+这台机器的证书**不在** certbot 默认目录，必须显式指定三处路径并加 `sudo`，否则会报
+`Permission denied: /var/log/letsencrypt/.certbot.lock`：
 
-1. 上传 `lingxi-app.conf` 与 `lingxi-app-https.conf.disabled` 到 `conf.d/`，`nginx -t` 通过。
-2. 手工发布了一版 `apps/user-web/dist` 到 `/data/mingus/nginx/html/lingxi-app/dist`（CI 建成后由 CI 接管）。
-3. 用 `Host: app.mingusone.com` 直连 IP 验证：`/`、`/goals`、`/login`、`/membership` 均 200，
-   静态资源 200，`/api/v1/goals` 返回 401 `AUTH_UNAUTHENTICATED`（反代正常）。
+| 项 | 值 | 原因 |
+| --- | --- | --- |
+| `--config-dir` | `/data/mingus/letsencrypt` | nginx 容器把该目录以只读挂到 `/etc/letsencrypt`；写默认的 `/etc/letsencrypt` 容器看不到 |
+| `--work-dir` | `/data/mingus/certbot/work` | 默认 `/var/lib/letsencrypt` 不可写 |
+| `--logs-dir` | `/data/mingus/certbot/logs` | 默认 `/var/log/letsencrypt` 不可写 |
+| `-w`（webroot） | `/data/mingus/certbot/www` | **宿主机路径**；容器内是只读的 `/var/www/certbot`，宿主机上的 certbot 写不进去 |
+| 权限 | `sudo -n certbot ...` | 上述目录属 root；本机 `mingus` 有免密 sudo |
 
-待用户完成：
+`certbot.timer` 已在运行，续期自动。续期依赖 renewal 里的 `webroot_path`，新证书写的是
+`/data/mingus/certbot/www`（正确）。**注意 `family.mingusone.com.conf` 里写的是容器内路径
+`/var/www/certbot`，属历史遗留错误，该证书续期会失败**，届时需改为宿主机路径。
 
-1. **在 DNS 添加 `app.mingusone.com` 的 A 记录，指向 `1.14.43.81`**（与 lingxi/family/doc 一致）。
-2. DNS 生效后执行：
+### 上线记录与状态（2026-09-13）
 
-```bash
-ssh obsidian-server 'sh /data/mingus/nginx/enable-https.sh'
-```
+| 步骤 | 状态 |
+| --- | --- |
+| 上传 vhost、`nginx -t` 通过 | ✅ |
+| 发布 `apps/user-web/dist`（先手工，后由 CI 接管） | ✅ |
+| `Host: app.mingusone.com` 直连 IP 验证 SPA / 静态资源 / `/api/` 反代 | ✅ |
+| 用户添加 DNS A 记录 `app.mingusone.com → 1.14.43.81` | ✅ |
+| 执行 `enable-https.sh` 签发证书 | ✅ 到期 2026-12-12，续期配置 `webroot_path` 正确 |
+| 停用冲突的 `lingxi-app.conf`，`nginx -t` 无告警 | ✅ |
+| 线上验证 | ✅ `http://` 308 → `https://`；`/`、`/goals`、`/login`、`/membership`、`/companion`、`/privacy` 均 200；证书校验 `verify_result=0`；浏览器协商 **h2**；`/api/v1/goals` 返回 401（反代正常）；浏览器用真实手机号登录成功并进入「今日行动」 |
 
-脚本会自动签发证书、启用 443 vhost（80 端口改为 308 跳转到 https）并 reload。
+正式入口：**https://app.mingusone.com**
 
 ### 常见故障
 
 | 现象 | 原因与处理 |
 | --- | --- |
-| 访问站点 500，错误日志报 `rewrite or internal redirection cycle while internally redirecting to "/index.html"` | vhost 的 `server` 块**缺少 `root` 指令**，nginx 退回默认 root，`try_files` 回落到 `/index.html` 形成内部重定向环。补 `root /usr/share/nginx/html/lingxi-app/dist;` |
+| 站点 500，错误日志报 `rewrite or internal redirection cycle while internally redirecting to "/index.html"` | vhost 的 `server` 块**缺少 `root` 指令**，nginx 退回默认 root，`try_files` 回落到 `/index.html` 形成内部重定向环。补 `root /usr/share/nginx/html/lingxi-app/dist;` |
+| nginx 报 `conflicting server name "app.mingusone.com" on 0.0.0.0:80, ignored` | `lingxi-app.conf` 与 `lingxi-app-https.conf` 同时启用。停用前者（改名加 `.bootstrap-disabled`） |
+| `nginx -t` 报 `cannot load certificate ... No such file or directory` | 启用了 443 配置但证书还没签。签完证书再启用，或用 `.disabled` 后缀挡住 |
 | 页面能打开但接口全部 404/返回 HTML | `/api/` 的 `proxy_pass` 结尾多写了 `/`（会剥掉 `/api`），或该 vhost 误用了 `/prod-api/` 前缀 |
 | Agent 对话流式输出卡住不动 | SSE 被代理缓冲。确认 `/api/` 下有 `proxy_buffering off;`、`proxy_read_timeout 3600s;` 与 `add_header X-Accel-Buffering no;` |
-| 证书续期 | `certbot renew` 走 `/var/www/certbot` webroot；`obsidian.conf` 的 ACME location 也在同一路径，注意保留 |
+| certbot 报 `Permission denied` / `unable to write` | 未加 `sudo` 或未指定 `--config-dir/--work-dir/--logs-dir`，见上一节表格 |
 
 ## 生产 .env 同步
 
