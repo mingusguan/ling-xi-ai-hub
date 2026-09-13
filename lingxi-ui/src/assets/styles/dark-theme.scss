@@ -1046,18 +1046,24 @@ pre {
 }
 
 // ---------------------------------------------------------------------------
-//  11. 滚动条：global.scss 全局隐藏了滚动条，长表格/长弹窗里会失去位置感，
-//      这里在可滚动容器内恢复一条细的深色滚动条（覆盖 display:none）。
+//  11. 滚动条
+//  global.scss 用 * 把滚动条整体 display:none 掉了，导致比视口长的页面
+//  （长表格、长弹窗、抽屉）既看不到滚动条也容易让人以为内容没加载完。
+//  这里在可滚动容器内恢复一条细滚动条。
+//  注：内容滚动容器是 .app-main（见 layout/components/AppMain.vue），
+//  global.scss 的 `* { scrollbar-width: none }` 会覆盖 Firefox 的滚动条宽度设置，
+//  但 Chrome/Edge/Safari 走 ::-webkit-scrollbar，因此这条对主流浏览器有效。
 // ---------------------------------------------------------------------------
 .el-scrollbar__wrap,
 .el-table__body-wrapper,
 .el-select-dropdown__wrap,
 .el-dialog__body,
 .el-drawer__body,
+.app-main,
 .json-message .el-message-box__message p,
 .permission-grid {
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 178, 255, 0.32) transparent;
+  scrollbar-color: rgba(148, 178, 255, 0.3) transparent;
 
   &::-webkit-scrollbar {
     display: block;
@@ -1070,11 +1076,11 @@ pre {
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgba(148, 178, 255, 0.28);
+    background: rgba(148, 178, 255, 0.3);
     border-radius: $radius-full;
 
     &:hover {
-      background: rgba(148, 178, 255, 0.48);
+      background: rgba(148, 178, 255, 0.5);
     }
   }
 }

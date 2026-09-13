@@ -465,6 +465,12 @@ $lx-surface-2: rgba(15, 23, 42, 0.55);
   margin-bottom: 18px;
 }
 
+// 内容可能比视口长，而 .app-main 是滚动容器；两侧留出与页头对齐的呼吸空间，
+// 底部额外留白，保证滚到底时最后一张卡片/表格不被贴边。
+.companion-admin {
+  padding: 8px 4px 32px;
+}
+
 .toolbar .el-input,
 .toolbar .el-select,
 .filter-bar > .el-input,
