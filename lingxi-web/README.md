@@ -46,8 +46,27 @@ npm run dev --workspace @lingxi/user-web    # 开发服务器（默认 http://12
 npm run build --workspace @lingxi/user-web  # 类型检查 + 生产构建
 ```
 
+> 依赖必须在本工作区根目录安装：`apps/user-web` 依赖 `packages/api-client`，
+> 在 `apps/user-web` 内单独执行 `npm ci` 会解析不到该包。
+
+## 部署
+
+生产入口为 **`app.mingusone.com`**（与后台管理端 `lingxi.mingusone.com` 分开）。
+
+| 项 | 值 |
+| --- | --- |
+| 前端产物 | `/data/mingus/nginx/html/lingxi-app/dist` |
+| nginx vhost | `deploy/nginx/lingxi-app.conf`（HTTP）、`deploy/nginx/lingxi-app-https.conf.disabled`（HTTPS，证书就绪后启用） |
+| CI | `.github/workflows/deploy-lingxi-user-web.yml`，`lingxi-web/**` 变更即自动构建并原子发布 |
+| 接口前缀 | 前端用同源相对路径 `/api/v1/**`（`baseUrl: ''`）；vhost 的 `/api/` 使用 `proxy_pass http://lingxi-admin:8080`（**结尾不带 `/`**，保留原路径） |
+
+与后台管理端的关键差异：管理端走 `/prod-api/**` 且 `proxy_pass` 结尾带 `/`（剥前缀），
+用户端**不能**照抄；另外用户端 vhost 关闭了 `proxy_buffering` 并放宽读超时，
+否则 `/companion` 的 SSE 事件流会被 nginx 缓冲住。完整说明与排障见 `deploy/README.md` 的「PC 用户端部署」章节。
+
 ## 验证状态
 
 - `vue-tsc --noEmit` 与 `vite build` 已通过（构建产物 `apps/user-web/dist`）。
 - 服务端联调：已用真实 MySQL + 真实 HTTP 完成注册→登录→创建目标→确认计划→打卡→成就授予的端到端验证（见实施交接）。
-- 尚未完成：真实身份桥接层（手机号/华为账号）接入、浏览器端完整回归、会员/伙伴分享/模板/文件/日历页面。
+- 生产入口：vhost 与静态产物已就位，14 条导航与各域页面均已打开验证；**待 DNS 添加 `app.mingusone.com` A 记录后由 `deploy/nginx/enable-https.sh` 签发证书并启用 HTTPS**。
+- 尚未完成：真实身份桥接层（手机号/华为账号）接入、HarmonyOS 编译与真机验证。
