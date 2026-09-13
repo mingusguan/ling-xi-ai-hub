@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { Notification, MessageBox, Message, Loading } from 'element-ui'
+import { Notification, Message, Loading } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import { getToken, removeToken, removeExpiresIn } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
 import { tansParams, blobValidate } from "@/utils/ruoyi"
 import cache from '@/plugins/cache'
@@ -11,6 +11,33 @@ import { withPublicPath } from '@/utils/appPath'
 let downloadLoadingInstance
 // 是否显示重新登录
 export let isRelogin = { show: false }
+// 会话失效只处理一次：并发请求同时 401 时避免重复提示与重复跳转
+let sessionExpiredHandled = false
+
+// 会话失效统一处理：清理本地会话后强制回到登录页
+// 说明：服务端 GlobalExceptionHandler 对 AUTH_UNAUTHENTICATED 等业务错误返回真实 HTTP 状态码，
+// 因此 401 一定走 axios 的 error 分支，必须在这里处理；调用 `/auth/logout` 只会再次得到 401，
+// 而 LogOut 失败会让 `GetInfo().catch()` 里的跳转被跳过，用户会卡在空页面。
+const handleSessionExpired = () => {
+  if (sessionExpiredHandled) {
+    return
+  }
+  sessionExpiredHandled = true
+  isRelogin.show = false
+  store.commit('SET_TOKEN', '')
+  store.commit('SET_ROLES', [])
+  store.commit('SET_PERMISSIONS', [])
+  store.commit('SET_SYS_CODE', '')
+  removeToken()
+  removeExpiresIn()
+  Message({ message: '登录状态已过期，请重新登录', type: 'warning', duration: 3000 })
+  // 使用绝对地址跳转以重置内存中的路由与会话状态，并带回跳地址；
+  // 已在登录页时无需再次跳转（否则会丢掉 redirect 参数）
+  if (window.location.pathname.indexOf('/login') === -1) {
+    const back = window.location.pathname + window.location.search
+    window.location.replace(withPublicPath('/login') + '?redirect=' + encodeURIComponent(back))
+  }
+}
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
@@ -82,17 +109,7 @@ service.interceptors.response.use(res => {
       return res.data
     }
     if (code === 401) {
-      if (!isRelogin.show) {
-        isRelogin.show = true
-        MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', { confirmButtonText: '重新登录', cancelButtonText: '取消', type: 'warning' }).then(() => {
-          isRelogin.show = false
-          store.dispatch('LogOut').then(() => {
-            location.href = withPublicPath('/login')
-          })
-      }).catch(() => {
-        isRelogin.show = false
-      })
-    }
+      handleSessionExpired()
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
     } else if (code === 500) {
       Message({ message: msg, type: 'error' })
@@ -108,7 +125,11 @@ service.interceptors.response.use(res => {
     }
   },
   error => {
-    console.log('err' + error)
+    // 会话失效：服务端以 401 + AUTH_UNAUTHENTICATED 响应，统一清会话并跳转登录页
+    if (error && error.response && error.response.status === 401) {
+      handleSessionExpired()
+      return Promise.reject(error)
+    }
     let message = (error.response && error.response.data && (error.response.data.message || error.response.data.msg)) || error.message
     if (message == "Network Error") {
       message = "后端接口连接异常"

@@ -2,7 +2,6 @@
   <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
     <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
-    <xiao-ling-robot/>
     <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar @setLayout="setLayout"/>
@@ -16,7 +15,6 @@
 
 <script>
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
-import XiaoLingRobot from '@/components/XiaoLingRobot'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
 
@@ -27,8 +25,7 @@ export default {
     Navbar,
     Settings,
     Sidebar,
-    TagsView,
-    XiaoLingRobot
+    TagsView
   },
   mixins: [ResizeMixin],
   computed: {

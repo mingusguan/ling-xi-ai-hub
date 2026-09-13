@@ -67,9 +67,13 @@ router.beforeEach((to, from, next) => {
             next({ path: '/admin/dashboard' })
           }
         }).catch(err => {
-          store.dispatch('LogOut').then(() => {
-            Message.error(err)
-            next({ path: '/' })
+          // 会话失效时请求拦截器已提示并跳转登录页，这里只做兜底清理与跳转。
+          // token 无效时后端不会签发新会话（否则未登录用户可借此拿 token），因此不尝试登录页接口。
+          store.dispatch('LogOut').catch(() => {}).then(() => {
+            if (!err || !(err.response && err.response.status === 401)) {
+              Message.error(typeof err === 'string' ? err : (err && err.message) || '获取用户信息失败')
+            }
+            next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
           })
         })
       } else if (store.getters.sysCode && store.getters.sidebarRouters.length === 0) {

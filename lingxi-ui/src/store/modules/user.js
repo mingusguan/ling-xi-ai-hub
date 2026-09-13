@@ -122,14 +122,27 @@ const user = {
     // 退出系统
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
+        // 本地会话清理必须无条件完成：会话已过期时退出接口本身返回 401，
+        // 若此时不改状态（旧实现直接 reject），权限守卫的 GetInfo().catch() 会跳过跳转，用户卡在空页面
+        const clearLocalSession = () => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           commit('SET_PERMISSIONS', [])
           commit('SET_SYS_CODE', '')
           removeToken()
+        }
+        logout(state.token).then(() => {
+          clearLocalSession()
           resolve()
         }).catch(error => {
+          const status = error && error.response && error.response.status
+          // 401 表示服务端会话已失效，本地清理后按成功处理；其他错误仍上报给调用方
+          if (status === 401) {
+            clearLocalSession()
+            resolve()
+            return
+          }
+          clearLocalSession()
           reject(error)
         })
       })
