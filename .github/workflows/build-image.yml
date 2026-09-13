@@ -17,7 +17,12 @@ on:
       - 'lingxi-common/**'
       - 'lingxi-modules/**'
       - 'lingxi-server/**'
-      - 'deploy/**'
+      # 只列出本工作流真正会部署到服务器的两个文件。
+      # 这里曾经是 'deploy/**'，导致改 nginx 配置或部署文档也会重建镜像并重启
+      # lingxi-admin；而 Spring Boot 冷启动约 25 秒，重启窗口内所有请求都会 502。
+      # 2026-09-13 用户点击登录时正好撞上这个窗口，实测踩到。
+      - 'deploy/deploy.sh'
+      - 'deploy/docker-compose.prod.yml'
 
 concurrency:
   group: lingxi-production

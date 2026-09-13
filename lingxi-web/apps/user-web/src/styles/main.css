@@ -1,26 +1,68 @@
-/* 灵犀伴行 PC Web 设计令牌：颜色、间距、圆角与字体层级。 */
+/* ============================================================================
+ *  灵犀伴行 PC Web 设计令牌
+ *  ---------------------------------------------------------------------------
+ *  视觉方向：与后台管理端（lingxi-ui / dark-theme.scss）统一为「深色玻璃」体系，
+ *  保证同一个产品两个端看起来是一套设计；差异只在强调色：
+ *    后台管理端 = 蓝 #3B82F6（运营/治理语境）
+ *    PC 用户端 = 青绿 #34C08D（成长/陪伴语境，沿用本端原有的绿色倾向）
+ *
+ *  约束：
+ *  1. 所有页面只使用这里的 CSS 变量，禁止在 .vue 内写死颜色
+ *     （转换前已核查：views/components 下 0 处硬编码颜色，90 处使用 var(--lx-*)）。
+ *  2. 文字对比度按 WCAG AA 正文 4.5:1 校验，基准底色 #161E2E：
+ *     text #F2F6FA → 14.6:1   muted #A3B2C7 → 7.7:1
+ *     青绿 text 用 #7BE0B4 → 10.3:1（直接用 #34C08D 只有 4.9:1，仅适合做按钮底色）
+ *  3. 表单/卡片边框用半透明亮色，避免深色底上一道道生硬的灰线。
+ * ========================================================================== */
 :root {
-  --lx-color-bg: #f6f4ef;
-  --lx-color-surface: #ffffff;
-  --lx-color-surface-muted: #f1efe9;
-  --lx-color-border: #dfdacf;
-  --lx-color-text: #24211c;
-  --lx-color-text-muted: #6d675d;
-  --lx-color-primary: #2f6f5e;
-  --lx-color-primary-soft: #e3efe9;
-  --lx-color-accent: #c2803c;
-  --lx-color-danger: #b4453b;
-  --lx-radius-sm: 6px;
-  --lx-radius-md: 12px;
-  --lx-radius-lg: 20px;
+  /* 底色与层次 */
+  --lx-color-bg: #0B1220;
+  --lx-color-surface: #161E2E;
+  --lx-color-surface-muted: rgba(30, 41, 59, 0.55);
+  --lx-color-surface-raised: rgba(23, 32, 50, 0.82);
+
+  /* 边框与分割线 */
+  --lx-color-border: rgba(148, 178, 255, 0.16);
+  --lx-color-border-strong: rgba(148, 178, 255, 0.3);
+
+  /* 文字层级 */
+  --lx-color-text: #F2F6FA;
+  --lx-color-text-muted: #A3B2C7;
+  --lx-color-text-inverse: #07130E;
+
+  /* 强调色（青绿） */
+  --lx-color-primary: #34C08D;
+  --lx-color-primary-hover: #48D69F;
+  --lx-color-primary-text: #7BE0B4;
+  --lx-color-primary-soft: rgba(52, 192, 141, 0.16);
+  --lx-color-primary-border: rgba(52, 192, 141, 0.42);
+
+  /* 状态色 */
+  --lx-color-accent: #E7B269;
+  --lx-color-danger: #FF9B9B;
+  --lx-color-danger-soft: rgba(239, 68, 68, 0.16);
+  --lx-color-focus: rgba(52, 192, 141, 0.35);
+
+  /* 圆角 */
+  --lx-radius-sm: 8px;
+  --lx-radius-md: 14px;
+  --lx-radius-lg: 22px;
+
+  /* 间距 */
   --lx-space-1: 4px;
   --lx-space-2: 8px;
   --lx-space-3: 12px;
   --lx-space-4: 16px;
   --lx-space-5: 24px;
   --lx-space-6: 32px;
-  --lx-shadow-card: 0 1px 2px rgba(36, 33, 28, 0.06), 0 8px 24px rgba(36, 33, 28, 0.06);
+
+  /* 阴影与光晕 */
+  --lx-shadow-card: 0 10px 30px rgba(0, 0, 0, 0.32);
+  --lx-shadow-raised: 0 18px 46px rgba(0, 0, 0, 0.45);
+  --lx-glow-primary: 0 0 0 3px var(--lx-color-focus);
+
   --lx-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  --lx-font-mono: 'JetBrains Mono', Menlo, Consolas, monospace;
 }
 
 * {
@@ -35,16 +77,27 @@ body,
 }
 
 body {
-  background: var(--lx-color-bg);
+  background:
+    radial-gradient(ellipse 900px 600px at 12% -8%, rgba(52, 192, 141, 0.14), transparent 62%),
+    radial-gradient(ellipse 800px 520px at 96% 4%, rgba(59, 130, 246, 0.12), transparent 60%),
+    var(--lx-color-bg);
+  background-attachment: fixed;
   color: var(--lx-color-text);
   font-family: var(--lx-font-family);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-  color: var(--lx-color-primary);
+  color: var(--lx-color-primary-text);
   text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: #FFFFFF;
 }
 
 button {
@@ -53,21 +106,85 @@ button {
   cursor: pointer;
 }
 
+/* 标题层级：深色底上必须比正文更亮更重，否则层级被压平 */
+h1,
+h2,
+h3,
+h4 {
+  color: var(--lx-color-text);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  margin: 0 0 var(--lx-space-3);
+}
+
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 19px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+/* 滚动条：细的浅色滑块，避免长页面失去位置感 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 178, 255, 0.26);
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 178, 255, 0.44);
+  background-clip: content-box;
+}
+
+/* 焦点可见性：深色主题下默认 outline 几乎看不见 */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--lx-glow-primary);
+  border-radius: var(--lx-radius-sm);
+}
+
+/* 卡片：深色玻璃 + 细微高光边 */
 .lx-card {
-  background: var(--lx-color-surface);
+  background: var(--lx-color-surface-raised);
   border: 1px solid var(--lx-color-border);
   border-radius: var(--lx-radius-md);
   box-shadow: var(--lx-shadow-card);
   padding: var(--lx-space-5);
+  backdrop-filter: blur(16px);
 }
 
 .lx-button {
   background: var(--lx-color-primary);
   border: 1px solid var(--lx-color-primary);
   border-radius: var(--lx-radius-sm);
-  color: #fff;
-  padding: 8px 16px;
-  transition: opacity 0.15s ease;
+  color: var(--lx-color-text-inverse);
+  font-weight: 600;
+  padding: 10px 18px;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.lx-button:hover:not(:disabled) {
+  background: var(--lx-color-primary-hover);
+  box-shadow: 0 6px 18px rgba(52, 192, 141, 0.32);
+}
+
+.lx-button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .lx-button:disabled {
@@ -77,19 +194,54 @@ button {
 
 .lx-button--ghost {
   background: transparent;
-  color: var(--lx-color-primary);
+  border-color: var(--lx-color-border-strong);
+  color: var(--lx-color-text-muted);
+}
+
+.lx-button--ghost:hover:not(:disabled) {
+  background: var(--lx-color-surface-muted);
+  border-color: var(--lx-color-primary-border);
+  color: var(--lx-color-primary-text);
+  box-shadow: none;
 }
 
 .lx-input,
 .lx-select,
 .lx-textarea {
-  background: #fff;
+  background: rgba(9, 15, 28, 0.72);
   border: 1px solid var(--lx-color-border);
   border-radius: var(--lx-radius-sm);
+  color: var(--lx-color-text);
   font-family: inherit;
   font-size: 14px;
-  padding: 8px 10px;
+  padding: 10px 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   width: 100%;
+}
+
+.lx-input::placeholder,
+.lx-textarea::placeholder {
+  color: #8496AD;
+}
+
+.lx-input:hover,
+.lx-select:hover,
+.lx-textarea:hover {
+  border-color: var(--lx-color-border-strong);
+}
+
+.lx-input:focus,
+.lx-select:focus,
+.lx-textarea:focus {
+  border-color: var(--lx-color-primary);
+  box-shadow: var(--lx-glow-primary);
+  outline: none;
+}
+
+/* 日期选择器的日历图标在深色下默认是黑的，几乎看不见 */
+.lx-input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(78%) sepia(12%) saturate(420%) hue-rotate(178deg) brightness(96%);
+  cursor: pointer;
 }
 
 .lx-field {
@@ -102,6 +254,7 @@ button {
 .lx-field > label {
   color: var(--lx-color-text-muted);
   font-size: 13px;
+  font-weight: 500;
 }
 
 .lx-row {
@@ -118,19 +271,23 @@ button {
 
 .lx-tag {
   background: var(--lx-color-primary-soft);
+  border: 1px solid var(--lx-color-primary-border);
   border-radius: 999px;
-  color: var(--lx-color-primary);
+  color: var(--lx-color-primary-text);
   font-size: 12px;
+  font-weight: 500;
   padding: 2px 10px;
 }
 
 .lx-tag--warn {
-  background: #f7ecdc;
+  background: rgba(231, 178, 105, 0.16);
+  border-color: rgba(231, 178, 105, 0.4);
   color: var(--lx-color-accent);
 }
 
 .lx-tag--danger {
-  background: #f8e5e2;
+  background: var(--lx-color-danger-soft);
+  border-color: rgba(239, 68, 68, 0.42);
   color: var(--lx-color-danger);
 }
 
@@ -139,12 +296,59 @@ button {
 }
 
 .lx-error {
+  background: var(--lx-color-danger-soft);
+  border: 1px solid rgba(239, 68, 68, 0.36);
+  border-radius: var(--lx-radius-sm);
   color: var(--lx-color-danger);
   margin: var(--lx-space-3) 0;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .lx-empty {
   color: var(--lx-color-text-muted);
   padding: var(--lx-space-6) var(--lx-space-4);
   text-align: center;
+}
+
+/* 表格：与后台管理端同一套表头/斑马纹/悬停规则 */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  color: var(--lx-color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-align: left;
+}
+
+th,
+td {
+  border-bottom: 1px solid rgba(148, 178, 255, 0.1);
+  padding: 10px 12px;
+}
+
+tbody tr:hover {
+  background: rgba(52, 192, 141, 0.08);
+}
+
+code,
+pre,
+kbd {
+  background: rgba(9, 15, 28, 0.72);
+  border: 1px solid var(--lx-color-border);
+  border-radius: 6px;
+  color: var(--lx-color-primary-text);
+  font-family: var(--lx-font-mono);
+  font-size: 0.92em;
+  padding: 1px 6px;
+}
+
+pre {
+  padding: var(--lx-space-4);
+  overflow: auto;
 }

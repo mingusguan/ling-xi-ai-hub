@@ -221,9 +221,37 @@ export class ApiClient {
   private toError(payload: unknown, status: number, headerRequestId: string | null): ApiError {
     const envelope = payload as Partial<ApiEnvelope<unknown>> | null;
     const code = envelope?.code && envelope.code !== '' ? envelope.code : `HTTP_${status}`;
-    const message = envelope?.message ?? '请求失败';
+    const message = this.readableMessage(envelope?.message, status);
     const requestId = envelope?.requestId ?? headerRequestId;
     return new ApiError(code, message, status, requestId ?? null);
+  }
+
+  /**
+   * 把服务端返回的文案整理成可直接展示的文本。
+   *
+   * 网关（nginx）在 502/504 时返回的是 HTML 错误页，而不是后端的 JSON 包裹；
+   * 直接把响应体塞进 message 会让界面出现一大段 `<!DOCTYPE html>…`。
+   * 这里识别出 HTML 后改写为可读文案，并保留状态码，便于用户判断是"服务未就绪"而非自己操作错了。
+   */
+  private readableMessage(raw: unknown, status: number): string {
+    const text = typeof raw === 'string' ? raw.trim() : '';
+    if (text !== '' && !this.looksLikeHtml(text)) {
+      return text.length > 300 ? `${text.slice(0, 300)}…` : text;
+    }
+    if (status === 502 || status === 503 || status === 504) {
+      return '服务正在重启或暂时不可用，请稍后重试';
+    }
+    if (text !== '') {
+      const status_line = text.match(/(\d{3})\s+([A-Za-z][A-Za-z ]+)/);
+      if (status_line) {
+        return `请求失败（${status_line[1]} ${status_line[2].trim()}）`;
+      }
+    }
+    return `请求失败（HTTP ${status}）`;
+  }
+
+  private looksLikeHtml(text: string): boolean {
+    return /<\s*(!doctype|html|head|body|title|center|h1)\b/i.test(text);
   }
 
   private handleUnauthorized(status: number): void {
