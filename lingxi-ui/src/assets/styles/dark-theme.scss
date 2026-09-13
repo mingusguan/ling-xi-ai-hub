@@ -1,0 +1,1107 @@
+@import './variables.scss';
+
+// ============================================================================
+//  灵犀伴行后台 · 深色主题统一层
+//  ---------------------------------------------------------------------------
+//  背景：global.scss 已把布局、卡片、表格、输入框等改造成深色玻璃质感，但
+//  Element UI 仍有大量组件沿用 theme-chalk 的浅色默认值（文字 #606266、
+//  表头 #909399、浅色边框、浅色下拉面板等），加上部分业务页面残留浅色
+//  样式，形成"深底 + 灰字 + 浅组件"的混杂观感：文字发灰、层级不清、对比度
+//  不足（旧 #909399 在 #1E293B 上仅约 3.3:1，低于 WCAG AA 的 4.5:1）。
+//
+//  本文件是深色主题的唯一权威层，规则：
+//  1. 文字只使用 variables.scss 中的四层文字令牌（strong/primary/regular/muted）；
+//  2. 所有颜色必须来自令牌或令牌的透明度变体，禁止新增孤立色值；
+//  3. 需要覆盖 theme-chalk 默认样式时使用 !important（同 global.scss 约定）；
+//  4. 主色统一取 $primary (#3B82F6)，不再使用 RuoYi 默认的 #409EFF。
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+//  1. 基础排版
+// ---------------------------------------------------------------------------
+html,
+body,
+#app {
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  color: $text-color-primary;
+}
+
+// 全局把标签加粗会让表单、筛选区到处是粗体，反而没有重点；
+// 仅在表单标签上给中等字重，配合更亮的颜色建立层级。
+label {
+  font-weight: $font-weight-medium;
+  color: $text-color-regular;
+}
+
+// 正文默认色（global.scss 里的 #E2E8F0 保留，这里补齐元素级兜底）
+p,
+span,
+div,
+li,
+td,
+th {
+  word-break: break-word;
+}
+
+// 标题与强调文字：深色底上必须比正文更亮，否则层级完全压平，扫读时找不到重点
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $text-color-strong;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.2px;
+}
+
+b,
+strong {
+  color: $text-color-strong;
+  font-weight: $font-weight-semibold;
+}
+
+// 次要说明文字统一退到 muted，避免各处零散的 #64748B/#94A3B8 混用
+small,
+.el-form-item__help,
+.form-tip {
+  color: $text-color-secondary;
+}
+
+code,
+pre,
+kbd {
+  color: #A9C7FF;
+  background: rgba(9, 15, 28, 0.72);
+  border: 1px solid $glass-border;
+  border-radius: $radius-xs;
+  padding: 1px 6px;
+  font-family: 'JetBrains Mono', Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+
+pre {
+  padding: $spacing-md;
+  overflow: auto;
+  line-height: 1.7;
+}
+
+// ---------------------------------------------------------------------------
+//  2. 表格：表头用 muted、单元格用 regular、hover 提亮
+// ---------------------------------------------------------------------------
+.el-table {
+  color: $text-color-regular;
+  font-size: $font-size-base;
+  background: transparent;
+
+  // 表头底色比单元格更深（叠加了两层半透明底），因此表头文字不能只用 muted，
+  // 否则在 #131B2A 上仅 3.9:1，低于 WCAG AA；这里单独取一个更亮的灰蓝。
+  th.el-table__cell {
+    color: #C6D2E2 !important;
+    font-weight: $font-weight-semibold !important;
+    font-size: $font-size-sm;
+    letter-spacing: 0.4px;
+    background: rgba(11, 18, 32, 0.75) !important;
+  }
+
+  td.el-table__cell {
+    color: $text-color-regular !important;
+    border-bottom: 1px solid $divider-color !important;
+    background: rgba(23, 32, 50, 0.42);
+    // 表格里有大量 ID / 时间 / 金额，等宽数字让列内容纵向对齐，显著提升扫读速度
+    font-variant-numeric: tabular-nums;
+    line-height: 1.6;
+  }
+
+  .el-table__body tr:hover > td.el-table__cell {
+    background: rgba($primary, 0.16) !important;
+    color: $text-color-strong !important;
+  }
+
+  &--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+    background: rgba(23, 32, 50, 0.62);
+  }
+
+  // 固定列在深色底上默认是白底，必须显式覆盖
+  .el-table__fixed,
+  .el-table__fixed-right {
+    background: $card-bg-solid;
+
+    &::before {
+      background-color: $divider-color;
+    }
+  }
+
+  .el-table__fixed-right-patch {
+    background: rgba(11, 18, 32, 0.75) !important;
+  }
+
+  // 空数据文案
+  .el-table__empty-text {
+    color: $text-color-secondary;
+  }
+
+  // 展开与排序图标
+  .el-table__expand-icon {
+    color: $text-color-secondary;
+  }
+
+  .caret-wrapper .sort-caret.ascending {
+    border-bottom-color: $text-color-disabled;
+  }
+
+  .caret-wrapper .sort-caret.descending {
+    border-top-color: $text-color-disabled;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  2.1 表格行状态兜底
+//  theme-chalk 为斑马纹行（#FAFAFA）、悬停行（#F5F7FA）、当前行（#F5F7FA）
+//  都定义了浅色底，且选择器带 .el-table--striped / .current-row 前缀，逐个覆盖容易漏。
+//  这里统一兜底，保证任何行状态下单元格底色都在深色区间内。
+// ---------------------------------------------------------------------------
+.el-table .el-table__body tr td.el-table__cell,
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: rgba(23, 32, 50, 0.42) !important;
+  color: $text-color-regular !important;
+}
+
+.el-table .el-table__body tr.el-table__row--striped td.el-table__cell,
+.el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: rgba(28, 38, 58, 0.5) !important;
+}
+
+.el-table .el-table__body tr.current-row td.el-table__cell {
+  background: rgba($primary, 0.22) !important;
+}
+
+// 悬停行：斑马纹行的选择器权重更高，所以 hover 需要额外压一层，否则悬停时看不到反馈
+.el-table .el-table__body tr:hover > td.el-table__cell,
+.el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell,
+.el-table--striped .el-table__body tr.el-table__row--striped:hover > td.el-table__cell,
+.el-table--striped .el-table__body tr.el-table__row--striped.hover-row > td.el-table__cell,
+.el-table .el-table__body tr.hover-row > td.el-table__cell {
+  background: rgba($primary, 0.18) !important;
+  color: $text-color-strong !important;
+}
+
+// 表格内的纯文本按钮（操作列）：
+// theme-chalk 的 text 按钮继承 #409EFF，在深色底上偏亮且与主题色不一致。
+.el-button--text {
+  color: $text-color-accent !important;
+
+  &:hover,
+  &:focus {
+    color: #FFFFFF !important;
+  }
+
+  &.is-disabled,
+  &.is-disabled:hover {
+    color: $text-color-disabled !important;
+  }
+
+  &.danger {
+    color: #FF8A8A !important;
+
+    &:hover,
+    &:focus {
+      color: #FFB4B4 !important;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  3. 表单：输入框、下拉、复选、单选、开关、数字、日期
+// ---------------------------------------------------------------------------
+.el-input__inner,
+.el-textarea__inner {
+  background: rgba(9, 15, 28, 0.72) !important;
+  border: 1px solid $glass-border !important;
+  border-radius: $radius-md;
+  color: $text-color-strong !important;
+  font-size: $font-size-base;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+  box-shadow: none !important;
+
+  &::placeholder {
+    color: $text-color-placeholder !important;
+  }
+
+  &:hover {
+    border-color: $glass-border-strong !important;
+  }
+
+  &:focus {
+    border-color: $primary !important;
+    box-shadow: 0 0 0 3px rgba($primary, 0.22) !important;
+  }
+}
+
+.el-input.is-disabled .el-input__inner,
+.el-textarea.is-disabled .el-textarea__inner {
+  background: rgba(9, 15, 28, 0.4) !important;
+  color: $text-color-disabled !important;
+  border-color: $border-color-lighter !important;
+}
+
+// 输入框前置/后置图标与单位
+.el-input__prefix,
+.el-input__suffix,
+.el-input__icon {
+  color: $text-color-secondary !important;
+}
+
+.el-input-group__append,
+.el-input-group__prepend {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border-color: $glass-border !important;
+  color: $text-color-regular !important;
+}
+
+// 表单标签与校验提示
+.el-form-item__label {
+  color: $text-color-regular !important;
+  font-weight: $font-weight-medium;
+}
+
+.el-form-item__error {
+  color: #FFA0A0 !important;
+}
+
+.el-form-item.is-error .el-input__inner,
+.el-form-item.is-error .el-textarea__inner {
+  border-color: #F87171 !important;
+}
+
+// 下拉选项
+.el-select-dropdown,
+.el-autocomplete-suggestion,
+.el-cascader__dropdown {
+  background: rgba(13, 21, 36, 0.97) !important;
+  border: 1px solid $glass-border-strong !important;
+  box-shadow: $shadow-xl !important;
+}
+
+.el-select-dropdown__item {
+  color: $text-color-regular !important;
+  font-size: $font-size-base;
+
+  &.hover,
+  &:hover {
+    background: rgba($primary, 0.18) !important;
+    color: $text-color-strong !important;
+  }
+
+  &.selected {
+    color: $text-color-accent !important;
+    font-weight: $font-weight-semibold !important;
+  }
+}
+
+.el-select-dropdown__empty,
+.el-select-dropdown__loading {
+  color: $text-color-secondary !important;
+}
+
+// 多选下拉里已选项的 hover 是浅色底（#F5F7FA），深色主题下必须覆盖
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected,
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected.hover {
+  background: rgba($primary, 0.24) !important;
+  color: $text-color-strong !important;
+}
+
+// 多选标签
+.el-select .el-tag,
+.el-select__tags .el-tag {
+  background: rgba($primary, 0.2) !important;
+  border-color: $glass-border-strong !important;
+  color: $text-color-strong !important;
+
+  .el-tag__close {
+    color: $text-color-regular !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.16) !important;
+      color: #FFFFFF !important;
+    }
+  }
+}
+
+// 复选 / 单选
+.el-checkbox__label,
+.el-radio__label {
+  color: $text-color-regular !important;
+  font-size: $font-size-base;
+}
+
+.el-checkbox__input.is-checked + .el-checkbox__label,
+.el-radio__input.is-checked + .el-radio__label {
+  color: $text-color-strong !important;
+}
+
+.el-checkbox__inner,
+.el-radio__inner {
+  background-color: rgba(9, 15, 28, 0.72) !important;
+  border-color: $glass-border-strong !important;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner,
+.el-radio__input.is-checked .el-radio__inner {
+  background-color: $primary !important;
+  border-color: $primary !important;
+}
+
+.el-checkbox__input.is-disabled + .el-checkbox__label,
+.el-radio__input.is-disabled + .el-radio__label {
+  color: $text-color-disabled !important;
+}
+
+.el-checkbox__input.is-disabled .el-checkbox__inner {
+  background-color: rgba(9, 15, 28, 0.4) !important;
+  border-color: $border-color-lighter !important;
+}
+
+// 开关
+.el-switch__label {
+  color: $text-color-secondary !important;
+
+  &.is-active {
+    color: $text-color-accent !important;
+  }
+}
+
+// 数字输入
+.el-input-number__decrease,
+.el-input-number__increase {
+  background: rgba(15, 23, 42, 0.7) !important;
+  color: $text-color-regular !important;
+  border-color: $glass-border !important;
+
+  &:hover {
+    color: $text-color-accent !important;
+  }
+}
+
+// 日期/时间选择面板（global.scss 已覆盖大部分，这里补齐文字与快捷栏）
+.el-picker-panel {
+  color: $text-color-regular !important;
+  background: rgba(13, 21, 36, 0.97) !important;
+  border-color: $glass-border-strong !important;
+  box-shadow: $shadow-xl !important;
+}
+
+.el-picker-panel__footer {
+  background: rgba(13, 21, 36, 0.97) !important;
+  border-top: 1px solid $divider-color;
+}
+
+.el-date-picker__header-label,
+.el-picker-panel__icon-btn,
+.el-date-picker__prev-btn,
+.el-date-picker__next-btn {
+  color: $text-color-regular !important;
+
+  &:hover {
+    color: $text-color-accent !important;
+  }
+}
+
+.el-picker-panel__sidebar {
+  background: rgba(9, 15, 28, 0.6) !important;
+  border-right: 1px solid $divider-color;
+}
+
+.el-picker-panel__shortcut {
+  color: $text-color-regular !important;
+
+  &:hover {
+    color: $text-color-accent !important;
+    background: rgba($primary, 0.14) !important;
+  }
+
+  &.active {
+    color: $text-color-accent !important;
+  }
+}
+
+.el-date-table th {
+  color: $text-color-secondary !important;
+  border-bottom: 1px solid $divider-color !important;
+}
+
+.el-date-table td.next-month,
+.el-date-table td.prev-month,
+.el-date-table td.disabled div {
+  color: $text-color-disabled !important;
+}
+
+.el-time-panel {
+  background: rgba(13, 21, 36, 0.97) !important;
+  border-color: $glass-border-strong !important;
+}
+
+.el-time-panel__content::before,
+.el-time-panel__content::after {
+  border-color: $divider-color;
+}
+
+.el-time-spinner__item {
+  color: $text-color-regular !important;
+
+  &:hover:not(.disabled):not(.active) {
+    background: rgba($primary, 0.14) !important;
+  }
+
+  &.active:not(.disabled) {
+    color: $text-color-strong !important;
+  }
+}
+
+// 级联与树选择
+.el-cascader-node,
+.el-cascader-menu {
+  color: $text-color-regular !important;
+  background: transparent !important;
+}
+
+.el-cascader-menu {
+  border-right: 1px solid $divider-color;
+}
+
+.el-cascader-node:hover {
+  background: rgba($primary, 0.16) !important;
+}
+
+.el-tree {
+  background: transparent !important;
+  color: $text-color-regular !important;
+}
+
+.el-tree-node__content:hover {
+  background: rgba($primary, 0.14) !important;
+}
+
+.el-tree-node:focus > .el-tree-node__content {
+  background: rgba($primary, 0.18) !important;
+}
+
+// ---------------------------------------------------------------------------
+//  4. 标签、徽标、进度、提示
+// ---------------------------------------------------------------------------
+.el-tag {
+  border-radius: $radius-sm;
+  font-weight: $font-weight-medium;
+  border-width: 1px;
+  border-style: solid;
+
+  &--info {
+    background: rgba(148, 163, 184, 0.16) !important;
+    border-color: rgba(148, 163, 184, 0.34) !important;
+    color: #D6DEEA !important;
+  }
+
+  &--success {
+    background: rgba(16, 185, 129, 0.18) !important;
+    border-color: rgba(16, 185, 129, 0.38) !important;
+    color: #7BE7BE !important;
+  }
+
+  &--warning {
+    background: rgba(245, 158, 11, 0.18) !important;
+    border-color: rgba(245, 158, 11, 0.38) !important;
+    color: #FFCE7A !important;
+  }
+
+  &--danger {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    color: #FFA3A3 !important;
+  }
+
+  &--primary {
+    background: rgba($primary, 0.2) !important;
+    border-color: rgba($primary, 0.42) !important;
+    color: #A9C7FF !important;
+  }
+}
+
+.el-progress__text {
+  color: $text-color-regular !important;
+}
+
+.el-progress-bar__outer {
+  background-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+.el-alert {
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-lg;
+
+  &--info.is-light {
+    background: rgba($primary, 0.14) !important;
+    color: $text-color-primary !important;
+    border: 1px solid rgba($primary, 0.3);
+
+    .el-alert__title,
+    .el-alert__description {
+      color: $text-color-primary !important;
+    }
+  }
+
+  &--warning.is-light {
+    background: rgba(245, 158, 11, 0.14) !important;
+    color: #FFD79A !important;
+    border: 1px solid rgba(245, 158, 11, 0.32);
+
+    .el-alert__title,
+    .el-alert__description {
+      color: #FFD79A !important;
+    }
+  }
+
+  &--error.is-light {
+    background: rgba(239, 68, 68, 0.14) !important;
+    color: #FFB0B0 !important;
+    border: 1px solid rgba(239, 68, 68, 0.34);
+
+    .el-alert__title,
+    .el-alert__description {
+      color: #FFB0B0 !important;
+    }
+  }
+
+  &--success.is-light {
+    background: rgba(16, 185, 129, 0.14) !important;
+    color: #8CEBC6 !important;
+    border: 1px solid rgba(16, 185, 129, 0.32);
+
+    .el-alert__title,
+    .el-alert__description {
+      color: #8CEBC6 !important;
+    }
+  }
+
+  .el-alert__icon {
+    font-size: $font-size-xl;
+  }
+}
+
+.el-badge__content {
+  border: none;
+}
+
+// 加载遮罩
+.el-loading-mask {
+  background-color: rgba(8, 13, 24, 0.62) !important;
+}
+
+.el-loading-spinner .path {
+  stroke: $primary;
+}
+
+.el-loading-spinner .el-loading-text {
+  color: $text-color-regular !important;
+}
+
+// ---------------------------------------------------------------------------
+//  5. 消息、通知、确认框、Tooltip、Popover
+// ---------------------------------------------------------------------------
+.el-message {
+  .el-message__content {
+    color: $text-color-strong !important;
+    font-size: $font-size-base;
+  }
+
+  &--success {
+    background: rgba(16, 185, 129, 0.16) !important;
+    border-color: rgba(16, 185, 129, 0.34) !important;
+
+    .el-message__content {
+      color: #8CEBC6 !important;
+    }
+  }
+
+  &--warning {
+    background: rgba(245, 158, 11, 0.16) !important;
+    border-color: rgba(245, 158, 11, 0.34) !important;
+
+    .el-message__content {
+      color: #FFD79A !important;
+    }
+  }
+
+  &--error {
+    background: rgba(239, 68, 68, 0.16) !important;
+    border-color: rgba(239, 68, 68, 0.36) !important;
+
+    .el-message__content {
+      color: #FFB0B0 !important;
+    }
+  }
+}
+
+.el-notification {
+  background: rgba(17, 26, 43, 0.97) !important;
+  border: 1px solid $glass-border !important;
+  box-shadow: $shadow-xl !important;
+  backdrop-filter: blur(20px);
+
+  .el-notification__title {
+    color: $text-color-strong !important;
+    font-weight: $font-weight-semibold;
+  }
+
+  .el-notification__content {
+    color: $text-color-regular !important;
+  }
+
+  .el-notification__closeBtn {
+    color: $text-color-secondary !important;
+  }
+}
+
+.el-message-box {
+  background: rgba(17, 26, 43, 0.97) !important;
+  border: 1px solid $glass-border !important;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-xl !important;
+  backdrop-filter: blur(20px);
+
+  .el-message-box__title {
+    color: $text-color-strong !important;
+    font-weight: $font-weight-semibold;
+  }
+
+  .el-message-box__content {
+    color: $text-color-regular !important;
+  }
+
+  .el-message-box__headerbtn .el-message-box__close {
+    color: $text-color-secondary !important;
+
+    &:hover {
+      color: $text-color-strong !important;
+    }
+  }
+
+  .el-message-box__input .el-input__inner {
+    color: $text-color-strong !important;
+  }
+}
+
+// 纯文本 JSON 详情弹窗（$alert + customClass: json-message）
+.json-message {
+  .el-message-box__message {
+    p {
+      color: $text-color-regular !important;
+      font-family: 'JetBrains Mono', Menlo, Consolas, monospace;
+      font-size: $font-size-sm;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      max-height: 60vh;
+      overflow: auto;
+    }
+  }
+}
+
+.el-tooltip__popper,
+.el-popover {
+  background: rgba(17, 26, 43, 0.97) !important;
+  border: 1px solid $glass-border-strong !important;
+  color: $text-color-primary !important;
+  box-shadow: $shadow-lg !important;
+}
+
+.el-tooltip__popper.is-dark {
+  background: rgba(9, 15, 28, 0.96) !important;
+  color: $text-color-primary !important;
+}
+
+.el-popover .el-popover__title {
+  color: $text-color-strong !important;
+}
+
+// ---------------------------------------------------------------------------
+//  6. 弹窗、抽屉、卡片
+// ---------------------------------------------------------------------------
+.el-dialog__body {
+  color: $text-color-regular !important;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: $text-color-secondary !important;
+
+  &:hover {
+    color: $text-color-strong !important;
+  }
+}
+
+.el-drawer__title {
+  color: $text-color-strong !important;
+  font-weight: $font-weight-semibold;
+}
+
+// 卡片标题：global.scss 里是 #E2E8F0，提到 strong 让标题在卡片里"立起来"
+.el-card {
+  .el-card__header > span,
+  .el-card__header .card-title > span {
+    color: $text-color-strong !important;
+    font-weight: $font-weight-semibold !important;
+    font-size: $font-size-lg !important;
+  }
+
+  .el-card__body {
+    color: $text-color-regular;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  7. 标签页、分页、折叠、时间线、描述列表
+// ---------------------------------------------------------------------------
+.el-tabs__item {
+  color: $text-color-secondary !important;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+
+  &.is-active {
+    color: $text-color-strong !important;
+    font-weight: $font-weight-semibold;
+  }
+
+  &:hover:not(.is-disabled):not(.is-active) {
+    color: $text-color-accent !important;
+  }
+}
+
+.el-tabs--border-card {
+  background: transparent !important;
+  border-color: $glass-border !important;
+
+  > .el-tabs__header {
+    background: rgba(11, 18, 32, 0.6) !important;
+    border-bottom-color: $divider-color !important;
+
+    .el-tabs__item.is-active {
+      background: rgba($primary, 0.16) !important;
+      border-right-color: $glass-border !important;
+      border-left-color: $glass-border !important;
+    }
+  }
+}
+
+// 分页：非当前页不要抢眼，当前页要明确
+.el-pagination {
+  color: $text-color-secondary !important;
+
+  .el-pagination__total,
+  .el-pagination__jump,
+  .el-pagination__sizes {
+    color: $text-color-secondary !important;
+    font-weight: $font-weight-normal;
+  }
+
+  .el-pagination__editor .el-input__inner {
+    color: $text-color-strong !important;
+  }
+}
+
+.el-collapse,
+.el-collapse-item__header,
+.el-collapse-item__wrap {
+  background: transparent !important;
+  border-color: $divider-color !important;
+  color: $text-color-regular !important;
+}
+
+.el-collapse-item__header {
+  font-weight: $font-weight-medium;
+}
+
+.el-descriptions {
+  background: transparent !important;
+  color: $text-color-regular !important;
+
+  .el-descriptions__title {
+    color: $text-color-strong !important;
+  }
+
+  .el-descriptions-item__label.is-bordered-label {
+    background: rgba(11, 18, 32, 0.6) !important;
+    color: $text-color-secondary !important;
+  }
+
+  .el-descriptions-item__content {
+    color: $text-color-regular !important;
+  }
+
+  .el-descriptions__body {
+    background: transparent !important;
+  }
+}
+
+.el-timeline-item__content {
+  color: $text-color-regular !important;
+}
+
+.el-timeline-item__timestamp {
+  color: $text-color-secondary !important;
+}
+
+.el-divider {
+  background-color: $divider-color !important;
+
+  .el-divider__text {
+    background-color: $card-bg-solid !important;
+    color: $text-color-secondary !important;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  8. 上传、步骤条、结果页、空状态
+// ---------------------------------------------------------------------------
+.el-upload__tip,
+.el-upload-list__item {
+  color: $text-color-secondary !important;
+}
+
+.el-upload-dragger {
+  background: rgba(9, 15, 28, 0.5) !important;
+  border-color: $glass-border !important;
+
+  &:hover {
+    border-color: $primary !important;
+  }
+
+  .el-upload__text {
+    color: $text-color-secondary !important;
+
+    em {
+      color: $text-color-accent !important;
+    }
+  }
+}
+
+.el-step__title {
+  color: $text-color-secondary !important;
+
+  &.is-process {
+    color: $text-color-strong !important;
+  }
+
+  &.is-finish {
+    color: $text-color-accent !important;
+  }
+}
+
+.el-step__description {
+  color: $text-color-secondary !important;
+}
+
+.el-result__title p {
+  color: $text-color-strong !important;
+}
+
+.el-result__subtitle p {
+  color: $text-color-regular !important;
+}
+
+.el-empty__description p {
+  color: $text-color-secondary !important;
+}
+
+// ---------------------------------------------------------------------------
+//  9. 布局框架：导航栏、标签页栏、面包屑
+// ---------------------------------------------------------------------------
+.navbar {
+  background: linear-gradient(90deg, rgba(11, 18, 32, 0.96) 0%, rgba(20, 30, 50, 0.96) 100%) !important;
+  border-bottom: 1px solid $divider-color !important;
+}
+
+.el-breadcrumb {
+  font-size: $font-size-base;
+}
+
+.el-breadcrumb__item {
+  .el-breadcrumb__inner,
+  .el-breadcrumb__inner a {
+    color: $text-color-secondary !important;
+    font-weight: $font-weight-normal !important;
+
+    &:hover {
+      color: $text-color-accent !important;
+    }
+  }
+
+  &:last-child .el-breadcrumb__inner {
+    color: $text-color-strong !important;
+    font-weight: $font-weight-medium !important;
+  }
+}
+
+.el-breadcrumb__separator {
+  color: $text-color-disabled !important;
+}
+
+// 标签页栏（TagsView）
+.tags-view-container {
+  background: rgba(11, 18, 32, 0.72) !important;
+  border-bottom: 1px solid $divider-color !important;
+  box-shadow: none !important;
+
+  .tags-view-item {
+    color: $text-color-secondary !important;
+    background: rgba(30, 41, 59, 0.55) !important;
+    border-color: $glass-border !important;
+
+    &.active {
+      color: $text-color-strong !important;
+      background: rgba($primary, 0.22) !important;
+      border-color: rgba($primary, 0.45) !important;
+
+      &::before {
+        background: $primary !important;
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  10. 侧边栏菜单：可读性优先
+// ---------------------------------------------------------------------------
+.sidebar-container {
+  .el-menu-item,
+  .el-submenu__title {
+    color: $menuText !important;
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium !important;
+
+    // 菜单项高度固定且 overflow:hidden，长菜单名（如“消息与触达”）会被直接截断，
+    // 这里改为省略号，避免出现半截字。
+    span {
+      display: inline-block;
+      max-width: calc(100% - 36px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    i {
+      color: inherit !important;
+    }
+
+    &:hover {
+      color: #FFFFFF !important;
+      background: rgba($primary, 0.18) !important;
+    }
+  }
+
+  .el-menu-item.is-active {
+    color: #FFFFFF !important;
+    background: linear-gradient(90deg, rgba($primary, 0.32) 0%, rgba($primary, 0.14) 100%) !important;
+    font-weight: $font-weight-semibold !important;
+    box-shadow: inset 3px 0 0 0 $primary;
+
+    i {
+      color: #A9C7FF !important;
+    }
+  }
+
+  .el-submenu.is-active > .el-submenu__title {
+    color: #FFFFFF !important;
+  }
+
+  .el-submenu .el-menu-item {
+    font-size: $font-size-base;
+  }
+}
+
+// 折叠态弹出菜单
+.el-menu--vertical .el-menu-item,
+.el-menu--popup .el-menu-item {
+  color: $menuText !important;
+
+  &:hover {
+    color: #FFFFFF !important;
+    background: rgba($primary, 0.18) !important;
+  }
+
+  &.is-active {
+    color: #FFFFFF !important;
+    background: rgba($primary, 0.26) !important;
+  }
+}
+
+.el-menu--popup {
+  background: rgba(13, 21, 36, 0.97) !important;
+  border: 1px solid $glass-border !important;
+}
+
+// 头像与用户名
+.navbar .right-menu .avatar-container .user-nickname {
+  color: $text-color-primary !important;
+  font-weight: $font-weight-medium;
+}
+
+// ---------------------------------------------------------------------------
+//  11. 滚动条：global.scss 全局隐藏了滚动条，长表格/长弹窗里会失去位置感，
+//      这里在可滚动容器内恢复一条细的深色滚动条（覆盖 display:none）。
+// ---------------------------------------------------------------------------
+.el-scrollbar__wrap,
+.el-table__body-wrapper,
+.el-select-dropdown__wrap,
+.el-dialog__body,
+.el-drawer__body,
+.json-message .el-message-box__message p,
+.permission-grid {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 178, 255, 0.32) transparent;
+
+  &::-webkit-scrollbar {
+    display: block;
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(148, 178, 255, 0.28);
+    border-radius: $radius-full;
+
+    &:hover {
+      background: rgba(148, 178, 255, 0.48);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  12. 可复用业务工具类
+// ---------------------------------------------------------------------------
+.text-strong {
+  color: $text-color-strong !important;
+}
+
+.text-muted {
+  color: $text-color-secondary !important;
+}
+
+.text-accent {
+  color: $text-color-accent !important;
+}
+
+.text-danger {
+  color: #FFA3A3 !important;
+}
+
+.text-success {
+  color: #7BE7BE !important;
+}
+
+.text-warning {
+  color: #FFCE7A !important;
+}

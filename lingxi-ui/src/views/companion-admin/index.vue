@@ -181,7 +181,7 @@ export default {
     pageTitle() { return this.$route.meta.title },
     pageDescription() { return ({ dashboard:'关键业务、风险、成本与发布状态的统一入口。', users:'账号、年龄模式、会员事实与安全限制，默认不展示私人内容。', templates:'目标模板的草稿、审核、发布、下架与版本治理。', aiConfig:'模型路由、Prompt、Agent 策略和安全规则的版本化发布。', safety:'风险命中、人工复核和应急处置的最小披露队列。', engagement:'Push 模板、人群、频控、免打扰与触达效果。', commerce:'商品价格、订单、订阅、退款和权益账本。', support:'账号、支付、AI、隐私、安全与伙伴投诉的 SLA 工单。', analytics:'匿名化漏斗、留存、转化、质量、成本与实验。', system:'功能开关、App 版本、协议、合规材料和不可抵赖审计。' })[this.moduleName] || '' },
     metrics() { const d=this.dashboardData; return [{key:'users',label:'用户总数',value:d.users||0,note:`青少年 ${d.teenUsers||0}`},{key:'orders',label:'订单总数',value:d.orders||0,note:`已支付 ${d.paidOrders||0}`},{key:'revenue',label:'累计收入',value:this.money(d.revenueMinor||0,'CNY'),note:`活跃订阅 ${d.activeSubscriptions||0}`},{key:'tickets',label:'待处理工单',value:d.openTickets||0,note:'按 SLA 优先级处理'},{key:'risks',label:'高风险事件',value:d.highRiskCases||0,note:'需值班复核'},{key:'releases',label:'待发布配置',value:d.pendingReleases||0,note:`今日审计 ${d.auditActionsToday||0}`}] },
-    healthBars() { const d=this.dashboardData; return [{label:'订单支付完成',value:d.paidOrders||0,percent:this.percent(d.paidOrders,d.orders),color:'#16a34a'},{label:'客服队列健康',value:d.openTickets||0,percent:Math.max(5,100-Math.min(95,(d.openTickets||0)*4)),color:'#2563eb'},{label:'安全事件收敛',value:d.highRiskCases||0,percent:Math.max(5,100-Math.min(95,(d.highRiskCases||0)*10)),color:'#dc2626'}] }
+    healthBars() { const d=this.dashboardData; return [{label:'订单支付完成',value:d.paidOrders||0,percent:this.percent(d.paidOrders,d.orders),color:'#22C55E'},{label:'客服队列健康',value:d.openTickets||0,percent:Math.max(5,100-Math.min(95,(d.openTickets||0)*4)),color:'#3B82F6'},{label:'安全事件收敛',value:d.highRiskCases||0,percent:Math.max(5,100-Math.min(95,(d.highRiskCases||0)*10)),color:'#F87171'}] }
   },
   watch: { '$route.path': { immediate: true, handler() { this.page=1; this.filters={}; this.activeTab=this.initialTab(); this.load() } } },
   methods: {
@@ -256,5 +256,359 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.companion-admin{min-height:calc(100vh - 84px);background:#f5f7fb}.page-heading{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}.eyebrow{margin:0 0 6px;color:#2563eb;font-size:12px;font-weight:700;letter-spacing:1.6px}.page-heading h1{margin:0;color:#0f172a;font-size:30px}.description{margin:8px 0 0;color:#64748b}.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.metric-card{padding:20px;border:1px solid #e2e8f0;border-radius:14px;background:#fff;box-shadow:0 8px 24px rgba(15,23,42,.04)}.metric-card span,.metric-card small{display:block;color:#64748b}.metric-card strong{display:block;margin:10px 0 6px;color:#0f172a;font-size:28px}.section-row{margin-top:20px}.health-row{margin:18px 0}.health-row>div{display:flex;justify-content:space-between;margin-bottom:8px;color:#334155}.guard-card p{display:flex;gap:10px;align-items:flex-start;margin:16px 0;color:#475569;line-height:1.6}.guard-card i{margin-top:4px;color:#2563eb}.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:18px}.toolbar .el-input,.toolbar .el-select,.filter-bar>.el-input,.filter-bar>.el-select{width:220px}.card-title{display:flex;justify-content:space-between;align-items:center}.pager{margin-top:20px;text-align:right}.danger{color:#dc2626!important}.role-tag{margin:2px 5px 2px 0}.permission-count{margin-right:10px;color:#64748b}.permission-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-height:360px;overflow:auto}.permission-grid .el-checkbox{display:flex!important;align-items:flex-start;margin:0!important;padding:10px;border:1px solid #e2e8f0;border-radius:8px}.permission-grid small{display:block;color:#94a3b8}.privacy-banner{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;padding:16px 18px;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;color:#1e3a8a}.privacy-banner i{margin-top:3px;font-size:22px}.privacy-banner p{margin:5px 0 0;color:#475569}.dialog-form{margin-top:18px}@media(max-width:1000px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.metric-grid,.permission-grid{grid-template-columns:1fr}.page-heading{gap:12px}.toolbar{flex-wrap:wrap}}
+// ============================================================================
+//  灵犀伴行后台 · 运营后台页面样式
+//  ---------------------------------------------------------------------------
+//  本页原先保留的是浅色主题（#f5f7fb 底 + #0f172a 字 + 白色卡片），
+//  与深色布局（深蓝玻璃底）直接冲突：卡片是白的、页面底是深的、字又发灰，
+//  既割裂又费眼。现统一到深色设计令牌：
+//    标题 #F8FAFC / 正文 #CBD5E1 / 辅助 #A3B2C7 / 强调 #8AB8FF / 主色 #3B82F6
+//  数值与标题使用最高对比度，辅助信息保持可读但退到第二层。
+// ============================================================================
+$lx-text-strong: #F8FAFC;
+$lx-text-main: #CBD5E1;
+$lx-text-muted: #A3B2C7;
+$lx-accent: #8AB8FF;
+$lx-primary: #3B82F6;
+$lx-border: rgba(148, 178, 255, 0.14);
+$lx-border-strong: rgba(148, 178, 255, 0.26);
+$lx-surface: rgba(23, 32, 50, 0.72);
+$lx-surface-2: rgba(15, 23, 42, 0.55);
+
+// 页面容器：保持透明，沿用布局层的深色渐变底，避免出现"深底上的浅色块"
+.companion-admin {
+  min-height: calc(100vh - 84px);
+  background: transparent;
+  color: $lx-text-main;
+}
+
+// ---------------------------------------------------------------------------
+//  页头
+// ---------------------------------------------------------------------------
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid $lx-border;
+
+  h1 {
+    margin: 0;
+    color: $lx-text-strong;
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    line-height: 1.35;
+  }
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: $lx-accent;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.description {
+  margin: 10px 0 0;
+  max-width: 720px;
+  color: $lx-text-muted;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+// ---------------------------------------------------------------------------
+//  指标卡
+// ---------------------------------------------------------------------------
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.metric-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 24px;
+  border: 1px solid $lx-border;
+  border-radius: 16px;
+  background: $lx-surface;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+  // 顶部主色细线，替代整块浅色卡片的"厚重感"
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $lx-primary 0%, rgba($lx-primary, 0) 78%);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: $lx-border-strong;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.36);
+  }
+
+  span,
+  small {
+    display: block;
+    color: $lx-text-muted;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  span {
+    font-weight: 600;
+    letter-spacing: 0.6px;
+  }
+
+  strong {
+    display: block;
+    margin: 12px 0 8px;
+    color: #FFFFFF;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.section-row {
+  margin-top: 22px;
+}
+
+// ---------------------------------------------------------------------------
+//  治理进度
+// ---------------------------------------------------------------------------
+.health-row {
+  margin: 20px 0;
+
+  &:first-of-type {
+    margin-top: 8px;
+  }
+
+  > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: $lx-text-main;
+    font-size: 15px;
+  }
+
+  b {
+    color: #FFFFFF;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::v-deep .el-progress-bar__outer {
+    background-color: rgba(148, 178, 255, 0.14) !important;
+    height: 8px !important;
+    border-radius: 999px;
+  }
+
+  ::v-deep .el-progress-bar__inner {
+    border-radius: 999px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  安全门禁
+// ---------------------------------------------------------------------------
+.guard-card {
+  height: 100%;
+
+  p {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin: 0 0 16px;
+    padding-bottom: 14px;
+    color: $lx-text-main;
+    font-size: 15px;
+    line-height: 1.7;
+    border-bottom: 1px dashed rgba(148, 178, 255, 0.1);
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
+  i {
+    margin-top: 3px;
+    color: $lx-accent;
+    font-size: 16px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  工具条 / 筛选区
+// ---------------------------------------------------------------------------
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.toolbar .el-input,
+.toolbar .el-select,
+.filter-bar > .el-input,
+.filter-bar > .el-select {
+  width: 220px;
+}
+
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pager {
+  margin-top: 22px;
+  text-align: right;
+}
+
+// 危险操作文字按钮：深色底上必须提亮，否则 #dc2626 几乎看不清
+.danger {
+  color: #FF9B9B !important;
+
+  &:hover,
+  &:focus {
+    color: #FFC9C9 !important;
+  }
+}
+
+.role-tag {
+  margin: 2px 6px 2px 0;
+}
+
+.permission-count {
+  margin-right: 10px;
+  color: $lx-text-muted;
+}
+
+// ---------------------------------------------------------------------------
+//  权限 / 角色选择网格
+// ---------------------------------------------------------------------------
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-height: 380px;
+  overflow: auto;
+  padding-right: 6px;
+
+  .el-checkbox {
+    display: flex !important;
+    align-items: flex-start;
+    margin: 0 !important;
+    padding: 12px 14px;
+    border: 1px solid $lx-border;
+    border-radius: 10px;
+    background: $lx-surface-2;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: $lx-border-strong;
+      background: rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  ::v-deep .el-checkbox__label {
+    color: $lx-text-main !important;
+    line-height: 1.6;
+  }
+
+  small {
+    display: block;
+    margin-top: 2px;
+    color: #8496AD;
+    font-size: 12px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  合规 / 隐私提示条
+// ---------------------------------------------------------------------------
+.privacy-banner {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border: 1px solid rgba(96, 165, 250, 0.34);
+  border-left: 3px solid $lx-primary;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.42) 0%, rgba(15, 23, 42, 0.62) 100%);
+  color: #DBEAFE;
+
+  i {
+    margin-top: 2px;
+    color: $lx-accent;
+    font-size: 22px;
+  }
+
+  b {
+    display: block;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #C7DBF7;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  弹窗内表单
+// ---------------------------------------------------------------------------
+.dialog-form {
+  margin-top: 18px;
+
+  ::v-deep .el-form-item__label {
+    color: $lx-text-muted !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .metric-grid,
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-heading {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .toolbar {
+    flex-wrap: wrap;
+  }
+}
 </style>

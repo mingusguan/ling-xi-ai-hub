@@ -5,8 +5,12 @@ import Cookies from 'js-cookie'
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
 
-import '@/assets/styles/index.scss' // global css
+// 样式导入顺序决定覆盖关系，必须保持如下顺序：
+// 1) ruoyi.scss 是若依旧版浅色样式（表头 #909399、表头底色 #F5F7FA 等，且大量使用 !important）
+// 2) index.scss 中的 dark-theme.scss 是深色主题权威层，必须最后导入才能覆盖上述浅色规则
+// 若把 ruoyi.scss 放在 index.scss 之后，表格表头会一直是浅色主题的灰色，深色主题规则被静默覆盖。
 import '@/assets/styles/ruoyi.scss' // ruoyi css
+import '@/assets/styles/index.scss' // global css + dark theme
 import App from './App'
 import store from './store'
 import router from './router'

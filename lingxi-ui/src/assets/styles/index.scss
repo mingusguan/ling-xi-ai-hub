@@ -5,3 +5,5 @@
 @import "./element-variables.scss";
 @import "./global.scss";
 @import "./sidebar.scss";
+// 深色主题统一层必须最后导入，用于覆盖 global.scss 与 theme-chalk 的默认样式
+@import "./dark-theme.scss";

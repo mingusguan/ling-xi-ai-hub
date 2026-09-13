@@ -303,26 +303,32 @@ export default {
     }
   }
 
+  // 右键菜单：深色主题下不能再用白底黑字
   .contextmenu {
     margin: 0;
-    background: #fff;
+    background: rgba(17, 26, 43, 0.97);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 178, 255, 0.22);
     z-index: 3000;
     position: absolute;
     list-style-type: none;
-    padding: 5px 0;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 6px;
+    border-radius: 10px;
+    font-size: 13px;
     font-weight: 400;
-    color: #333;
-    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);
+    color: #CBD5E1;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
 
     li {
       margin: 0;
-      padding: 7px 16px;
+      padding: 8px 16px;
+      border-radius: 6px;
       cursor: pointer;
+      transition: all .15s ease;
 
       &:hover {
-        background: #f2f3f5;
+        background: rgba(59, 130, 246, 0.18);
+        color: #FFFFFF;
       }
     }
   }
