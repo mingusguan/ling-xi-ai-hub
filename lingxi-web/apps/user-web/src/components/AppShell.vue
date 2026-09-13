@@ -47,8 +47,33 @@ const navGroups = computed(() => [
       { name: 'support', label: '客服工单' },
       { name: 'privacy', label: '隐私与账号' }
     ]
+  },
+  {
+    title: '帮助',
+    items: [{ name: 'help', label: '使用手册' }]
   }
 ]);
+
+/** 每个功能页对应手册里的章节，便于「本页怎么用」直接深链过去。 */
+const helpTopicByRoute: Record<string, string> = {
+  home: 'daily',
+  goals: 'goal-create',
+  'goal-detail': 'goal-plan',
+  reviews: 'review',
+  achievements: 'achievement',
+  companion: 'companion',
+  memory: 'memory',
+  notifications: 'notification',
+  calendar: 'calendar',
+  partner: 'partner',
+  assets: 'assets',
+  membership: 'membership',
+  guardian: 'guardian-user',
+  support: 'support',
+  privacy: 'privacy'
+};
+
+const currentHelpTopic = computed(() => helpTopicByRoute[String(route.name ?? '')] ?? '');
 
 const statusLabel = computed(() => {
   const status = session.profile?.accountStatus;
@@ -114,6 +139,14 @@ function logout(): void {
           <span class="lx-tag" :class="{ 'lx-tag--warn': session.needsGuardian }">{{ statusLabel }}</span>
         </div>
         <div class="shell__header-right">
+          <RouterLink
+            class="shell__help"
+            :to="currentHelpTopic ? { name: 'help', query: { topic: currentHelpTopic } } : { name: 'help' }"
+            :title="currentTitle ? `查看「${currentTitle}」的使用说明` : '打开使用手册'"
+          >
+            <span class="shell__help-icon">?</span>
+            <span class="shell__help-text">本页怎么用</span>
+          </RouterLink>
           <span class="shell__cursor lx-muted">同步游标 {{ engagement.cursor }}</span>
           <button class="lx-button lx-button--ghost shell__logout" @click="logout">退出登录</button>
         </div>
@@ -284,6 +317,38 @@ function logout(): void {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+/* 「本页怎么用」：从任意页面深链到手册的对应章节 */
+.shell__help {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid var(--lx-color-primary-border);
+  border-radius: 999px;
+  background: var(--lx-color-primary-soft);
+  color: var(--lx-color-primary-text);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.shell__help:hover {
+  background: rgba(52, 192, 141, 0.28);
+  color: #FFFFFF;
+}
+
+.shell__help-icon {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--lx-color-primary);
+  color: var(--lx-color-text-inverse);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .shell__cursor {

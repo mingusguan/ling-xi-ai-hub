@@ -91,6 +91,13 @@ const routes: RouteRecordRaw[] = [
         name: 'privacy',
         component: () => import('@/views/PrivacyView.vue'),
         meta: { title: '隐私与账号' }
+      },
+      {
+        // 使用手册：给用户看的操作说明，放最后并可被任意页面的帮助按钮深链到某节（?topic=xxx）
+        path: 'help',
+        name: 'help',
+        component: () => import('@/views/HelpView.vue'),
+        meta: { title: '使用手册' }
       }
     ]
   },
