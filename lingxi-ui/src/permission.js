@@ -3,7 +3,7 @@ import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { getToken } from '@/utils/auth'
+import { getToken, isSessionExpired } from '@/utils/auth'
 import { isPathMatch } from '@/utils/validate'
 import { isRelogin } from '@/utils/request'
 
@@ -36,6 +36,14 @@ const resolveSysCodeByPath = (path) => {
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
+  // 本地记录的会话到期时间已过：先清会话再进登录页，避免进入页面后由接口 401 被动登出
+  if (getToken() && !isWhiteList(to.path) && isSessionExpired()) {
+    store.dispatch('LogOut').catch(() => {}).then(() => {
+      next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
+      NProgress.done()
+    })
+    return
+  }
   if (getToken()) {
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     if (to.path === '/login') {

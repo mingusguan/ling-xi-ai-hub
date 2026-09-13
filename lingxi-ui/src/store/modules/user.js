@@ -1,7 +1,7 @@
 import router from '@/router'
 import { MessageBox, } from 'element-ui'
 import { login, logout, getInfo, refreshToken } from '@/api/login'
-import { getToken, setToken, setExpiresIn, removeToken } from '@/utils/auth'
+import { getToken, setToken, setExpiresIn, removeToken, setSessionExpiresAt, removeSessionExpiresAt } from '@/utils/auth'
 import { isEmpty } from "@/utils/validate"
 import { filePreviewUrl } from '@/utils/appPath'
 import defAva from '@/assets/images/profile.jpg'
@@ -70,8 +70,11 @@ const user = {
           let data = res.data
           setToken(data.accessToken)
           commit('SET_TOKEN', data.accessToken)
-          const expiresIn = Math.max(0, Math.floor((new Date(data.expiresAt).getTime() - Date.now()) / 1000))
+          // 服务端 accessToken 有效期记为 UTC 时刻（以 `Z` 结尾），浏览器可直接据此判定本地会话是否过期
+          const expiresAt = Date.parse(data.expiresAt)
+          const expiresIn = Number.isNaN(expiresAt) ? -1 : Math.max(0, Math.floor((expiresAt - Date.now()) / 1000))
           setExpiresIn(expiresIn)
+          setSessionExpiresAt(data.expiresAt)
           commit('SET_EXPIRES_IN', expiresIn)
           commit('SET_SYS_CODE', 'companion_admin')
           resolve()
@@ -130,6 +133,7 @@ const user = {
           commit('SET_PERMISSIONS', [])
           commit('SET_SYS_CODE', '')
           removeToken()
+          removeSessionExpiresAt()
         }
         logout(state.token).then(() => {
           clearLocalSession()
@@ -154,6 +158,7 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_SYS_CODE', '')
         removeToken()
+        removeSessionExpiresAt()
         resolve()
       })
     }
