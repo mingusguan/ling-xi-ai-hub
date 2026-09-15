@@ -8,6 +8,7 @@ import com.lingxi.engagement.infrastructure.event.OccurrenceReminderHandler;
 import com.lingxi.goal.api.GoalFacade;
 import com.lingxi.goal.api.OccurrenceResult;
 import com.lingxi.kernel.*;
+import java.time.Instant;
 import java.util.*;
 import org.springframework.stereotype.Component;
 
@@ -18,16 +19,19 @@ public class NotificationJobHandler implements AsyncJobHandler {
   private final NotificationTaskLifecycleService lifecycle;
   private final Map<NotificationChannel, NotificationChannelAdapter> adapters;
   private final GoalFacade goals;
+  private final AsyncJobScheduler jobs;
   private final ObjectMapper mapper;
 
   public NotificationJobHandler(
       NotificationTaskLifecycleService lifecycle,
       List<NotificationChannelAdapter> adapters,
       GoalFacade goals,
+      AsyncJobScheduler jobs,
       ObjectMapper mapper) {
     this.lifecycle = lifecycle;
     this.mapper = mapper;
     this.goals = goals;
+    this.jobs = jobs;
     this.adapters = new EnumMap<>(NotificationChannel.class);
     adapters.forEach(a -> this.adapters.put(a.channel(), a));
   }
@@ -49,8 +53,19 @@ public class NotificationJobHandler implements AsyncJobHandler {
       return "{\"status\":\"cancelled\"}";
     }
     NotificationTask task = lifecycle.start(id);
-    if (!lifecycle.deliveryAllowed(task)) {
-      lifecycle.suppress(task, "LATEST_POLICY_DENIED");
+    // 命中免打扰时顺延到时段结束再发，而不是把提醒直接丢掉。
+    DeliveryDecision decision = lifecycle.deliveryDecision(task, Instant.now());
+    if (decision.isDeferrable()) {
+      if (!lifecycle.defer(task, decision.deferredUntil())) {
+        // 顺延次数用尽或时刻已过：不再无限推迟，按最终失败收口。
+        lifecycle.failPermanently(task, decision.reason());
+        return "{\"status\":\"deferral_exhausted\"}";
+      }
+      jobs.defer(JOB_TYPE, Long.toString(task.getId()), decision.deferredUntil());
+      return "{\"status\":\"deferred\",\"until\":\"" + decision.deferredUntil() + "\"}";
+    }
+    if (!decision.allowed()) {
+      lifecycle.suppress(task, decision.reason());
       return "{\"status\":\"suppressed\"}";
     }
     if (!occurrenceStillPending(task)) {

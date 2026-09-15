@@ -5,10 +5,10 @@ import java.time.*;
 import lombok.Getter;
 import lombok.Setter;
 
-/** R05 持久化对象。 */
+/** 用户通知偏好的持久化对象：渠道、免打扰时段与时区。 */
 @Getter
 @Setter
-@TableName("eng_notification_rule")
+@TableName("eng_notification_preference")
 public class NotificationPreferenceEntity extends EngagementLogicalDeletionEntity {
   @TableId private String id;
   private Long userId;

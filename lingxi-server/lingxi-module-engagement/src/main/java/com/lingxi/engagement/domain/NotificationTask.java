@@ -7,6 +7,9 @@ import java.util.Objects;
 
 /** 可恢复通知任务聚合。 */
 public class NotificationTask {
+  /** 因免打扰被推迟时记录的固定原因，便于后台区分「策略拒绝」与「延后发送」。 */
+  public static final String DEFERRED_REASON = "DEFERRED_QUIET_HOURS";
+
   private final long id;
   private final String dedupeKey;
   private final long recipientUserId;
@@ -19,6 +22,8 @@ public class NotificationTask {
   private NotificationTaskStatus status;
   private int attemptCount;
   private String lastError;
+  /** 因免打扰时段被推迟到的时刻；null 表示没有被推迟过。 */
+  private Instant deferredUntil;
   private final LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
@@ -35,6 +40,7 @@ public class NotificationTask {
       NotificationTaskStatus status,
       int attempts,
       String error,
+      Instant deferredUntil,
       LocalDateTime createdAt,
       LocalDateTime updatedAt) {
     this.id = id;
@@ -49,6 +55,7 @@ public class NotificationTask {
     this.status = status;
     this.attemptCount = attempts;
     this.lastError = error;
+    this.deferredUntil = deferredUntil;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -71,6 +78,7 @@ public class NotificationTask {
         NotificationTaskStatus.PENDING,
         0,
         null,
+        null,
         now,
         now);
   }
@@ -88,11 +96,12 @@ public class NotificationTask {
       NotificationTaskStatus status,
       int attempts,
       String error,
+      Instant deferredUntil,
       LocalDateTime created,
       LocalDateTime updated) {
     return new NotificationTask(
         id, key, user, channel, scene, rt, rid, payload, scheduled, status, attempts, error,
-        created, updated);
+        deferredUntil, created, updated);
   }
 
   public void start(LocalDateTime now) {
@@ -128,8 +137,38 @@ public class NotificationTask {
     updatedAt = now;
   }
 
-  public void failed(String error, boolean retryable, LocalDateTime now) {
+  /**
+   * 因为当前处于免打扰时段而把任务推迟到指定时刻。
+   *
+   * <p>与 {@link #cancel} 的区别是产品语义的核心：命中免打扰不是「不发了」，
+   * 而是「换个时间再发」。用户把行动设在 22:00、免打扰设为 22:30–07:00 时，
+   * 那条提醒应当顺延到 07:00，而不是凭空消失。
+   *
+   * <p>推迟次数计入 {@code attemptCount}：免打扰配置异常时不能让任务被无限推迟，
+   * 达到上限后由调用方按 {@link #failed} 收口。
+   *
+   * @param nextAttempt 下一次允许投递的时刻；必须晚于当前时刻
+   * @return 是否接受了这次推迟
+   */
+  public boolean deferredTo(Instant nextAttempt, int maxDeferrals, LocalDateTime now) {
+    if (status != NotificationTaskStatus.SENDING) {
+      throw new BusinessException("ENG_TASK_NOT_SENDING", "通知任务不在投递中");
+    }
+    if (nextAttempt == null || !nextAttempt.isAfter(Instant.now())) {
+      return false;
+    }
+    if (attemptCount >= maxDeferrals) {
+      return false;
+    }
+    deferredUntil = nextAttempt;
     attemptCount++;
+    status = NotificationTaskStatus.PENDING;
+    lastError = DEFERRED_REASON;
+    updatedAt = now;
+    return true;
+  }
+
+  public void failed(String error, boolean retryable, LocalDateTime now) {    attemptCount++;
     status =
         retryable && attemptCount < 5
             ? NotificationTaskStatus.FAILED_RETRYABLE
@@ -184,6 +223,11 @@ public class NotificationTask {
 
   public String getLastError() {
     return lastError;
+  }
+
+  /** 因免打扰被推迟到的时刻；null 表示没有被推迟过。 */
+  public Instant getDeferredUntil() {
+    return deferredUntil;
   }
 
   public LocalDateTime getCreatedAt() {

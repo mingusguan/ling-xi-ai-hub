@@ -16,12 +16,24 @@ export type {
 export * from './types';
 export { GoalApi } from './endpoints/goals';
 export type {
+  AddActionBody,
+  AdjustOccurrenceBody,
   CheckInBody,
   ConfirmDraftBody,
   ConfirmPlanBody,
+  CopyActionBody,
   CreateGoalBody,
+  EditActionBody,
+  FocusTransitionAction,
+  FocusTransitionBody,
+  GoalDefinitionBody,
+  MoveActionBody,
   PlanDraftBody,
-  ReviewBody
+  QuickNoteBody,
+  ReviewBody,
+  StartFocusBody,
+  TransitionGoalBody,
+  UpdateGoalBody
 } from './endpoints/goals';
 export { EngagementApi } from './endpoints/engagement';
 export type { CalendarBody, CommandBody, PreferenceBody } from './endpoints/engagement';

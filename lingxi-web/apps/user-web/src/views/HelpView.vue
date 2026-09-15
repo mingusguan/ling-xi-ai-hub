@@ -28,8 +28,8 @@ interface Stage {
   done: string;
   /** 边界与坑 */
   traps?: string[];
-  /** 关联页面 */
-  route?: { name: string; label: string };
+  /** 关联页面；query 用于携带语义参数（例如重做引导时的 intent=redo） */
+  route?: { name: string; label: string; query?: Record<string, string> };
   /** 相关的参考章节 id（用于「细节见…」） */
   refs?: string[];
 }
@@ -39,7 +39,7 @@ interface RefTopic {
   id: string;
   label: string;
   items: string[];
-  route?: { name: string; label: string };
+  route?: { name: string; label: string; query?: Record<string, string> };
 }
 
 const concepts: Concept[] = [
@@ -308,6 +308,20 @@ const refTopics: RefTopic[] = [
       '对年龄判定有异议时，在「年龄申诉」填写证据引用编号后提交。'
     ],
     route: { name: 'privacy', label: '前往隐私与账号' }
+  },
+  {
+    id: 'onboarding',
+    label: '新手引导（先认识一下）',
+    items: [
+      '第 1 步「怎么称呼你」：填昵称就行，不要求实名；留空则统一用「你」。',
+      '第 2 步「你的节奏」：通常几点睡、几点起，以及每周大概有多少可用时间，用来判断计划排不排得下。',
+      '第 3 步「希望我怎么陪你」：偏好提醒时段、免打扰时段、说话风格、主动程度，以及你平时最容易卡在哪一类原因。',
+      '每一步都可以留空；底部「跳过引导」只把引导标记为已完成，不会替你填任何选项。',
+      '免打扰时段支持跨天（例如 23:00 到次日 07:00）；这段时间伙伴不会主动打扰你。',
+      '所有选项只影响伙伴的语气与提醒方式，不影响任何功能是否可用。',
+      '想重做时随时回到本页：在侧边栏「账号 → 新手引导」重新填写即可覆盖旧设置。'
+    ],
+    route: { name: 'onboarding', label: '前往新手引导', query: { intent: 'redo' } }
   }
 ];
 

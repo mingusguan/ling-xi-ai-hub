@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -46,6 +47,28 @@ public class GlobalExceptionHandler {
       Exception exception, HttpServletRequest request) {
     return ResponseEntity.badRequest()
         .body(ApiResponse.failure("COMMON_INVALID_REQUEST", "请求格式或参数类型不正确", requestId(request)));
+  }
+
+  /**
+   * 路径存在但 HTTP 方法不对。
+   *
+   * <p>必须单独处理：否则会落到兜底分支返回 500，让调用方以为服务端坏了。
+   * 实际语义是客户端用错了方法（例如对只支持 PUT 的接口发 GET），应当是 405。
+   */
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported(
+      HttpRequestMethodNotSupportedException exception, HttpServletRequest request) {
+    String supported =
+        exception.getSupportedHttpMethods() == null
+            ? ""
+            : String.join(
+                ",", exception.getSupportedHttpMethods().stream().map(Object::toString).toList());
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+        .body(
+            ApiResponse.failure(
+                "COMMON_METHOD_NOT_ALLOWED",
+                "该接口不支持此请求方法" + (supported.isEmpty() ? "" : "，支持：" + supported),
+                requestId(request)));
   }
 
   @ExceptionHandler(Exception.class)

@@ -1,8 +1,12 @@
 import type { ApiClient, LongId } from '../http';
 import type {
+  CommonBlocker,
+  CommunicationStyle,
+  OnboardingProfileResult,
   PrivacyExportResult,
   PrivacyRequestResult,
   PrivacyRequestType,
+  ProactivityLevel,
   RegisteredUserResult,
   SessionTokens
 } from '../types';
@@ -48,6 +52,33 @@ export interface PrivacyRequestBody {
   type: PrivacyRequestType;
   /** 仅允许 modules 字段，例如 {"modules":["identity","goal"]}；CLOSE_ACCOUNT 必须为全模块。 */
   scopeJson: string;
+}
+
+/**
+ * 新手引导画像更新请求体，对应 OnboardingController.SaveProfileBody。
+ *
+ * 所有画像字段都可为空：PRD 要求引导可跳过，且禁止强制收集真实姓名、职业单位等
+ * 完成核心功能非必需的信息。`complete` 传 true 即表示「填完了」或「跳过」。
+ */
+export interface SaveOnboardingProfileBody {
+  /** 用户自定义称呼（昵称），不是实名。 */
+  nickname: string | null;
+  /** 通常入睡 / 起床时刻（HH:mm:ss），本地时间。 */
+  sleepTime: string | null;
+  wakeTime: string | null;
+  /** 画像级别的每周可用时间（分钟）。 */
+  weeklyAvailableMinutes: number | null;
+  remindWindowStart: string | null;
+  remindWindowEnd: string | null;
+  quietHoursStart: string | null;
+  quietHoursEnd: string | null;
+  communicationStyle: CommunicationStyle | null;
+  proactivityLevel: ProactivityLevel | null;
+  commonBlockers: CommonBlocker[];
+  /** 是否同时结束引导；点「跳过」时同样传 true。 */
+  complete: boolean;
+  /** 客户端持有的账号版本；不一致时服务端返回 IDENTITY_VERSION_CONFLICT。 */
+  expectedVersion: LongId;
 }
 
 /** 身份、会话与隐私权利接口客户端。 */
@@ -121,6 +152,31 @@ export class IdentityApi {
     return this.client.send<unknown>('/api/v1/age-appeals', {
       method: 'POST',
       body: { claimedBirthDate, evidenceRef }
+    });
+  }
+
+  /** 读取新手引导状态与已填画像。 */
+  getOnboardingProfile(): Promise<OnboardingProfileResult> {
+    return this.client.send<OnboardingProfileResult>('/api/v1/onboarding/profile');
+  }
+
+  /**
+   * 覆盖写入新手引导画像，可选同时结束引导。
+   *
+   * 由账号乐观版本号保护，因此不要求幂等键：同一份画像重复提交结果相同。
+   */
+  saveOnboardingProfile(body: SaveOnboardingProfileBody): Promise<OnboardingProfileResult> {
+    return this.client.send<OnboardingProfileResult>('/api/v1/onboarding/profile', {
+      method: 'PUT',
+      body
+    });
+  }
+
+  /** 重新进入新手引导（用户在设置里主动重做）；保留已填画像。 */
+  reopenOnboarding(expectedVersion: LongId): Promise<OnboardingProfileResult> {
+    return this.client.send<OnboardingProfileResult>('/api/v1/onboarding/reopen', {
+      method: 'POST',
+      body: { expectedVersion }
     });
   }
 }

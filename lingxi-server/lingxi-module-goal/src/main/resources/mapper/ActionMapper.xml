@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingxi.goal.infrastructure.persistence.ActionMapper">
+    <!--
+      批量写入行动定义。列清单必须与 ActionEntity 的字段保持一一对应：
+      本语句显式列出列名，新增字段若只改实体与迁移、忘了改这里，
+      写入会静默丢字段，直到读回时才暴露（间隔重复的 interval_days 曾因此丢失）。
+      ActionMapperInsertColumnsTest 会校验这份列清单的完整性。
+      逻辑删除标记 deleted 由建表默认值补齐，不在列清单内。
+    -->
     <insert id="insertBatch">
         INSERT INTO goal_action
-        (id,goal_id,plan_version_id,milestone_id,client_key,title,recurrence_type,weekdays_json,
-         start_date,end_date,local_time,timezone,status,version,created_at,updated_at) VALUES
+        (id,goal_id,plan_version_id,milestone_id,client_key,title,description,priority,difficulty,
+         completion_criteria,estimated_minutes,recurrence_type,weekdays_json,interval_days,
+         start_date,end_date,local_time,end_local_time,prerequisite_action_id,reminder_policy,
+         timezone,status,is_first,version,created_at,updated_at) VALUES
         <foreach collection="items" item="i" separator=",">
             (#{i.id},#{i.goalId},#{i.planVersionId},#{i.milestoneId},#{i.clientKey},#{i.title},
-             #{i.recurrenceType},#{i.weekdaysJson},#{i.startDate},#{i.endDate},#{i.localTime},
-             #{i.timezone},#{i.status},#{i.version},#{i.createdAt},#{i.updatedAt})
+             #{i.description},#{i.priority},#{i.difficulty},#{i.completionCriteria},
+             #{i.estimatedMinutes},#{i.recurrenceType},#{i.weekdaysJson},#{i.intervalDays},
+             #{i.startDate},#{i.endDate},#{i.localTime},#{i.endLocalTime},
+             #{i.prerequisiteActionId},#{i.reminderPolicy},#{i.timezone},#{i.status},
+             #{i.isFirst},#{i.version},#{i.createdAt},#{i.updatedAt})
         </foreach>
     </insert>
 </mapper>

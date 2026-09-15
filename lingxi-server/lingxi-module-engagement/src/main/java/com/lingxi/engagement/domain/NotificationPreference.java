@@ -2,6 +2,7 @@ package com.lingxi.engagement.domain;
 
 import com.lingxi.engagement.api.NotificationChannel;
 import com.lingxi.kernel.BusinessException;
+import com.lingxi.kernel.QuietHoursWindow;
 import java.time.*;
 import java.util.*;
 
@@ -98,12 +99,42 @@ public class NotificationPreference {
     if (safetyCritical || quietStart == null || quietEnd == null) {
       return true;
     }
-    LocalTime local = instant.atZone(ZoneId.of(timezone)).toLocalTime();
-    boolean quiet =
-        quietStart.isBefore(quietEnd)
-            ? !local.isBefore(quietStart) && local.isBefore(quietEnd)
-            : !local.isBefore(quietStart) || local.isBefore(quietEnd);
-    return !quiet;
+    return !isWithinQuietHours(instant);
+  }
+
+  /** 该场景是否允许走这个渠道；与时段无关，用于区分「渠道未开」和「时段不允许」。 */
+  public boolean allowsChannel(NotificationChannel channel) {
+    return channels.contains(channel);
+  }
+
+  /**
+   * 判断给定时刻是否落在免打扰时段内。
+   *
+   * <p>免打扰允许跨天（例如 22:00 到次日 07:00），因此起止相等或结束早于开始时按跨天区间处理。
+   */
+  public boolean isWithinQuietHours(Instant instant) {
+    QuietHoursWindow window = quietWindow();
+    return window != null && window.contains(instant);
+  }
+
+  /**
+   * 计算免打扰时段结束的时刻，供通知任务顺延。
+   *
+   * <p>返回 null 表示当前不在免打扰时段内，或本来就没有配置免打扰。
+   * 语义上这是「什么时候可以再打扰用户」，不是「什么时候必须发」——
+   * 调用方还需要复核实例是否仍然待执行。
+   */
+  public Instant quietHoursEndAt(Instant instant) {
+    QuietHoursWindow window = quietWindow();
+    return window == null ? null : window.endsAt(instant);
+  }
+
+  /** 未配置免打扰时返回 null，避免调用方到处判空两个时刻。 */
+  private QuietHoursWindow quietWindow() {
+    if (quietStart == null || quietEnd == null) {
+      return null;
+    }
+    return new QuietHoursWindow(quietStart, quietEnd, ZoneId.of(timezone));
   }
 
   private static void validate(long userId, String scene, Set<NotificationChannel> channels) {

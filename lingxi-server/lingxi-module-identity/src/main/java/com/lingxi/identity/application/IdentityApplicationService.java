@@ -15,7 +15,13 @@ import com.lingxi.identity.domain.IdentityRepository;
 import com.lingxi.identity.domain.User;
 import com.lingxi.kernel.BusinessException;
 import com.lingxi.kernel.DomainEventPublisher;
+import com.lingxi.identity.api.OnboardingProfile;
+import com.lingxi.identity.api.OnboardingProfileResult;
+import com.lingxi.kernel.CompanionPreference;
+import com.lingxi.kernel.CompanionPreferenceProvider;
 import com.lingxi.kernel.IdGenerator;
+import com.lingxi.kernel.QuietHoursProvider;
+import com.lingxi.kernel.QuietHoursWindow;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -26,14 +32,20 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.HexFormat;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** 身份准入和账号状态应用服务。 */
 @Service
-public class IdentityApplicationService implements IdentityFacade {
+public class IdentityApplicationService
+    implements IdentityFacade,
+        OnboardingApplicationService,
+        QuietHoursProvider,
+        CompanionPreferenceProvider {
   private final IdentityRepository repository;
   private final AgeAccessPolicy ageAccessPolicy;
   private final IdGenerator idGenerator;
@@ -206,6 +218,119 @@ public class IdentityApplicationService implements IdentityFacade {
     return repository
         .findById(userId)
         .orElseThrow(() -> new BusinessException("IDENTITY_USER_NOT_FOUND", "用户不存在"));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public OnboardingProfileResult getOnboardingProfile(long userId) {
+    return onboardingResult(requireUser(userId));
+  }
+
+  /**
+   * 把引导画像里的免打扰时段暴露给触达模块。
+   *
+   * <p>用户没填过就返回 null（按「不限制」处理），而不是填一个默认时段：
+   * 引导页明确写着可以留空，凭空造一个默认免打扰会让提醒莫名其妙地不发。
+   */
+  @Override
+  @Transactional(readOnly = true)
+  public QuietHoursWindow findQuietHours(long userId, ZoneId zone) {
+    if (userId <= 0 || zone == null) {
+      return null;
+    }
+    User user = repository.findById(userId).orElse(null);
+    if (user == null) {
+      return null;
+    }
+    OnboardingProfile profile = user.getOnboardingProfile();
+    if (profile.quietHoursStart() == null || profile.quietHoursEnd() == null) {
+      return null;
+    }
+    return new QuietHoursWindow(profile.quietHoursStart(), profile.quietHoursEnd(), zone);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public ZoneId findAccountZone(long userId) {
+    if (userId <= 0) {
+      return null;
+    }
+    return repository.findById(userId).map(user -> ZoneId.of(user.getTimezone())).orElse(null);
+  }
+
+  /**
+   * 把引导画像里与对话有关的偏好暴露给伙伴对话与触达。
+   *
+   * <p>只做取值映射，不做任何兜底：沟通风格与主动程度的默认值由消费方决定，
+   * 这里替用户假造一个选择会让「明确选过」和「没选过」再也分不开。
+   */
+  @Override
+  @Transactional(readOnly = true)
+  public CompanionPreference findPreference(long userId) {
+    if (userId <= 0) {
+      return CompanionPreference.empty();
+    }
+    User user = repository.findById(userId).orElse(null);
+    if (user == null) {
+      return CompanionPreference.empty();
+    }
+    OnboardingProfile profile = user.getOnboardingProfile();
+    return new CompanionPreference(
+        profile.nickname(),
+        profile.communicationStyle() == null
+            ? null
+            : CompanionPreference.CommunicationPreferenceStyle.valueOf(
+                profile.communicationStyle().name()),
+        profile.proactivityLevel() == null
+            ? null
+            : CompanionPreference.ProactivityPreference.valueOf(
+                profile.proactivityLevel().name()),
+        profile.commonBlockers().stream()
+            .map(blocker -> CompanionPreference.CommonBlockerReason.valueOf(blocker.name()))
+            .collect(Collectors.toCollection(LinkedHashSet::new)));
+  }
+
+  @Override
+  @Transactional
+  public OnboardingProfileResult saveOnboardingProfile(
+      long userId, OnboardingProfile profile, boolean complete, long expectedVersion) {
+    User user = requireUser(userId);
+    long previous = user.getVersion();
+    LocalDateTime now = utc(clock.instant());
+    user.updateOnboardingProfile(profile, expectedVersion, now);
+    if (complete) {
+      // 结束引导复用同一次版本推进；此时 user 的版本已经 +1，必须按新版本校验。
+      user.completeOnboarding(user.getVersion(), now);
+    }
+    persist(user, previous);
+    return onboardingResult(user);
+  }
+
+  @Override
+  @Transactional
+  public OnboardingProfileResult reopenOnboarding(long userId, long expectedVersion) {
+    User user = requireUser(userId);
+    long previous = user.getVersion();
+    user.reopenOnboarding(expectedVersion, utc(clock.instant()));
+    persist(user, previous);
+    return onboardingResult(user);
+  }
+
+  /**
+   * 组装引导结果。
+   *
+   * <p>画像里的沟通风格与主动程度保持用户原样填写的值（未填就是 null），
+   * 另外单独给出生效值，避免客户端把服务端兜底误当成用户选择。
+   */
+  private OnboardingProfileResult onboardingResult(User user) {
+    OnboardingProfile profile = user.getOnboardingProfile();
+    return new OnboardingProfileResult(
+        user.isOnboardingCompleted(),
+        user.getOnboardingCompletedAt(),
+        profile,
+        profile.effectiveCommunicationStyle(),
+        profile.effectiveProactivityLevel(),
+        user.getVersion());
   }
 
   private void persist(User user, long previousVersion) {

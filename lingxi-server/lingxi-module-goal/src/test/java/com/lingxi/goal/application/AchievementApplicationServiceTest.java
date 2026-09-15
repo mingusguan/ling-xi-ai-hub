@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.*;
 import com.lingxi.goal.domain.*;
 import com.lingxi.kernel.DomainEventPublisher;
@@ -157,7 +158,20 @@ class AchievementApplicationServiceTest {
 
   private static Goal goal(GoalStatus status) {
     return Goal.rehydrate(
-        5, "G-5", USER_ID, "goal-key", "digest", "每日阅读", "连续阅读 30 天", status, 3L, 100, 4, NOW, NOW);
+        5,
+        "G-5",
+        USER_ID,
+        "goal-key",
+        "digest",
+        GoalDefinition.of("每日阅读", "连续阅读 30 天"),
+        status,
+        3L,
+        100,
+        null,
+        null,
+        4, NOW,
+        NOW,
+        GoalClarificationStage.AWAITING_GOAL);
   }
 
   private static Action action(long id, Long milestoneId) {
@@ -168,12 +182,16 @@ class AchievementApplicationServiceTest {
         milestoneId,
         "client-" + id,
         "阅读 20 分钟",
-        RecurrenceType.DAILY,
-        Set.of(),
-        LocalDate.of(2026, 9, 1),
-        null,
-        LocalTime.of(21, 0),
-        "Asia/Shanghai",
+        new ActionSchedule(
+            RecurrenceType.DAILY,
+            Set.of(),
+            null,
+            LocalDate.of(2026, 9, 1),
+            null,
+            LocalTime.of(21, 0),
+            null,
+            "Asia/Shanghai"),
+        ActionDetail.defaults(),
         ActionStatus.ACTIVE,
         0,
         NOW,

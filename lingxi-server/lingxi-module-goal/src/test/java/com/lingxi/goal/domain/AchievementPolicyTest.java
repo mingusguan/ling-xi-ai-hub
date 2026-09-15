@@ -2,9 +2,13 @@ package com.lingxi.goal.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.AchievementType;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.CheckInResultType;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.GoalStatus;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.RecurrenceType;
 import java.time.*;
 import java.util.*;
@@ -135,14 +139,15 @@ class AchievementPolicyTest {
         USER_ID,
         "goal-key",
         "digest",
-        "每日阅读",
-        "连续阅读 30 天",
+        GoalDefinition.of("每日阅读", "连续阅读 30 天"),
         status,
         3L,
         progress,
-        4,
+        null,
+        null,
+        4, NOW,
         NOW,
-        NOW);
+        GoalClarificationStage.AWAITING_GOAL);
   }
 
   private static Action action(long id, long milestoneId) {
@@ -153,12 +158,16 @@ class AchievementPolicyTest {
         milestoneId,
         "client-" + id,
         "阅读 20 分钟",
-        RecurrenceType.DAILY,
-        Set.of(),
-        LocalDate.of(2026, 9, 1),
-        null,
-        LocalTime.of(21, 0),
-        "Asia/Shanghai",
+        new ActionSchedule(
+            RecurrenceType.DAILY,
+            Set.of(),
+            null,
+            LocalDate.of(2026, 9, 1),
+            null,
+            LocalTime.of(21, 0),
+            null,
+            "Asia/Shanghai"),
+        ActionDetail.defaults(),
         ActionStatus.ACTIVE,
         0,
         NOW,

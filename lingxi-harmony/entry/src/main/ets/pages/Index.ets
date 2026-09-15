@@ -1,9 +1,12 @@
 import {
   AchievementResult,
+  ActionResult,
   CalendarBindingResult,
   EntitlementResult,
   FileResult,
+  GoalQuotaResult,
   GoalResult,
+  GoalTransition,
   MemoryResult,
   NotificationResult,
   OccurrenceResult,
@@ -28,6 +31,9 @@ struct Index {
   @State message: string = '';
   @State tabIndex: number = 0;
   @State goals: GoalResult[] = [];
+  @State quota: GoalQuotaResult | null = null;
+  /** 当前展开目标的生效计划行动。 */
+  @State planActions: ActionResult[] = [];
   @State occurrences: OccurrenceResult[] = [];
   @State achievements: AchievementResult[] = [];
   @State notifications: NotificationResult[] = [];
@@ -96,6 +102,7 @@ struct Index {
   async refreshAll(): Promise<void> {
     try {
       this.goals = await SessionStore.api.listGoals();
+      this.quota = await SessionStore.api.quota();
       const today = new Date().toISOString().slice(0, 10);
       const weekEnd = new Date(Date.now() + 6 * 24 * 3600 * 1000).toISOString().slice(0, 10);
       this.occurrences = await SessionStore.api.listOccurrences(today, weekEnd);
@@ -161,9 +168,70 @@ struct Index {
     }
   }
 
-  async checkIn(occurrenceId: number, result: 'COMPLETED' | 'PARTIAL' | 'SKIPPED'): Promise<void> {
+  /** 目标生命周期流转；服务端按目标状态幂等，重复点击是安全的。 */
+  async transitionGoal(goal: GoalResult, transition: GoalTransition): Promise<void> {
+    let reason: string | null = null;
+    if (transition === 'ABANDON') {
+      // 放弃必须记录原因，空值会被服务端拒绝。
+      reason = '在鸿蒙端放弃目标';
+    }
     try {
-      const checkIn = await SessionStore.api.checkIn(occurrenceId, result, null, false);
+      await SessionStore.api.transitionGoal(goal.goalId, transition, goal.version, null, reason);
+      this.message = `目标已${transition === 'PAUSE' ? '暂停' : transition === 'RESUME' ? '恢复' : transition === 'ABANDON' ? '放弃' : '归档'}`;
+      await this.refreshAll();
+    } catch (error) {
+      this.message = `状态变更失败：${JSON.stringify(error)}`;
+    }
+  }
+
+  /** 单次跳过某一天的行动实例；不改写行动的重复规则。 */
+  async skipOnce(occurrenceId: number): Promise<void> {
+    try {
+      await SessionStore.api.adjustOccurrence(occurrenceId, 'SKIP', null, '在鸿蒙端单次跳过');
+      this.message = '已只跳过这一次，重复规则未改动';
+      await this.refreshAll();
+    } catch (error) {
+      this.message = `单次跳过失败：${JSON.stringify(error)}`;
+    }
+  }
+
+  /** 加载某个目标生效计划下的行动。 */
+  async loadPlanActions(goalId: number): Promise<void> {
+    try {
+      this.planActions = await SessionStore.api.listActions(goalId);
+      this.message = `已加载 ${this.planActions.length} 个行动`;
+    } catch (error) {
+      this.message = `加载行动失败：${JSON.stringify(error)}`;
+    }
+  }
+
+  /** 取消行动：只停止后续生成，已打卡的历史记录保留。 */
+  async cancelPlanAction(action: ActionResult): Promise<void> {
+    try {
+      await SessionStore.api.cancelAction(action.actionId, action.version);
+      this.message = '行动已取消，后续实例不再生成';
+      await this.loadPlanActions(action.goalId);
+      await this.refreshAll();
+    } catch (error) {
+      this.message = `取消行动失败：${JSON.stringify(error)}`;
+    }
+  }
+
+  async checkIn(occurrenceId: number, result: 'COMPLETED' | 'PARTIAL' | 'SKIPPED' | 'FAILED'): Promise<void> {
+    try {
+      // 失败必须给出原因，否则服务端会以 GOAL_FAILURE_REASON_REQUIRED 拒绝。
+      const failureReason = result === 'FAILED' ? '在鸿蒙端记录为失败，原因待补充' : null;
+      const checkIn = await SessionStore.api.checkIn(
+        occurrenceId,
+        result,
+        null,
+        null,
+        null,
+        null,
+        null,
+        failureReason,
+        false
+      );
       this.message =
         checkIn.newAchievements.length > 0
           ? `获得新成就：${checkIn.newAchievements.map((item) => item.title).join('、')}`
@@ -335,6 +403,20 @@ struct Index {
                   .onClick(() => {
                     this.checkIn(item.occurrenceId, 'COMPLETED');
                   })
+                Button('仅跳过这一次')
+                  .fontSize(12)
+                  .backgroundColor('#E3EFE9')
+                  .fontColor('#2F6F5E')
+                  .onClick(() => {
+                    this.skipOnce(item.occurrenceId);
+                  })
+                Button('失败')
+                  .fontSize(12)
+                  .backgroundColor('#F2DEDA')
+                  .fontColor('#B4453B')
+                  .onClick(() => {
+                    this.checkIn(item.occurrenceId, 'FAILED');
+                  })
               }
             }
             .padding(12)
@@ -360,14 +442,92 @@ struct Index {
   GoalsTab() {
     Column({ space: 12 }) {
       Text(`我的目标（${this.goals.length}）`).fontSize(18).fontWeight(FontWeight.Medium)
+      if (this.quota !== null) {
+        Text(`活跃 ${this.quota.activeCount} / ${this.quota.allowance} 个；草稿与已暂停目标不占配额`)
+          .fontSize(12)
+          .fontColor('#6D675D')
+      }
       List({ space: 8 }) {
         ForEach(this.goals, (goal: GoalResult) => {
           ListItem() {
             Column({ space: 4 }) {
               Text(goal.title).fontSize(15)
-              Text(`${goal.status} · 进度 ${goal.progress}% · 版本 ${goal.version}`)
+              Text(`${goal.status} · ${goal.goalType} · 进度 ${goal.progress}% · 版本 ${goal.version}`)
                 .fontSize(12)
                 .fontColor('#6D675D')
+              Text(goal.description ?? goal.successCriteria).fontSize(12).fontColor('#6D675D')
+              if (goal.targetEndDate !== null) {
+                Text(`期望完成 ${goal.targetEndDate}`).fontSize(12).fontColor('#6D675D')
+              }
+              if (goal.status === 'PAUSED' && goal.pauseResumeAt !== null) {
+                Text(`预计 ${goal.pauseResumeAt} 恢复`).fontSize(12).fontColor('#6D675D')
+              }
+              if (goal.abandonReason !== null) {
+                Text(`放弃原因：${goal.abandonReason}`).fontSize(12).fontColor('#6D675D')
+              }
+              Row({ space: 8 }) {
+                if (goal.status === 'ACTIVE' || goal.status === 'PENDING_CONFIRMATION') {
+                  Button('暂停')
+                    .fontSize(12)
+                    .backgroundColor('#E3EFE9')
+                    .fontColor('#2F6F5E')
+                    .onClick(() => {
+                      this.transitionGoal(goal, 'PAUSE');
+                    })
+                }
+                if (goal.status === 'PAUSED') {
+                  Button('恢复')
+                    .fontSize(12)
+                    .onClick(() => {
+                      this.transitionGoal(goal, 'RESUME');
+                    })
+                }
+                if (goal.status !== 'ABANDONED' && goal.status !== 'ARCHIVED' && goal.status !== 'COMPLETED') {
+                  Button('放弃')
+                    .fontSize(12)
+                    .backgroundColor('#F2DEDA')
+                    .fontColor('#B4453B')
+                    .onClick(() => {
+                      this.transitionGoal(goal, 'ABANDON');
+                    })
+                }
+                if (goal.status === 'PAUSED' || goal.status === 'COMPLETED') {
+                  Button('归档')
+                    .fontSize(12)
+                    .backgroundColor('#E3EFE9')
+                    .fontColor('#2F6F5E')
+                    .onClick(() => {
+                      this.transitionGoal(goal, 'ARCHIVE');
+                    })
+                }
+                if (goal.status === 'ACTIVE') {
+                  Button('查看行动')
+                    .fontSize(12)
+                    .backgroundColor('#E3EFE9')
+                    .fontColor('#2F6F5E')
+                    .onClick(() => {
+                      this.loadPlanActions(goal.goalId);
+                    })
+                }
+              }
+              if (this.planActions.length > 0) {
+                ForEach(this.planActions, (action: ActionResult) => {
+                  Row({ space: 8 }) {
+                    Text(`${action.title} · ${action.recurrenceType} · v${action.version}`)
+                      .fontSize(12)
+                      .fontColor('#6D675D')
+                      .layoutWeight(1)
+                    Button('取消行动')
+                      .fontSize(12)
+                      .backgroundColor('#F2DEDA')
+                      .fontColor('#B4453B')
+                      .onClick(() => {
+                        this.cancelPlanAction(action);
+                      })
+                  }
+                  .width('100%')
+                })
+              }
             }
             .alignItems(HorizontalAlign.Start)
             .padding(12)
@@ -378,6 +538,12 @@ struct Index {
         })
       }
       .layoutWeight(1)
+      Button('刷新')
+        .backgroundColor('#E3EFE9')
+        .fontColor('#2F6F5E')
+        .onClick(() => {
+          this.refreshAll();
+        })
     }
     .padding(16)
     .width('100%')

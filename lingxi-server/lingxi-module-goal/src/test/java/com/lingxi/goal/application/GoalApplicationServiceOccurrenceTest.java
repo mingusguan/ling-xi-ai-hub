@@ -10,15 +10,25 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.lingxi.goal.api.GoalClarificationStage;
+import com.lingxi.goal.api.ActiveGoalQuota;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.ConfirmPlanCommand;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.GoalStatus;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.OccurrenceScheduledEvent;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.PlanActionDraft;
+import com.lingxi.goal.api.GoalClarificationStage;
 import com.lingxi.goal.api.RecurrenceType;
 import com.lingxi.goal.domain.Action;
+import com.lingxi.goal.domain.ActionDetail;
+import com.lingxi.goal.domain.ActionSchedule;
 import com.lingxi.goal.domain.ActionOccurrence;
 import com.lingxi.goal.domain.ActionStatus;
 import com.lingxi.goal.domain.Goal;
+import com.lingxi.goal.domain.GoalDefinition;
 import com.lingxi.goal.domain.GoalRepository;
 import com.lingxi.goal.domain.PlanVersion;
 import com.lingxi.identity.api.AccessProfile;
@@ -96,6 +106,8 @@ class GoalApplicationServiceOccurrenceTest {
             eventPublisher,
             achievements,
             new ObjectMapper().registerModule(new JavaTimeModule()),
+            // 本测试只验证实例生成，配额给出免费档上限即可。
+            userId -> ActiveGoalQuota.FREE_ACTIVE_GOAL_LIMIT,
             Clock.fixed(Instant.parse("2026-09-12T02:00:00Z"), ZoneOffset.UTC));
   }
 
@@ -237,12 +249,22 @@ class GoalApplicationServiceOccurrenceTest {
                 "client-41",
                 null,
                 "每日复盘",
+                null,
                 RecurrenceType.DAILY,
                 Set.of(),
+                null,
                 LocalDate.of(2026, 9, 12),
                 null,
                 LocalTime.of(21, 0),
-                "Asia/Shanghai")));
+                null,
+                "Asia/Shanghai",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false)));
   }
 
   private ConfirmPlanCommand commandWithNoActions() {
@@ -252,8 +274,22 @@ class GoalApplicationServiceOccurrenceTest {
 
   private static Goal goal(GoalStatus status) {
     return Goal.rehydrate(
-        GOAL_ID, "G-5", USER_ID, "goal-key", "digest", "阅读", "读完 12 本", status, null, 0, 0,
-        LocalDateTime.of(2026, 9, 1, 0, 0), LocalDateTime.of(2026, 9, 1, 0, 0));
+        GOAL_ID,
+        "G-5",
+        USER_ID,
+        "goal-key",
+        "digest",
+        GoalDefinition.of("阅读", "读完 12 本"),
+        status,
+        null,
+        0,
+        null,
+        null,
+        0,
+        LocalDateTime.of(2026, 9, 1, 0, 0),
+        LocalDateTime.of(2026, 9, 1, 0, 0),
+        // 计划确认测试不关心首目标引导，阶段取起点即可。
+        GoalClarificationStage.AWAITING_GOAL);
   }
 
   private static Action action(long id, long planVersionId) {
@@ -264,12 +300,16 @@ class GoalApplicationServiceOccurrenceTest {
         null,
         "client-" + id,
         "每日复盘",
-        RecurrenceType.DAILY,
-        Set.of(),
-        LocalDate.of(2026, 9, 12),
-        null,
-        LocalTime.of(21, 0),
-        "Asia/Shanghai",
+        new ActionSchedule(
+            RecurrenceType.DAILY,
+            Set.of(),
+            null,
+            LocalDate.of(2026, 9, 12),
+            null,
+            LocalTime.of(21, 0),
+            null,
+            "Asia/Shanghai"),
+        ActionDetail.defaults(),
         ActionStatus.ACTIVE,
         0,
         LocalDateTime.of(2026, 9, 1, 0, 0),

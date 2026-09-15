@@ -5,7 +5,7 @@ import java.time.*;
 import lombok.Getter;
 import lombok.Setter;
 
-/** R05 持久化对象。 */
+/** 可恢复通知任务的持久化对象。 */
 @Getter
 @Setter
 @TableName("eng_notification_task")
@@ -22,6 +22,8 @@ public class NotificationTaskEntity extends EngagementLogicalDeletionEntity {
   private String status;
   private Integer attemptCount;
   private String lastError;
+  /** 因免打扰被推迟到的时刻；NULL 表示未被推迟。 */
+  private LocalDateTime deferredUntil;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }

@@ -44,6 +44,7 @@ const navGroups = computed(() => [
     items: [
       { name: 'membership', label: '会员与权益' },
       { name: 'guardian', label: '监护' },
+      { name: 'onboarding', label: '新手引导', to: { name: 'onboarding', query: { intent: 'redo' } } },
       { name: 'support', label: '客服工单' },
       { name: 'privacy', label: '隐私与账号' }
     ]
@@ -70,7 +71,8 @@ const helpTopicByRoute: Record<string, string> = {
   membership: 'membership',
   guardian: 'guardian-user',
   support: 'support',
-  privacy: 'privacy'
+  privacy: 'privacy',
+  onboarding: 'onboarding'
 };
 
 const currentHelpTopic = computed(() => helpTopicByRoute[String(route.name ?? '')] ?? '');

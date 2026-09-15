@@ -2,6 +2,7 @@ package com.lingxi.identity.domain;
 
 import com.lingxi.identity.api.AccountStatus;
 import com.lingxi.identity.api.AgeBand;
+import com.lingxi.identity.api.OnboardingProfile;
 import com.lingxi.kernel.BusinessException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +23,10 @@ public class User {
   private long version;
   private final LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  /** 新手引导基础画像（PRD ONB-01）；未填写过时为空画像。 */
+  private OnboardingProfile onboardingProfile;
+  /** 新手引导完成时间；NULL 表示未完成。与画像分开，才能区分「跳过」和「从未进入」。 */
+  private LocalDateTime onboardingCompletedAt;
 
   private User(
       long id,
@@ -36,7 +41,9 @@ public class User {
       long authorizationVersion,
       long version,
       LocalDateTime createdAt,
-      LocalDateTime updatedAt) {
+      LocalDateTime updatedAt,
+      OnboardingProfile onboardingProfile,
+      LocalDateTime onboardingCompletedAt) {
     this.id = id;
     this.publicId = Objects.requireNonNull(publicId);
     this.registrationKey = Objects.requireNonNull(registrationKey);
@@ -50,6 +57,9 @@ public class User {
     this.version = version;
     this.createdAt = Objects.requireNonNull(createdAt);
     this.updatedAt = Objects.requireNonNull(updatedAt);
+    this.onboardingProfile =
+        onboardingProfile == null ? OnboardingProfile.empty() : onboardingProfile;
+    this.onboardingCompletedAt = onboardingCompletedAt;
   }
 
   public static User register(
@@ -80,7 +90,9 @@ public class User {
         1,
         0,
         now,
-        now);
+        now,
+        OnboardingProfile.empty(),
+        null);
   }
 
   public static User rehydrate(
@@ -96,7 +108,9 @@ public class User {
       long authorizationVersion,
       long version,
       LocalDateTime createdAt,
-      LocalDateTime updatedAt) {
+      LocalDateTime updatedAt,
+      OnboardingProfile onboardingProfile,
+      LocalDateTime onboardingCompletedAt) {
     return new User(
         id,
         publicId,
@@ -110,7 +124,51 @@ public class User {
         authorizationVersion,
         version,
         createdAt,
-        updatedAt);
+        updatedAt,
+        onboardingProfile,
+        onboardingCompletedAt);
+  }
+
+  /**
+   * 覆盖写入新手引导画像。
+   *
+   * <p>整体替换而不是逐字段补齐：引导页允许用户清空此前填过的选项，逐字段合并会让「清空」
+   * 无法表达。写入会推进账号版本号，与账号状态机共用同一条乐观锁。账号已关闭时拒绝写入。
+   */
+  public void updateOnboardingProfile(
+      OnboardingProfile profile, long expectedVersion, LocalDateTime now) {
+    assertProfileWritable(expectedVersion, now);
+    this.onboardingProfile = profile == null ? OnboardingProfile.empty() : profile;
+  }
+
+  /**
+   * 结束新手引导。
+   *
+   * <p>允许画像为空：PRD 要求 ONB-01 可跳过，跳过时必须留下「已结束引导」的痕迹，
+   * 否则用户每次进入都会再次被引导页拦住。
+   */
+  public void completeOnboarding(long expectedVersion, LocalDateTime now) {
+    assertProfileWritable(expectedVersion, now);
+    if (onboardingCompletedAt == null) {
+      onboardingCompletedAt = now;
+    }
+  }
+
+  /** 重新进入引导（用户在设置里主动重做），只清标记，不动已填画像。 */
+  public void reopenOnboarding(long expectedVersion, LocalDateTime now) {
+    assertProfileWritable(expectedVersion, now);
+    onboardingCompletedAt = null;
+  }
+
+  private void assertProfileWritable(long expectedVersion, LocalDateTime now) {
+    if (status == AccountStatus.CLOSED || status == AccountStatus.CLOSING) {
+      throw new BusinessException("IDENTITY_ACCOUNT_CLOSED", "账号已关闭或正在注销，不能修改引导信息");
+    }
+    if (version != expectedVersion) {
+      throw new BusinessException("IDENTITY_VERSION_CONFLICT", "账号已被其他终端更新");
+    }
+    version++;
+    updatedAt = now;
   }
 
   public void activateTeenAccount(LocalDateTime now) {
@@ -239,5 +297,19 @@ public class User {
 
   public LocalDateTime getUpdatedAt() {
     return updatedAt;
+  }
+
+  /** 新手引导画像；用户从未填写过时返回空画像而不是 null。 */
+  public OnboardingProfile getOnboardingProfile() {
+    return onboardingProfile;
+  }
+
+  /** 新手引导完成时间；null 表示尚未完成（含用户主动重做引导的情况）。 */
+  public LocalDateTime getOnboardingCompletedAt() {
+    return onboardingCompletedAt;
+  }
+
+  public boolean isOnboardingCompleted() {
+    return onboardingCompletedAt != null;
   }
 }

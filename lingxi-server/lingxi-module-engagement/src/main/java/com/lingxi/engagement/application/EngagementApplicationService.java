@@ -275,14 +275,15 @@ public class EngagementApplicationService implements EngagementFacade {
                   new CreateGoalCommand(
                       c.clientCommandId(),
                       c.userId(),
-                      payload.path("title").asText(),
-                      payload.path("successCriteria").asText()));
+                      GoalDefinitionInput.minimal(
+                          payload.path("title").asText(),
+                          payload.path("successCriteria").asText())));
           yield success(c, json(g));
         }
         case "CHECK_IN" -> {
           CheckInResult x =
               goals.checkIn(
-                  new CheckInCommand(
+                  CheckInCommand.minimal(
                       c.clientCommandId(),
                       c.userId(),
                       payload.path("occurrenceId").asLong(),

@@ -2,17 +2,29 @@ import http from '@ohos.net.http';
 import { HttpClient } from './HttpClient';
 import {
   AchievementResult,
+  ActionDifficulty,
+  ActionExceptionResult,
+  ActionExceptionType,
+  ActionInput,
+  ActionResult,
   AgentRunResult,
   CalendarBindingResult,
   CheckInResult,
   CheckInResultType,
+  CheckInView,
   ConversationResult,
+  EnergyLevel,
   EntitlementResult,
   FileResult,
+  FocusSessionResult,
+  GoalQuotaResult,
   GoalResult,
+  GoalTransition,
+  GoalType,
   GuardianInvitationResult,
   GuardianRelationResult,
   MemoryResult,
+  MoodLevel,
   NotificationChannel,
   NotificationPreferenceResult,
   NotificationResult,
@@ -25,6 +37,8 @@ import {
   PlanMilestoneDraft,
   PrivacyRequestResult,
   PrivacyRequestType,
+  QuickNoteResult,
+  TodayResult,
   ProductResult,
   RegisteredUserResult,
   ReviewResult,
@@ -98,11 +112,59 @@ export class LingxiApi {
     return this.http.send<GoalResult[]>('/api/v1/goals');
   }
 
-  createGoal(title: string, successCriteria: string): Promise<GoalResult> {
+  /**
+   * 创建草稿目标。
+   *
+   * 草稿不计入活跃目标上限；除标题与完成标准外均可省略，
+   * 服务端会为目标类型、优先级与隐私级别补齐默认值。
+   */
+  createGoal(
+    title: string,
+    successCriteria: string,
+    description: string | null = null,
+    goalType: GoalType | null = null,
+    startDate: string | null = null,
+    targetEndDate: string | null = null
+  ): Promise<GoalResult> {
     return this.http.send<GoalResult>('/api/v1/goals', {
       method: 'POST',
-      body: { title: title, successCriteria: successCriteria },
+      body: {
+        title: title,
+        successCriteria: successCriteria,
+        description: description,
+        goalType: goalType,
+        startDate: startDate,
+        targetEndDate: targetEndDate
+      },
       idempotencyKey: this.http.newIdempotencyKey()
+    });
+  }
+
+  /** 查询当前活跃目标配额。 */
+  quota(): Promise<GoalQuotaResult> {
+    return this.http.send<GoalQuotaResult>('/api/v1/goal-quota');
+  }
+
+  /**
+   * 目标生命周期流转：暂停、恢复、放弃、归档。
+   *
+   * 服务端按目标状态幂等，重复提交同一动作不会报错，因此不需要幂等键。
+   */
+  transitionGoal(
+    goalId: number,
+    transition: GoalTransition,
+    expectedVersion: number,
+    expectedResumeDate: string | null = null,
+    abandonReason: string | null = null
+  ): Promise<GoalResult> {
+    return this.http.send<GoalResult>(`/api/v1/goals/${goalId}/transitions`, {
+      method: 'POST',
+      body: {
+        transition: transition,
+        expectedVersion: expectedVersion,
+        expectedResumeDate: expectedResumeDate,
+        abandonReason: abandonReason
+      }
     });
   }
 
@@ -130,10 +192,157 @@ export class LingxiApi {
     });
   }
 
+  /** 查询目标当前生效计划下的全部行动。 */
+  listActions(goalId: number): Promise<ActionResult[]> {
+    return this.http.send<ActionResult[]>(`/api/v1/goals/${goalId}/actions`);
+  }
+
+  /** 计划外新增行动；追加到目标当前生效的计划版本上。 */
+  addAction(goalId: number, milestoneSequence: number | null, definition: ActionInput): Promise<ActionResult> {
+    return this.http.send<ActionResult>(`/api/v1/goals/${goalId}/actions`, {
+      method: 'POST',
+      body: { milestoneSequence: milestoneSequence, definition: definition },
+      idempotencyKey: this.http.newIdempotencyKey()
+    });
+  }
+
+  /**
+   * 编辑行动定义，「本次及未来」整体生效。
+   *
+   * 由行动乐观版本号保护，不需要幂等键；`expectedVersion` 必须来自最近一次查询结果。
+   */
+  editAction(actionId: number, expectedVersion: number, definition: ActionInput): Promise<ActionResult> {
+    return this.http.send<ActionResult>(`/api/v1/actions/${actionId}`, {
+      method: http.RequestMethod.PUT,
+      body: { expectedVersion: expectedVersion, definition: definition }
+    });
+  }
+
+  /** 取消行动；重复调用是安全的空操作，服务端会同时清掉尚未执行的实例。 */
+  cancelAction(actionId: number, expectedVersion: number): Promise<ActionResult> {
+    return this.http.send<ActionResult>(
+      `/api/v1/actions/${actionId}?expectedVersion=${expectedVersion}`,
+      { method: http.RequestMethod.DELETE }
+    );
+  }
+
+  /** 复制行动为同计划内的新行动。 */
+  copyAction(actionId: number, clientKey: string, title: string): Promise<ActionResult> {
+    return this.http.send<ActionResult>(`/api/v1/actions/${actionId}/copies`, {
+      method: 'POST',
+      body: { clientKey: clientKey, title: title },
+      idempotencyKey: this.http.newIdempotencyKey()
+    });
+  }
+
+  /** 平移行动开始日期，「本次及未来」整体生效。 */
+  moveAction(actionId: number, expectedVersion: number, newStartDate: string): Promise<ActionResult> {
+    return this.http.send<ActionResult>(`/api/v1/actions/${actionId}/moves`, {
+      method: 'POST',
+      body: { expectedVersion: expectedVersion, newStartDate: newStartDate }
+    });
+  }
+
+  /**
+   * 单次调整：只跳过或改期这一次，不改写行动的重复规则。
+   *
+   * SKIP 不得携带 targetDate，RESCHEDULE 必须携带，服务端会拒绝自相矛盾的组合。
+   */
+  adjustOccurrence(
+    occurrenceId: number,
+    type: ActionExceptionType,
+    targetDate: string | null,
+    reason: string | null
+  ): Promise<OccurrenceResult> {
+    return this.http.send<OccurrenceResult>(
+      `/api/v1/action-occurrences/${occurrenceId}/adjustments`,
+      {
+        method: 'POST',
+        body: { type: type, targetDate: targetDate, reason: reason },
+        idempotencyKey: this.http.newIdempotencyKey()
+      }
+    );
+  }
+
+  /** 查询目标下已登记的单次调整例外。 */
+  listActionExceptions(goalId: number): Promise<ActionExceptionResult[]> {
+    return this.http.send<ActionExceptionResult[]>(`/api/v1/goals/${goalId}/action-exceptions`);
+  }
+
+  /**
+   * 今日工作台聚合：今天、逾期、接下来几天分组返回。
+   *
+   * timezone 决定「今天」的判定口径，必须传用户所在时区。
+   */
+  today(timezone: string, upcomingDays: number): Promise<TodayResult> {
+    return this.http.send<TodayResult>('/api/v1/today', {
+      query: { timezone: timezone, upcomingDays: `${upcomingDays}` }
+    });
+  }
+
+  /** 开始专注会话；已有进行中会话时服务端会拒绝。 */
+  startFocus(occurrenceId: number | null, plannedMinutes: number | null): Promise<FocusSessionResult> {
+    return this.http.send<FocusSessionResult>('/api/v1/focus-sessions', {
+      method: 'POST',
+      body: { occurrenceId: occurrenceId, plannedMinutes: plannedMinutes },
+      idempotencyKey: this.http.newIdempotencyKey()
+    });
+  }
+
+  /** 查询当前进行中的专注会话；空闲时 data 为 null。 */
+  activeFocus(): Promise<FocusSessionResult | null> {
+    return this.http.send<FocusSessionResult | null>('/api/v1/focus-sessions/active');
+  }
+
+  /** 专注计时流转：暂停、恢复、结束、作废；由会话乐观版本号保护。 */
+  transitionFocus(
+    sessionId: number,
+    action: string,
+    expectedVersion: number,
+    note: string | null
+  ): Promise<FocusSessionResult> {
+    return this.http.send<FocusSessionResult>(`/api/v1/focus-sessions/${sessionId}/transitions`, {
+      method: 'POST',
+      body: { action: action, expectedVersion: expectedVersion, note: note }
+    });
+  }
+
+  /** 新建快速记录；不绑定行动。 */
+  createQuickNote(content: string, moodLevel: MoodLevel | null, timezone: string): Promise<QuickNoteResult> {
+    return this.http.send<QuickNoteResult>('/api/v1/quick-notes', {
+      method: 'POST',
+      body: { content: content, moodLevel: moodLevel, timezone: timezone },
+      idempotencyKey: this.http.newIdempotencyKey()
+    });
+  }
+
+  /** 查询最近的快速记录，按创建时间倒序。 */
+  listQuickNotes(limit: number): Promise<QuickNoteResult[]> {
+    return this.http.send<QuickNoteResult[]>('/api/v1/quick-notes', { query: { limit: `${limit}` } });
+  }
+
+  /** 删除快速记录；服务端逻辑删除。 */
+  deleteQuickNote(noteId: number): Promise<void> {
+    return this.http.send<void>(`/api/v1/quick-notes/${noteId}`, {
+      method: http.RequestMethod.DELETE
+    });
+  }
+
+  /**
+   * 打卡或更正记录。
+   *
+   * FAILED 必须给出 failureReason；非 FAILED 不允许携带，服务端会拒绝自相矛盾的组合。
+   * correction 为 true 时不覆盖原记录：旧记录被标记失效并保留为历史。
+   */
   checkIn(
     occurrenceId: number,
     result: CheckInResultType,
     note: string | null,
+    actualMinutes: number | null,
+    perceivedDifficulty: ActionDifficulty | null,
+    energyLevel: EnergyLevel | null,
+    moodLevel: MoodLevel | null,
+    failureReason: string | null,
     correction: boolean
   ): Promise<CheckInResult> {
     return this.http.send<CheckInResult>(`/api/v1/action-occurrences/${occurrenceId}/check-ins`, {
@@ -142,10 +351,22 @@ export class LingxiApi {
         result: result,
         note: note,
         evidenceReference: null,
+        actualMinutes: actualMinutes,
+        perceivedDifficulty: perceivedDifficulty,
+        energyLevel: energyLevel,
+        moodLevel: moodLevel,
+        failureReason: failureReason,
         correction: correction
       },
       idempotencyKey: this.http.newIdempotencyKey()
     });
+  }
+
+  /** 查询当前有效打卡记录，供更正入口预填；未打卡时 data 为 null。 */
+  getEffectiveCheckIn(occurrenceId: number): Promise<CheckInView | null> {
+    return this.http.send<CheckInView | null>(
+      `/api/v1/action-occurrences/${occurrenceId}/check-in`
+    );
   }
 
   listAchievements(goalId: number | null, page: number, pageSize: number): Promise<PageResult<AchievementResult>> {

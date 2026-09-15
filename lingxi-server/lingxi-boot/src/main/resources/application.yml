@@ -34,7 +34,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        # prometheus 供运营侧刮取运行态指标（模型延迟/成本、通知投递、任务重试）；
+        # metrics 便于人工排查具体指标名。两者都不暴露配置与堆栈细节。
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: never
 
 logging:
   level:

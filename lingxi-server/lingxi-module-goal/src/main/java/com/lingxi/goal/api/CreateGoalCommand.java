@@ -5,8 +5,6 @@ package com.lingxi.goal.api;
  *
  * @param requestKey 幂等键
  * @param userId 用户标识
- * @param title 目标标题
- * @param successCriteria 可验证的成功标准
+ * @param definition 目标定义，见 PRD「目标管理」
  */
-public record CreateGoalCommand(
-    String requestKey, long userId, String title, String successCriteria) {}
+public record CreateGoalCommand(String requestKey, long userId, GoalDefinitionInput definition) {}

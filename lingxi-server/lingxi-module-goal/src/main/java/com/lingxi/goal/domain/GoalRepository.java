@@ -1,5 +1,6 @@
 package com.lingxi.goal.domain;
 
+import com.lingxi.goal.api.StarterGoalTemplate;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,9 +34,34 @@ public interface GoalRepository {
 
   boolean updateActivatedPlan(Goal goal, long previousVersion);
 
+  /** 按乐观版本更新目标定义与生命周期字段（暂停、恢复、放弃、归档）。 */
+  boolean updateDefinitionAndState(Goal goal, long previousVersion);
+
+  /**
+   * 统计用户已计入活跃上限的目标数。
+   *
+   * @param excludeGoalId 需要排除的目标标识，通常为当前正在激活的目标；无排除项时传 0
+   */
+  int countActiveGoals(long userId, long excludeGoalId);
+
   Optional<Action> findAction(long actionId);
 
+  /** 追加单个行动，用于「计划外新增行动」。 */
+  void insertAction(Action action);
+
+  /** 按乐观版本更新行动定义；「本次及未来」修改走这里。 */
+  boolean updateAction(Action action, long expectedVersion);
+
   List<Action> findActionsByGoalIds(List<Long> goalIds);
+
+  /** 查询指定行动的单次调整例外。 */
+  List<ActionException> findActionExceptions(List<Long> actionIds);
+
+  /** 新增或覆盖单次调整例外；同一行动同一天只保留一条。 */
+  void upsertActionException(ActionException exception);
+
+  /** 撤销某一天的单次调整例外。 */
+  boolean deleteActionException(long actionId, LocalDate localDate);
 
   Optional<ActionOccurrence> findOccurrence(long occurrenceId);
 
@@ -45,6 +71,23 @@ public interface GoalRepository {
   int insertOccurrences(List<ActionOccurrence> occurrences);
 
   boolean updateOccurrence(ActionOccurrence occurrence, String expectedStatus);
+
+  /**
+   * 删除指定行动在给定时刻之后仍未执行的实例。
+   *
+   * <p>修改行动时间或重复规则后必须清掉不再符合规则的未来实例，否则会出现「改了却没生效」；
+   * 已打卡或已跳过的实例属于历史事实，一律保留。
+   */
+  int deleteFutureScheduledOccurrences(long actionId, java.time.LocalDateTime after);
+
+  /**
+   * 删除指定行动在某一时刻的未执行实例。
+   *
+   * <p>单次调整必须按「行动 + 时刻」精确定位：用范围比较需要构造开区间边界，
+   * 而 DATETIME(3) 会把超过毫秒精度的边界值四舍五入，边界恰好落到实例时刻上时
+   * 目标实例反而被排除在外。精确删除没有这个歧义。
+   */
+  boolean deleteScheduledOccurrenceAt(long actionId, java.time.LocalDateTime scheduledAt);
 
   Optional<CheckIn> findCheckInByRequest(long occurrenceId, String requestKey);
 
@@ -75,6 +118,9 @@ public interface GoalRepository {
   /** 查询里程碑，用于成就判定。 */
   Optional<Milestone> findMilestone(long milestoneId);
 
+  /** 按计划版本与序号定位里程碑，用于把计划外新增的行动挂到正确阶段下。 */
+  Optional<Milestone> findMilestoneByPlanAndSequence(long planVersionId, int sequenceNo);
+
   /** 查询里程碑下的行动，用于成就判定。 */
   List<Action> findActionsByMilestone(long milestoneId);
 
@@ -85,4 +131,39 @@ public interface GoalRepository {
   List<LocalDate> findCompletedCheckInDates(long userId, LocalDate fromDate, LocalDate toDate);
 
   int logicallyDeleteUserData(long userId);
+
+  // ---- 今日工作台：专注会话与快速记录 ----
+
+  /** 查询用户当前进行中的专注会话；同一用户最多一个。 */
+  Optional<FocusSession> findActiveFocusSession(long userId);
+
+  Optional<FocusSession> findFocusSession(long sessionId);
+
+  void insertFocusSession(FocusSession session);
+
+  /** 按乐观版本更新专注会话；结束与作废会把进行中标记一并清空。 */
+  boolean updateFocusSession(FocusSession session, long expectedVersion);
+
+  /** 追加快速记录。 */
+  void insertQuickNote(QuickNote note);
+
+  /** 按创建时间倒序查询用户的快速记录，最多 {@code limit} 条。 */
+  List<QuickNote> findQuickNotes(long userId, int limit);
+
+  /** 查询用户最近结束的专注会话，用于今日专注时长汇总。 */
+  List<FocusSession> findFocusSessionsSince(long userId, java.time.Instant since);
+
+  /** 逻辑删除一条快速记录。 */
+  boolean deleteQuickNote(long noteId);
+
+  /**
+   * 查询全部启用的入门目标模板，按展示顺序返回。
+   *
+   * <p>模板是随版本交付的产品自带数据、对所有用户一致，因此不按用户过滤；
+   * 将来若需要按年龄分层限制模板范围，再在应用层按账号年龄段裁剪。
+   */
+  List<StarterGoalTemplate> findStarterTemplates();
+
+  /** 按业务键查询单个入门模板；不存在时返回空。 */
+  Optional<StarterGoalTemplate> findStarterTemplate(String templateKey);
 }

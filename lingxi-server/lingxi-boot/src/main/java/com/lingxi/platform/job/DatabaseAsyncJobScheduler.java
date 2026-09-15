@@ -84,6 +84,41 @@ public class DatabaseAsyncJobScheduler implements AsyncJobScheduler {
 
   @Override
   @Transactional
+  public Long defer(String jobType, String businessKey, Instant notBefore) {
+    if (jobType == null || jobType.isBlank() || businessKey == null || businessKey.isBlank()) {
+      throw new BusinessException("PLATFORM_INVALID_ASYNC_JOB", "异步任务参数不合法");
+    }
+    if (notBefore == null) {
+      throw new BusinessException("PLATFORM_INVALID_ASYNC_JOB", "推迟时刻不能为空");
+    }
+    AsyncJobEntity existing = find(jobType, businessKey);
+    if (existing == null) {
+      return null;
+    }
+    LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+    int affected =
+        mapper.update(
+            null,
+            Wrappers.<AsyncJobEntity>lambdaUpdate()
+                .eq(AsyncJobEntity::getId, existing.getId())
+                // 已成功或已终结的任务不复活：推迟只对在途任务有意义。
+                .in(
+                    AsyncJobEntity::getStatus,
+                    AsyncJobStatus.PENDING.name(),
+                    AsyncJobStatus.RETRY_WAIT.name(),
+                    AsyncJobStatus.RUNNING.name())
+                .set(AsyncJobEntity::getStatus, AsyncJobStatus.PENDING.name())
+                .set(AsyncJobEntity::getNextRetryAt, LocalDateTime.ofInstant(notBefore, ZoneOffset.UTC))
+                .set(AsyncJobEntity::getLeaseOwner, null)
+                .set(AsyncJobEntity::getLeaseUntil, null)
+                // 清掉上一次的失败原因：这次不是失败，是主动改期。
+                .set(AsyncJobEntity::getLastError, null)
+                .set(AsyncJobEntity::getUpdatedAt, now));
+    return affected == 1 ? existing.getId() : null;
+  }
+
+  @Override
+  @Transactional
   public void scheduleBatch(List<AsyncJobRequest> requests) {
     if (requests == null || requests.isEmpty()) {
       return;

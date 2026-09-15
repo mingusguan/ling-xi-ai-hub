@@ -13,6 +13,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/components/AppShell.vue'),
     children: [
       { path: '', name: 'home', component: () => import('@/views/HomeView.vue'), meta: { title: '今日行动' } },
+      {
+        // 新手引导基础画像（PRD ONB-01）：允许留空与跳过，因此不做路由级强制拦截。
+        path: 'onboarding',
+        name: 'onboarding',
+        component: () => import('@/views/OnboardingView.vue'),
+        meta: { title: '新手引导' }
+      },
       { path: 'goals', name: 'goals', component: () => import('@/views/GoalsView.vue'), meta: { title: '我的目标' } },
       {
         path: 'goals/:goalId',

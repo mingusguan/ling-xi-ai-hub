@@ -63,6 +63,7 @@ public class ActionOccurrence {
           case COMPLETED -> OccurrenceStatus.COMPLETED;
           case PARTIAL -> OccurrenceStatus.PARTIAL;
           case SKIPPED -> OccurrenceStatus.SKIPPED;
+          case FAILED -> OccurrenceStatus.FAILED;
         };
     updatedAt = now;
   }

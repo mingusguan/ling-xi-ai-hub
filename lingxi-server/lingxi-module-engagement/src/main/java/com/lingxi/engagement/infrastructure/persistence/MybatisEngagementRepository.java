@@ -109,6 +109,11 @@ public class MybatisEngagementRepository implements EngagementRepository {
                 .set(NotificationTaskEntity::getStatus, t.getStatus().name())
                 .set(NotificationTaskEntity::getAttemptCount, t.getAttemptCount())
                 .set(NotificationTaskEntity::getLastError, t.getLastError())
+                .set(
+                    NotificationTaskEntity::getDeferredUntil,
+                    t.getDeferredUntil() == null
+                        ? null
+                        : LocalDateTime.ofInstant(t.getDeferredUntil(), ZoneOffset.UTC))
                 .set(NotificationTaskEntity::getUpdatedAt, t.getUpdatedAt()))
         == 1;
   }
@@ -445,6 +450,7 @@ public class MybatisEngagementRepository implements EngagementRepository {
         NotificationTaskStatus.valueOf(e.getStatus()),
         e.getAttemptCount(),
         e.getLastError(),
+        e.getDeferredUntil() == null ? null : e.getDeferredUntil().toInstant(ZoneOffset.UTC),
         e.getCreatedAt(),
         e.getUpdatedAt());
   }
@@ -463,6 +469,10 @@ public class MybatisEngagementRepository implements EngagementRepository {
     e.setStatus(t.getStatus().name());
     e.setAttemptCount(t.getAttemptCount());
     e.setLastError(t.getLastError());
+    e.setDeferredUntil(
+        t.getDeferredUntil() == null
+            ? null
+            : LocalDateTime.ofInstant(t.getDeferredUntil(), ZoneOffset.UTC));
     e.setCreatedAt(t.getCreatedAt());
     e.setUpdatedAt(t.getUpdatedAt());
     return e;

@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lingxi.goal.infrastructure.persistence.OccurrenceMapper">
-    <insert id="insertIgnoreBatch">
-        INSERT IGNORE INTO goal_action_occurrence
+    <!--
+      实例是重复规则的投影，重建必须幂等。
+
+      为什么不能用 INSERT IGNORE：实例表参与逻辑删除（deleted 标记），唯一键是 (action_id, scheduled_at)。
+      行动规则变更时旧实例只是被标记 deleted=1，行仍在；再用 INSERT IGNORE 重建同一时间点会被唯一键直接忽略，
+      结果是「改了规则却再也生成不出实例」。因此这里改为 upsert：
+        - 已存在且仍是未执行的实例：把 deleted 复位，等于重新物化这一格；
+        - 已打卡 / 部分完成 / 已跳过的实例：属于历史事实，只保留不复位、也不改状态。
+    -->
+    <insert id="upsertBatch">
+        INSERT INTO goal_action_occurrence
         (id,action_id,scheduled_at,local_date,timezone,status,created_at,updated_at) VALUES
         <foreach collection="items" item="i" separator=",">
             (#{i.id},#{i.actionId},#{i.scheduledAt},#{i.localDate},#{i.timezone},
              #{i.status},#{i.createdAt},#{i.updatedAt})
         </foreach>
+        ON DUPLICATE KEY UPDATE deleted = IF(status = 'SCHEDULED', 0, deleted)
     </insert>
 </mapper>
